@@ -1,11 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit'
 
 export const makeStore = () => {
-  return configureStore({
-    reducer: {
-        //reducers
-    },
-  })
+    return configureStore({
+        reducer: {
+            //reducers
+        },
+    })
 }
 
 // Infer the type of makeStore
