@@ -1,11 +1,5 @@
 import React from "react";
 
-//components
-import Input from "../common/input/Input";
-
-//utils
-import { Icon } from "@/lib/icons/icons";
-
 const Header = () => {
   return (
     <header className="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#f4f0f0] px-10 py-3">
@@ -58,11 +52,6 @@ const Header = () => {
         </div>
       </div>
       <div className="flex flex-1 justify-end gap-8">
-        <label className="flex flex-col min-w-40 !h-10 max-w-64">
-          <div className="flex w-full flex-1 items-stretch rounded-xl h-full">
-            <Input placeholder="Search" leftIcon={<Icon icon="search" />} />
-          </div>
-        </label>
         <div className="flex gap-2">
           <button className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-[#e82630] text-white text-sm font-bold leading-normal tracking-[0.015em]">
             <span className="truncate">Log In</span>
