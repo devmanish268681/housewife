@@ -11,7 +11,8 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <Header />
-        <StoreProvider>{children}</StoreProvider>
+        {/* <StoreProvider>{children}</StoreProvider> */}
+        {children}
       </body>
     </html>
   );
