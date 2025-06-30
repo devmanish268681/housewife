@@ -1,3 +1,5 @@
+'use client';
+  import { signIn } from "next-auth/react";
 import React from "react";
 
 const Header = () => {
@@ -53,7 +55,11 @@ const Header = () => {
       </div>
       <div className="flex flex-1 justify-end gap-8">
         <div className="flex gap-2">
-          <button className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-[#e82630] text-white text-sm font-bold leading-normal tracking-[0.015em]">
+            <button
+            className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-[#e82630] text-white text-sm font-bold leading-normal tracking-[0.015em]"
+            onClick={() => signIn("google")}
+            type="button"
+            >
             <span className="truncate">Log In</span>
           </button>
           <button className="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 bg-[#f4f0f0] text-[#181111] gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5">
