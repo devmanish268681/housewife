@@ -1,6 +1,9 @@
 import React from "react";
+
+//components
 import Input from "../common/Input";
 import Chip from "../common/Chip";
+import Category from "./components/category/Category";
 
 const HomePage = () => {
   return (
@@ -23,6 +26,7 @@ const HomePage = () => {
         <Chip>Craft Beer</Chip>
         <Chip>Gluten-Free Bread</Chip>
       </div>
+      <Category />
     </div>
   );
 };
