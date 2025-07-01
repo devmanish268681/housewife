@@ -1,88 +1,197 @@
-'use client';
-  import { signIn } from "next-auth/react";
-import React from "react";
+"use client";
+import React, { useState } from "react";
+import { signIn } from "next-auth/react";
 
 const Header = () => {
+  const [fullName, setFullName] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [view, setView] = useState<"login" | "signup">("login");
+
+  const handleCredentialsLogin = async () => {
+    console.log("view", view);
+
+    if (view === "login") {
+      const result = await signIn("credentials", {
+        redirect: false,
+        email,
+        password,
+        mode: "signin",
+      });
+
+      if (result?.error) {
+        alert("Login failed: " + result.error);
+      } else {
+        setIsOpen(false);
+      }
+    } else {
+      // Simple frontend validation
+      if (!fullName || !email || !password || !confirmPassword) {
+        alert("Please fill in all fields");
+        return;
+      }
+      if (password !== confirmPassword) {
+        alert("Passwords do not match");
+        return;
+      }
+
+      // Replace this with actual sign-up API if needed
+      console.log("Signup values:", { fullName, email, password });
+
+      const result = await signIn("credentials", {
+        redirect: false,
+        fullName,
+        email,
+        password,
+        mode: "signup",
+      });
+
+      if (result?.error) {
+        alert("Sign Up failed: " + result.error);
+      } else {
+        setIsOpen(false);
+      }
+    }
+  };
+
   return (
-    <header className="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#f4f0f0] px-10 py-3">
-      <div className="flex items-center gap-8">
-        <div className="flex items-center gap-4 text-[#181111]">
-          <div className="size-4">
-            <svg
-              viewBox="0 0 48 48"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <g clipPath="url(#clip0_6_535)">
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M47.2426 24L24 47.2426L0.757355 24L24 0.757355L47.2426 24ZM12.2426 21H35.7574L24 9.24264L12.2426 21Z"
-                  fill="currentColor"
-                />
-              </g>
-              <defs>
-                <clipPath id="clip0_6_535">
-                  <rect width="48" height="48" fill="white" />
-                </clipPath>
-              </defs>
-            </svg>
-          </div>
-          <h2 className="text-[#181111] text-lg font-bold leading-tight tracking-[-0.015em]">
-            HouseWife
-          </h2>
+    <>
+      <header className="flex items-center justify-between border-b border-[#f4f0f0] px-10 py-3">
+        <div className="flex items-center gap-8">
+          <h2 className="text-[#181111] text-lg font-bold">HouseWife</h2>
+          <nav className="flex items-center gap-6 text-sm text-[#181111] font-medium">
+            <a href="#">Offers</a>
+            <a href="#">Categories</a>
+            <a href="#">Help</a>
+          </nav>
         </div>
-        <div className="flex items-center gap-9">
-          <a
-            className="text-[#181111] text-sm font-medium leading-normal"
-            href="#"
+        <div className="flex gap-4">
+          <button
+            onClick={() => setIsOpen(true)}
+            className="h-10 px-4 bg-[#e82630] text-white rounded-full text-sm font-bold"
           >
-            Offers
-          </a>
-          <a
-            className="text-[#181111] text-sm font-medium leading-normal"
-            href="#"
-          >
-            Categories
-          </a>
-          <a
-            className="text-[#181111] text-sm font-medium leading-normal"
-            href="#"
-          >
-            Help
-          </a>
+            Log In
+          </button>
+          <button className="h-10 px-4 bg-[#f4f0f0] text-[#181111] rounded-full">
+            🛒
+          </button>
         </div>
-      </div>
-      <div className="flex flex-1 justify-end gap-8">
-        <div className="flex gap-2">
+      </header>
+
+      {/* Modal */}
+      {isOpen && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
+          <div className="bg-white w-full max-w-sm rounded-lg p-6 relative shadow-xl">
             <button
-            className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-[#e82630] text-white text-sm font-bold leading-normal tracking-[0.015em]"
-            onClick={() => signIn("google")}
-            type="button"
+              onClick={() => setIsOpen(false)}
+              className="absolute top-2 right-3 text-gray-500 text-xl font-bold"
             >
-            <span className="truncate">Log In</span>
-          </button>
-          <button className="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 bg-[#f4f0f0] text-[#181111] gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5">
-            <div
-              className="text-[#181111]"
-              data-icon="ShoppingCart"
-              data-size="20px"
-              data-weight="regular"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20px"
-                height="20px"
-                fill="currentColor"
-                viewBox="0 0 256 256"
+              ×
+            </button>
+
+            {/* Toggle between login/signup */}
+            <div className="flex justify-center mb-6">
+              <button
+                className={`px-4 py-1 text-sm font-semibold border-b-2 ${
+                  view === "login"
+                    ? "border-[#e82630] text-[#e82630]"
+                    : "text-gray-500"
+                }`}
+                onClick={() => setView("login")}
               >
-                <path d="M222.14,58.87A8,8,0,0,0,216,56H54.68L49.79,29.14A16,16,0,0,0,34.05,16H16a8,8,0,0,0,0,16h18L59.56,172.29a24,24,0,0,0,5.33,11.27,28,28,0,1,0,44.4,8.44h45.42A27.75,27.75,0,0,0,152,204a28,28,0,1,0,28-28H83.17a8,8,0,0,1-7.87-6.57L72.13,152h116a24,24,0,0,0,23.61-19.71l12.16-66.86A8,8,0,0,0,222.14,58.87ZM96,204a12,12,0,1,1-12-12A12,12,0,0,1,96,204Zm96,0a12,12,0,1,1-12-12A12,12,0,0,1,192,204Zm4-74.57A8,8,0,0,1,188.1,136H69.22L57.59,72H206.41Z" />
-              </svg>
+                Login
+              </button>
+              <button
+                className={`px-4 py-1 text-sm font-semibold border-b-2 ml-4 ${
+                  view === "signup"
+                    ? "border-[#e82630] text-[#e82630]"
+                    : "text-gray-500"
+                }`}
+                onClick={() => setView("signup")}
+              >
+                Sign Up
+              </button>
             </div>
-          </button>
+
+            {/* Shared Google sign-in */}
+            <button
+              className="w-full bg-[#4285F4] text-white py-2 px-4 rounded-md mb-4 font-medium"
+              onClick={() => signIn("google")}
+            >
+              Continue with Google
+            </button>
+
+            <div className="my-4 text-center text-sm text-gray-500">
+              or use credentials
+            </div>
+
+            {view === "login" ? (
+              <>
+                <input
+                  type="email"
+                  placeholder="Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full mb-3 px-4 py-2 border rounded-md text-sm"
+                />
+                <input
+                  type="password"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full mb-4 px-4 py-2 border rounded-md text-sm"
+                />
+                <button
+                  className="w-full bg-[#e82630] text-white py-2 rounded-md font-semibold"
+                  onClick={handleCredentialsLogin}
+                >
+                  Sign In
+                </button>
+              </>
+            ) : (
+              <>
+                <input
+                  type="text"
+                  placeholder="Full Name"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  className="w-full mb-3 px-4 py-2 border rounded-md text-sm"
+                />
+                <input
+                  type="email"
+                  placeholder="Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full mb-3 px-4 py-2 border rounded-md text-sm"
+                />
+                <input
+                  type="password"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full mb-3 px-4 py-2 border rounded-md text-sm"
+                />
+                <input
+                  type="password"
+                  placeholder="Confirm Password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="w-full mb-4 px-4 py-2 border rounded-md text-sm"
+                />
+                <button
+                  className="w-full bg-[#e82630] text-white py-2 rounded-md font-semibold"
+                  onClick={handleCredentialsLogin}
+                >
+                  Sign Up
+                </button>
+              </>
+            )}
+          </div>
         </div>
-      </div>
-    </header>
+      )}
+    </>
   );
 };
 
