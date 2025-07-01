@@ -4,6 +4,7 @@ import React from "react";
 import Input from "../common/Input";
 import Chip from "../common/Chip";
 import Category from "./components/category/Category";
+import DailyDeals from "./components/deals/Deals";
 
 const HomePage = () => {
   return (
@@ -27,6 +28,7 @@ const HomePage = () => {
         <Chip>Gluten-Free Bread</Chip>
       </div>
       <Category />
+      <DailyDeals />
     </div>
   );
 };

@@ -65,7 +65,7 @@ const categories = [
 
 const CategoriesSection = () => {
   return (
-    <div className="px-40 flex flex-1 py-5">
+    <div className="flex flex-1 py-5">
       <div className="layout-content-container flex flex-col flex-1">
         <h2 className="text-[#181111] tracking-light text-[28px] font-bold leading-tight px-4 text-left pb-3 pt-5">
           Shop by Category
