@@ -6,7 +6,7 @@ const DailyDeals = () => {
       className="relative flex size-full min-h-screen flex-col bg-white group/design-root overflow-x-hidden"
       style={{ fontFamily: '"Plus Jakarta Sans", "Noto Sans", sans-serif' }}
     >
-      <div className="layout-container flex h-full grow flex-col">
+      <div className="layout-container flex grow flex-col">
         <div className="flex flex-1 py-5">
           <div className="layout-content-container flex flex-col flex-1">
             <h2 className="text-[#181111] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">

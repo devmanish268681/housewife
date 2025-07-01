@@ -5,6 +5,7 @@ import Input from "../common/Input";
 import Chip from "../common/Chip";
 import Category from "./components/category/Category";
 import DailyDeals from "./components/deals/Deals";
+import Recommended from "./components/recommended/Recommended";
 
 const HomePage = () => {
   return (
@@ -29,6 +30,7 @@ const HomePage = () => {
       </div>
       <Category />
       <DailyDeals />
+      <Recommended />
     </div>
   );
 };
