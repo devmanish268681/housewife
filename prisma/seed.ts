@@ -4,12 +4,15 @@ const prisma = new PrismaClient();
 async function main() {
   // Roles
   // Create roles, with "user" as default
-  const [adminRole, deliveryAgentRole, userRole] = await Promise.all([
+  await Promise.all([
     prisma.role.create({ data: { name: "admin" } }),
     prisma.role.create({ data: { name: "delivery_agent" } }),
-    prisma.role.create({ data: { name: "user", isDefault: true } }),
+    prisma.role.create({ data: { name: "user" } }),
   ]);
 
+  const userRole = await prisma.role.findUnique({
+    where: { name: "user" },
+  });
   // User with address
   const user = await prisma.user.create({
     data: {
