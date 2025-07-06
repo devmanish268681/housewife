@@ -5,10 +5,13 @@ import Image from "next/image";
 
 //third-party
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHeart, faPlus, faMinus } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faMinus } from "@fortawesome/free-solid-svg-icons";
 
 //components
 import ProductModal from "@/components/product-modal/ProductModal";
+
+//constants
+import { product } from "@/constants/constants";
 
 
 //types
@@ -32,22 +35,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
   const increment = () => setQuantity((prev) => prev + 1);
   const decrement = () => setQuantity((prev) => (prev > 0 ? prev - 1 : 0));
-  const product = {
-    title: "Lay's Kettle Cooked Jalapeno Potato Chips",
-    description:
-      "Crispy, crunchy kettle-cooked chips with a spicy kick of jalapeño. Perfect snack for parties or solo munching!",
-    price: 22000,
-    stock: 342,
-    category: "Snacks",
-    tags: ["chips", "spicy", "kettle cooked", "lay's"],
-    image:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuDO7S7Jv8jRcgvw6Jer_oGOSWY6eCEYDcJcHc3yDpGUhfxVdDl8LhZ1UBu3EExL9OIybfx8qg-CFUF4g8DSvKfuWz73TbmTW5aZb_SwTc8XZkunjD98EtzDWQZkRjTHX7KqTT6J4_HvanYMOYKGAUg6dqOjwWpYp7rVMChnuAmUhL0sqerBu08omTDSwjm0RTKK4K0OBYbHUejq1LyYF42UdfymFnjIEie8fXmqILEb5-vFRuP-9JXkZBE6tHUNkvFK-J9ZTE3M2yxQ",
-  };
-
+  
   return (
     <>
       <article
-        className="w-[220px] bg-white rounded-2xl overflow-hidden border border-gray-200 shadow hover:shadow-lg transition-transform duration-300 ease-in-out cursor-pointer hover:-translate-y-1"
+        className="bg-white rounded-2xl overflow-hidden border border-gray-200 shadow hover:shadow-lg transition-transform duration-300 ease-in-out cursor-pointer hover:-translate-y-1"
         onClick={() => setIsModalOpen(true)}
       >
         {/* Product Image */}
@@ -59,13 +51,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
             height={150}
             className="p-4"
           />
-          <button className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full flex items-center justify-center bg-white shadow-md hover:scale-110 transition">
-            <FontAwesomeIcon
-              icon={faHeart}
-              size="lg"
-              className="text-red-500"
-            />
-          </button>
         </div>
 
         {/* Product Info */}

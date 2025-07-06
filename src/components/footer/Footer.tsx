@@ -1,4 +1,6 @@
 import React from "react";
+
+//third-party
 import {
   faSquareFacebook,
   faSquareInstagram,
@@ -6,28 +8,8 @@ import {
 } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-const footerLinks = [
-  {
-    title: "Company",
-    links: ["About Us", "Careers", "Contact"],
-  },
-  {
-    title: "Support",
-    links: ["Help Center", "Returns", "Shipping"],
-  },
-  {
-    title: "Legal",
-    links: ["Privacy Policy", "Terms of Service", "Disclaimer"],
-  },
-  {
-    title: "Account",
-    links: ["Login", "Register", "Orders"],
-  },
-  {
-    title: "Explore",
-    links: ["Blog", "Offers", "Locations"],
-  },
-];
+//constants
+import { footerLinks } from "@/constants/constants";
 
 const Footer = () => {
   return (
