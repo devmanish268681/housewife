@@ -1,4 +1,7 @@
+"use client";
+
 import React from "react";
+import { useRouter } from "next/navigation";
 
 //components
 import Input from "../common/Input";
@@ -8,15 +11,20 @@ import DailyDeals from "./components/deals/Deals";
 import Recommended from "./components/recommended/Recommended";
 
 const HomePage = () => {
+  const router = useRouter();
+
+  const categories = ["Vegetables", "Fruits", "Dairy", "Snacks", "Beverages"];
   return (
     <div className="mt-12">
       <Input placeholder="Search for products" />
       <div className="flex gap-3 p-3 flex-wrap pr-4 pt-5">
-        <Chip>Vegetables</Chip>
-        <Chip>Fruits</Chip>
-        <Chip>Dairy</Chip>
-        <Chip>Snacks</Chip>
-        <Chip>Beverages</Chip>
+        {categories.map((category) => (
+          <Chip
+            onClick={() => router.push(`/category/${category.toLowerCase()}`)}
+          >
+            {category}
+          </Chip>
+        ))}
       </div>
       <h2 className="text-[#181111] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">
         Popular Searches

@@ -1,0 +1,74 @@
+"use client";
+
+import React, { useState } from "react";
+import Image from "next/image";
+
+// third-party
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faAngleDown, faAngleUp } from "@fortawesome/free-solid-svg-icons";
+
+// components
+import CircleCheckbox from "../circle-checkbox/CircleCheckbox";
+
+// types
+type CategoryAccordionProps = {
+  title: string;
+  image: string;
+  subcategories: string[];
+  isLast: boolean;
+};
+
+const CategoryAccordion: React.FC<CategoryAccordionProps> = ({
+  title,
+  image,
+  subcategories,
+  isLast,
+}) => {
+  const [dropdown, setDropdown] = useState(false);
+
+  return (
+    <div>
+      {/* Accordion Header */}
+      <div
+        className={`flex items-center justify-between p-3 cursor-pointer ${
+          isLast ? "" : "border-b border-gray-200"
+        }`}
+        onClick={() => setDropdown(!dropdown)}
+      >
+        <div className="flex items-center gap-2.5">
+          <Image src={image} alt={title} width={40} height={40} />
+          <p className="text-[15px]">{title}</p>
+        </div>
+        <FontAwesomeIcon
+          icon={dropdown ? faAngleUp : faAngleDown}
+          className="w-3.5 h-3.5"
+        />
+      </div>
+
+      {/* Accordion Body */}
+      <div
+        className={`border border-gray-200 border-t-0 overflow-hidden transition-all duration-400 ease-in-out ${
+          dropdown
+            ? "max-h-[500px] opacity-100 px-4 py-2"
+            : "max-h-0 opacity-0 px-0 py-0"
+        }`}
+      >
+        {subcategories.map((item, index) => (
+          <div
+            key={index}
+            className={`flex justify-between items-center py-3 ${
+              index !== subcategories.length - 1
+                ? "border-b border-gray-200"
+                : ""
+            }`}
+          >
+            <p>{item}</p>
+            <CircleCheckbox />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default CategoryAccordion;
