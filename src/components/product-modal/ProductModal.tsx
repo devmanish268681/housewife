@@ -33,7 +33,6 @@ const ProductModal: React.FC<ProductModalProps> = ({
 }) => {
   const [quantity, setQuantity] = useState(1);
 
-
   useEffect(() => {
     if (isOpen) setQuantity(1);
   }, [isOpen, product]);
@@ -80,10 +79,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
       >
         {/* Header */}
         <div className="flex justify-between items-center mb-4">
-          <h3
-            id="product-modal-title"
-            className="text-xl font-semibold"
-          >
+          <h3 id="product-modal-title" className="text-xl font-semibold">
             {product.title}
           </h3>
           <button
@@ -106,16 +102,15 @@ const ProductModal: React.FC<ProductModalProps> = ({
           />
           {product.stock === 0 && (
             <div className="absolute inset-0 bg-white bg-opacity-70 flex items-center justify-center rounded">
-              <span className="text-red-600 font-bold text-lg">Out of Stock</span>
+              <span className="text-red-600 font-bold text-lg">
+                Out of Stock
+              </span>
             </div>
           )}
         </div>
 
         {/* Details */}
-        <p
-          id="product-modal-description"
-          className="mb-2 text-gray-700"
-        >
+        <p id="product-modal-description" className="mb-2 text-gray-700">
           {product.description}
         </p>
 
@@ -127,7 +122,9 @@ const ProductModal: React.FC<ProductModalProps> = ({
         </p>
         <p className="mb-1">
           Stock:{" "}
-          <span className={product.stock === 0 ? "text-red-600 font-semibold" : ""}>
+          <span
+            className={product.stock === 0 ? "text-red-600 font-semibold" : ""}
+          >
             {product.stock}
           </span>
         </p>
@@ -176,7 +173,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
           className={`w-full py-2 rounded text-white transition ${
             product.stock === 0
               ? "bg-gray-400 cursor-not-allowed"
-              : "bg-green-600 hover:bg-green-700"
+              : "bg-red-600 hover:bg-red-700"
           }`}
           disabled={product.stock === 0}
           aria-disabled={product.stock === 0}
@@ -210,7 +207,9 @@ const ProductModal: React.FC<ProductModalProps> = ({
                     height={120}
                     className="rounded"
                   />
-                  <p className="text-sm font-medium mt-1 truncate">{relProd.title}</p>
+                  <p className="text-sm font-medium mt-1 truncate">
+                    {relProd.title}
+                  </p>
                   <p className="text-sm text-gray-600">
                     {relProd.price.toLocaleString("en-IN", {
                       style: "currency",

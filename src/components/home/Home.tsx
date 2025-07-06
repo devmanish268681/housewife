@@ -7,19 +7,21 @@ import { useRouter } from "next/navigation";
 import Input from "../common/Input";
 import Chip from "../common/Chip";
 import Category from "./components/category/Category";
-import DailyDeals from "./components/deals/Deals";
 import Recommended from "./components/recommended/Recommended";
+
+//constants
+import { categories, popularSearches } from "@/constants/constants";
 
 const HomePage = () => {
   const router = useRouter();
 
-  const categories = ["Vegetables", "Fruits", "Dairy", "Snacks", "Beverages"];
   return (
     <div className="mt-12">
       <Input placeholder="Search for products" />
       <div className="flex gap-3 p-3 flex-wrap pr-4 pt-5">
-        {categories.map((category) => (
+        {categories.map((category, index) => (
           <Chip
+            key={index}
             onClick={() => router.push(`/category/${category.toLowerCase()}`)}
           >
             {category}
@@ -30,14 +32,17 @@ const HomePage = () => {
         Popular Searches
       </h2>
       <div className="flex gap-3 p-3 flex-wrap">
-        <Chip>Organic Apples</Chip>
-        <Chip>Local Honey</Chip>
-        <Chip>Artisan Cheese</Chip>
-        <Chip>Craft Beer</Chip>
-        <Chip>Gluten-Free Bread</Chip>
+        {popularSearches.map((item, index) => (
+          <Chip
+            key={index}
+            onClick={() => router.push(`/products/${item.toLowerCase()}`)}
+          >
+            {item}
+          </Chip>
+        ))}
       </div>
       <Category />
-      <DailyDeals />
+      {/* <DailyDeals /> */}
       <Recommended />
     </div>
   );

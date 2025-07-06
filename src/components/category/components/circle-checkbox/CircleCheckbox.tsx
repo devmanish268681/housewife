@@ -6,9 +6,7 @@ export default function CircleCheckbox() {
   const [checked, setChecked] = useState(false);
 
   return (
-    <label
-      className="inline-block cursor-pointer relative w-6 h-6"
-    >
+    <label className="inline-block cursor-pointer relative w-6 h-6">
       <input
         type="checkbox"
         checked={checked}
@@ -16,8 +14,8 @@ export default function CircleCheckbox() {
         className="absolute opacity-0 w-6 h-6 m-0 cursor-pointer"
       />
       <span
-        className={`inline-flex items-center justify-center w-6 h-6 rounded-full border-2 border-yellow-400 transition-all duration-200 ease-in-out ${
-          checked ? "bg-yellow-400" : "bg-transparent"
+        className={`inline-flex items-center justify-center w-6 h-6 rounded-full border-2 border-red-600 transition-all duration-200 ease-in-out ${
+          checked ? "bg-red-600" : "bg-transparent"
         }`}
       >
         {checked && (
