@@ -1,17 +1,22 @@
 "use client";
 
 import React from "react";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import { signIn } from "next-auth/react";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 //third-party
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes, faSpinner} from "@fortawesome/free-solid-svg-icons";
+import { faTimes, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { faGoogle } from "@fortawesome/free-brands-svg-icons";
 
 //types
 type SignupModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  onSignIn:() => void;
+  onSignIn: () => void;
   onGoogleSignIn?: () => void;
   loadingGoogle?: boolean;
 };
@@ -23,6 +28,45 @@ const SignupModal: React.FC<SignupModalProps> = ({
   onSignIn,
   loadingGoogle,
 }) => {
+  const router = useRouter();
+
+  const validationSchema = Yup.object({
+    email: Yup.string()
+      .email("Invalid email address")
+      .required("Email is required"),
+    password: Yup.string()
+      .min(6, "Password must be at least 6 characters")
+      .required("Password is required"),
+  });
+
+  const { values, setFieldValue, handleSubmit } = useFormik({
+    initialValues: {
+      name: "",
+      email: "",
+      password: "",
+    },
+    validationSchema,
+    onSubmit: async (values, { resetForm }) => {
+      const res = await signIn("credentials", {
+        redirect: false, // avoid auto redirect
+        email,
+        fullName: name,
+        password,
+        mode: "signup",
+      });
+
+      if (res?.error) {
+        toast.error("Signup failed. Try again");
+      } else {
+        toast?.success("Account created successfully!");
+        resetForm();
+        router.push("/");
+      }
+    },
+  });
+
+  const { name, email, password } = values;
+
   if (!isOpen) return null;
 
   return (
@@ -47,12 +91,26 @@ const SignupModal: React.FC<SignupModalProps> = ({
         <form className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
+              User name
+            </label>
+            <input
+              type="text"
+              value={name}
+              placeholder="you@example.com"
+              onChange={(e) => setFieldValue("name", e.target.value)}
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-red-600 focus:ring-2 focus:ring-red-100 outline-none"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
               Email
             </label>
             <input
               type="email"
+              value={email}
               placeholder="you@example.com"
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-green-600 focus:ring-2 focus:ring-green-100 outline-none"
+              onChange={(e) => setFieldValue("email", e.target.value)}
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-red-600 focus:ring-2 focus:ring-red-100 outline-none"
             />
           </div>
           <div>
@@ -61,13 +119,16 @@ const SignupModal: React.FC<SignupModalProps> = ({
             </label>
             <input
               type="password"
+              value={password}
               placeholder="••••••••"
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-green-600 focus:ring-2 focus:ring-green-100 outline-none"
+              onChange={(e) => setFieldValue("password", e.target.value)}
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-red-600 focus:ring-2 focus:ring-red-100 outline-none"
             />
           </div>
           <button
-            type="submit"
+            type="button"
             className="w-full rounded-full bg-red-600 px-4 py-2 text-white font-medium hover:bg-red-600 transition"
+            onClick={() => handleSubmit()}
           >
             Sign Up
           </button>
@@ -82,7 +143,7 @@ const SignupModal: React.FC<SignupModalProps> = ({
 
         {/* Google Signin Button */}
         <button
-          onClick={onGoogleSignIn}
+          onClick={() => signIn("google", { callbackUrl: "/" })}
           className="w-full flex items-center justify-center gap-2 rounded-full border border-gray-300 px-4 py-2 text-gray-700 hover:bg-gray-50 transition"
           type="button"
         >
@@ -90,7 +151,11 @@ const SignupModal: React.FC<SignupModalProps> = ({
             <FontAwesomeIcon icon={faSpinner} spin />
           ) : (
             <>
-              <FontAwesomeIcon icon={faGoogle} size="lg" className="text-red-500" />
+              <FontAwesomeIcon
+                icon={faGoogle}
+                size="lg"
+                className="text-red-500"
+              />
               Continue with Google
             </>
           )}
