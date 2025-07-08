@@ -35,7 +35,8 @@ export const authOptions = {
         mode: { label: "Mode", type: "text" },
       },
       async authorize(credentials) {
-        const isSignup = credentials?.mode === "login" ? true : false;
+        const isSignup = credentials?.mode === "signup" ? false : true;
+
         console.log("isSignup", isSignup);
         console.log("credentials?.view", credentials);
         if (isSignup) {
@@ -48,7 +49,7 @@ export const authOptions = {
           });
 
           if (!user || !user.password) {
-            throw new Error("user does not exists please login first");
+            throw new Error("USER_NOT_FOUND");
           }
 
           // Compare password (you should hash passwords with bcrypt)
@@ -57,7 +58,7 @@ export const authOptions = {
             user.password
           );
           if (!isValid) {
-            throw new Error("Invalid password");
+            throw new Error("INVALID_CREDENTIALS");
           }
 
           return {
@@ -67,8 +68,12 @@ export const authOptions = {
             profileImage: user.profileImage,
           };
         } else {
-          if (!credentials?.email || !credentials?.password) {
-            throw new Error("Email and password are required");
+          if (
+            !credentials?.fullName ||
+            !credentials?.email ||
+            !credentials?.password
+          ) {
+            throw new Error("MISSING_FIELDS");
           }
 
           let user = await prisma.user.findUnique({
@@ -90,6 +95,23 @@ export const authOptions = {
                 roles: { connect: { id: userRole?.id } },
               },
             });
+            // try {
+            //   const res = await fetch(
+            //     `${process.env.NEXTAUTH_URL}/api/send-verification-email`,
+            //     {
+            //       method: "POST",
+            //       headers: { "Content-Type": "application/json" },
+            //       body: JSON.stringify({ userId: user.id }),
+            //     }
+            //   );
+            //   if (res.status !== 200) {
+            //     throw Error(
+            //       `Error sending verification email to ${user.email}`
+            //     );
+            //   }
+            // } catch (error) {
+            //   throw Error(`Error sending verification email to ${user.email}`);
+            // }
           }
 
           return {
@@ -115,6 +137,9 @@ export const authOptions = {
       },
     }),
   ],
+  pages: {
+    error: "/auth/error",
+  },
   session: {
     strategy: "jwt" as const,
   },
@@ -129,18 +154,38 @@ export const authOptions = {
       // Only on first login
       if (user && user.email) {
         const dbUser = await prisma.user.findUnique({
-          where: { email: user.email },
-          select: { id: true, roles: { select: { name: true } } },
+          where: { email: user.email ?? undefined },
+          select: {
+            id: true,
+            roles: { select: { name: true } },
+            profileImage: true,
+          },
         });
         if (dbUser?.id) {
           token.id = dbUser.id;
           token.role = dbUser.roles?.name || null;
+          token.profileImage = dbUser.profileImage || null;
         }
       }
 
       return token;
     },
-    async signIn() {
+    async signIn({
+      user,
+      account,
+    }: {
+      user: import("next-auth").User;
+      account: import("next-auth").Account | null;
+    }) {
+      // if (account?.provider === "credentials") {
+      //   let existingUser = await prisma.user.findUnique({
+      //     where: { email: user.email ?? undefined },
+      //   });
+
+      //   if (!existingUser?.emailVerified) {
+      //     throw new Error("EMAIL_NOT_VERIFIED");
+      //   }
+      // }
       return true;
     },
     async session({
@@ -153,6 +198,7 @@ export const authOptions = {
       if (token && session.user) {
         session.user.id = token?.id || null;
         session.user.role = token?.role as string;
+        session.user.image = token?.profileImage as string;
       }
       return session;
     },

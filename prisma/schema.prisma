@@ -64,6 +64,7 @@ model User {
   Account       Account[]
   Order         Order[]
   Address       Address[]
+  OtpCode       OtpCode[]
 }
 
 model VerificationToken {
@@ -135,4 +136,18 @@ model Address {
   country String
   zipCode String
   orders  Order[]
+}
+
+model OtpCode {
+  id        Int      @id @default(autoincrement())
+  userId    String
+  otpHash   String
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+
+  // Optional: relation to User model
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([expiresAt])
 }
