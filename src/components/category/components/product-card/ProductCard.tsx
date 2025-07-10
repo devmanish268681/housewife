@@ -18,7 +18,7 @@ import { product } from "@/constants/constants";
 type ProductCardProps = {
   title: string;
   subtitle: string;
-  price: string;
+  price: number;
   quantityText?: string;
   image: string;
 };
@@ -57,7 +57,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <div className="p-4">
           {/* Price and Quantity Controls */}
           <div className="flex justify-between items-center font-bold mb-2">
-            <p>{price}</p>
+            <p>&#8377;{price}</p>
             <div>
               {quantity === 0 ? (
                 <button
@@ -99,7 +99,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
           <h3 className="text-base font-semibold text-gray-900 mb-1">
             {title}
           </h3>
-          <p className="text-sm text-gray-500 mb-1">{subtitle}</p>
           <p className="text-xs text-gray-400">{quantityText}</p>
         </div>
       </article>

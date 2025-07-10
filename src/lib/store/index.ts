@@ -1,10 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit'
+import { categoriesApiSlice } from '../slices/categoriesApiSlice'
 
 export const makeStore = () => {
     return configureStore({
         reducer: {
             //reducers
+            [categoriesApiSlice.reducerPath]:categoriesApiSlice.reducer
         },
+        middleware:(getDefaultMiddleware) => getDefaultMiddleware().concat(categoriesApiSlice.middleware)
     })
 }
 

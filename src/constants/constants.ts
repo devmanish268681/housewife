@@ -271,7 +271,6 @@ export const products = [
     },
     {
       title: "Jalapeno Potato Chips",
-      subtitle: "Lay's Kettle Cooked",
       price: "$15.00 - $25.00",
       quantityText: "1 pack (200g)",
       image:

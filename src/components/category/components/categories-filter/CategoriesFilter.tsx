@@ -8,20 +8,25 @@ import CategoryAccordion from "../categories-accordion/CategoriesAccordion";
 
 //constants
 import { brands, filterCategories } from "@/constants/constants";
+import { useGetCategoriesQuery } from "@/lib/slices/categoriesApiSlice";
 
 const CategoriesFilter = () => {
+  const { data: categoriesData, isLoading: isCategoryLoading } =
+      useGetCategoriesQuery();
+  const subcategories = ["Arugula", "Broccoli", "Spinach"];
+  
   return (
     <div className="sticky top-16 hidden shrink-0 lg:block h-full w-80 xl:w-96 pt-4 ltr:pr-8 rtl:pl-8 xl:ltr:pr-16 xl:rtl:pl-16">
       {/* Categories */}
       <div>
         <h3 className="mb-5 font-semibold text-lg">Categories</h3>
         <div className="border border-gray-200 rounded-xl">
-          {filterCategories.map((cat, index) => (
+          {categoriesData?.map((category, index) => (
             <CategoryAccordion
               key={index}
-              title={cat.title}
-              image={cat.image}
-              subcategories={cat.subcategories}
+              title={category?.name}
+              image={category?.image}
+              subcategories={subcategories}
               isLast={index === filterCategories.length - 1}
             />
           ))}

@@ -7,16 +7,13 @@ import { NextResponse } from "next/server";
 export async function GET(request: Request) {
   try {
     const session = await getServerSession(authOptions);
-    console.log("session", session);
 
     if (!session?.user.id) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
-    const { searchParams } = new URL(request.url);
-    const category = searchParams.get("category");
 
     const hasAccess = await validateAccess({
-      resource: "products",
+      resource: "category",
       action: "view",
       userId: session?.user.id,
     });
@@ -32,23 +29,9 @@ export async function GET(request: Request) {
       );
     }
 
-    const whereClause: { categoryId: string | undefined } = {
-      categoryId: undefined,
-    };
+    const categories = await prisma.category.findMany()
 
-    if (category) {
-      const categoryData = await prisma.category.findMany({
-        where: { name: category },
-      });
-      whereClause.categoryId = categoryData[0].id;
-    }
-
-    const products = await prisma.product.findMany({
-      where: whereClause,
-      include: { category: true },
-    });
-
-    return NextResponse.json(products);
+    return NextResponse.json(categories);
   } catch (error: any) {
     console.log("Internal server error", error);
     return NextResponse.json(

@@ -23,8 +23,7 @@ export default function RootLayout({
       <body>
         <AuthProvider>
           <Header />
-          {/* <StoreProvider>{children}</StoreProvider> */}
-          {children}
+          <StoreProvider>{children}</StoreProvider>
           <Footer />
         </AuthProvider>
         <Toaster
