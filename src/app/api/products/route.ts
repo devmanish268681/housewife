@@ -9,28 +9,8 @@ export async function GET(request: Request) {
     const session = await getServerSession(authOptions);
     console.log("session", session);
 
-    if (!session?.user.id) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
     const { searchParams } = new URL(request.url);
     const category = searchParams.get("category");
-
-    const hasAccess = await validateAccess({
-      resource: "products",
-      action: "view",
-      userId: session?.user.id,
-    });
-
-    console.log("hasAccess", hasAccess);
-
-    if (!hasAccess) {
-      return NextResponse.json(
-        {
-          message: "You are not allowed to access this route",
-        },
-        { status: 403 }
-      );
-    }
 
     const whereClause: { categoryId: string | undefined } = {
       categoryId: undefined,

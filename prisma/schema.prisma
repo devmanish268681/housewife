@@ -84,20 +84,53 @@ model Session {
 }
 
 model Product {
-  id          String      @id @default(uuid())
-  name        String
-  description String
-  price       Float
-  stock       Int
-  category    Category    @relation(fields: [categoryId], references: [id])
-  categoryId  String
-  images      String[]
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  orderItems  OrderItem[]
+  id            String           @id @default(uuid())
+  name          String
+  description   String
+  price         Float
+  stock         Int
+  category      Category         @relation(fields: [categoryId], references: [id])
+  categoryId    String
+  images        String[]
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  orderItems    OrderItem[]
+  subCategory   SubCategory      @relation(fields: [subCategoryId], references: [id])
+  subCategoryId String
+  brand         Brand            @relation(fields: [brandId], references: [id])
+  brandId       String
+  variants      ProductVariant[]
 }
 
 model Category {
+  id          String        @id @default(uuid())
+  name        String        @unique
+  image       String?
+  products    Product[]
+  subCategory SubCategory[]
+}
+
+model ProductVariant {
+  id         String      @id @default(uuid())
+  product    Product     @relation(fields: [productId], references: [id])
+  productId  String
+  size       String // e.g., "500ml", "1L", "5kg"
+  price      Float // price for this variant
+  stock      Int
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  orderItems OrderItem[]
+}
+
+model SubCategory {
+  id         String    @id @default(uuid())
+  name       String // e.g., "Milk"
+  category   Category  @relation(fields: [categoryId], references: [id])
+  categoryId String
+  products   Product[]
+}
+
+model Brand {
   id       String    @id @default(uuid())
   name     String    @unique
   image    String?
@@ -118,13 +151,15 @@ model Order {
 }
 
 model OrderItem {
-  id        String  @id @default(uuid())
-  order     Order   @relation(fields: [orderId], references: [id])
-  orderId   String
-  product   Product @relation(fields: [productId], references: [id])
-  productId String
-  quantity  Int
-  price     Float // price at time of order
+  id               String          @id @default(uuid())
+  order            Order           @relation(fields: [orderId], references: [id])
+  orderId          String
+  product          Product         @relation(fields: [productId], references: [id])
+  productId        String
+  quantity         Int
+  price            Float // price at time of order
+  ProductVariant   ProductVariant? @relation(fields: [productVariantId], references: [id])
+  productVariantId String?
 }
 
 model Address {

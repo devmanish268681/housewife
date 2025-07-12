@@ -5,13 +5,7 @@ export async function GET(request: Request) {
   try {
     // Always fetch all categories with subcategories
     const categories = await prisma.category.findMany({
-      orderBy: { name: "asc" },
-      include: {
-        subCategory: {
-          orderBy: { name: "asc" },
-          select: { id: true, name: true },
-        },
-      },
+      select: { name: true, image: true, id: true },
     });
 
     return NextResponse.json({
