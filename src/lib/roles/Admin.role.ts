@@ -11,4 +11,10 @@ export const admin = {
     update: true,
     delete: true,
   },
+  category:{
+    view:true,
+    create:false,
+    update:false,
+    delete:false
+  }
 };

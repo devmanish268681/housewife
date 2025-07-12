@@ -10,7 +10,7 @@ export async function GET(request: Request) {
     console.log("session", session);
 
     if (!session?.user.id) {
-      return NextResponse.json("userId is required");
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
     const { searchParams } = new URL(request.url);
     const category = searchParams.get("category");
