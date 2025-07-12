@@ -11,10 +11,14 @@ import { faAngleDown, faAngleUp } from "@fortawesome/free-solid-svg-icons";
 import CircleCheckbox from "../circle-checkbox/CircleCheckbox";
 
 // types
+type category = {
+  id: string;
+  name: string;
+};
 type CategoryAccordionProps = {
   title: string;
   image: string;
-  subcategories: string[];
+  subcategories: category[];
   isLast: boolean;
 };
 
@@ -39,34 +43,38 @@ const CategoryAccordion: React.FC<CategoryAccordionProps> = ({
           <Image src={image} alt={title} width={40} height={40} />
           <p className="text-[15px]">{title}</p>
         </div>
-        <FontAwesomeIcon
-          icon={dropdown ? faAngleUp : faAngleDown}
-          className="w-3.5 h-3.5"
-        />
+        {subcategories?.length > 0 && (
+          <FontAwesomeIcon
+            icon={dropdown ? faAngleUp : faAngleDown}
+            className="w-3.5 h-3.5"
+          />
+        )}
       </div>
 
       {/* Accordion Body */}
-      <div
-        className={`border border-gray-200 border-t-0 overflow-hidden transition-all duration-400 ease-in-out ${
-          dropdown
-            ? "max-h-[500px] opacity-100 px-4 py-2"
-            : "max-h-0 opacity-0 px-0 py-0"
-        }`}
-      >
-        {subcategories.map((item, index) => (
-          <div
-            key={index}
-            className={`flex justify-between items-center py-3 ${
-              index !== subcategories.length - 1
-                ? "border-b border-gray-200"
-                : ""
-            }`}
-          >
-            <p>{item}</p>
-            <CircleCheckbox />
-          </div>
-        ))}
-      </div>
+      {subcategories?.length > 0 && (
+        <div
+          className={`border border-gray-200 border-t-0 overflow-hidden transition-all duration-400 ease-in-out ${
+            dropdown
+              ? "max-h-[500px] opacity-100 px-4 py-2"
+              : "max-h-0 opacity-0 px-0 py-0"
+          }`}
+        >
+          {subcategories.map((item, index) => (
+            <div
+              key={index}
+              className={`flex justify-between items-center py-3 ${
+                index !== subcategories.length - 1
+                  ? "border-b border-gray-200"
+                  : ""
+              }`}
+            >
+              <p>{item.name}</p>
+              <CircleCheckbox />
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

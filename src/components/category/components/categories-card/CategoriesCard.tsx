@@ -20,11 +20,14 @@ const CategoriesCard = ({products}:CategoriesCardProps) => {
         {products?.map((product, index) => (
           <ProductCard
             key={index}
+            id={product.id}
             title={product.name}
             subtitle={"tetsing"}
             price={Number(product.price)}
             quantityText={"1 pack (200g)"}
             image={product.images[0]}
+            stock={product.stock}
+            category={product.category.name}
           />
         ))}
       </div>

@@ -14,6 +14,8 @@ import {
 
 //components
 import CheckoutModal from "../category/components/checkout-modal/CheckoutModal";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { decrementQuantity, incrementQuantity,removeItem } from "@/lib/slices/cartSlice";
 
 //constants
 const cartItemsMock = [
@@ -36,6 +38,8 @@ type CartProps = {
 const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
   const [cartItems, setCartItems] = React.useState(cartItemsMock);
   const [isCheckoutOpen, setIsCheckoutOpen] = React.useState(false);
+  const cartItem = useAppSelector((state) => state.cart.items);
+  const dispatch = useAppDispatch();
 
   const updateQuantity = (id: number, amount: number) => {
     setCartItems((prev) =>
@@ -50,17 +54,13 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
     );
   };
 
-  const removeItem = (id: number) => {
-    setCartItems((prev) => prev.filter((item) => item.id !== id));
-  };
-
   const getSubtotal = () =>
-    cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+    cartItem.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
   const deliveryFee = cartItems.length > 0 ? 50 : 0;
   const total = getSubtotal() + deliveryFee;
 
-  if (!isOpen) return null; // Don't render if closed
+  if (!isOpen) return null; 
 
   return (
     <div
@@ -80,12 +80,12 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
 
       {/* Cart Items */}
       <div className="p-4 space-y-4 overflow-y-auto max-h-[70vh]">
-        {cartItems.length === 0 ? (
+        {cartItem.length === 0 ? (
           <p className="text-gray-500 text-center mt-10">
             Your cart is empty 😔
           </p>
         ) : (
-          cartItems.map((item) => (
+          cartItem.map((item) => (
             <div
               key={item.id}
               className="flex items-center gap-3 border rounded-lg p-3"
@@ -103,21 +103,27 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
               </div>
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => updateQuantity(item.id, -1)}
+                  onClick={() => {
+                    dispatch(decrementQuantity({id:item.id}))
+                  }}
                   className="p-1 border rounded hover:bg-gray-100"
                 >
                   <FontAwesomeIcon icon={faMinus} />
                 </button>
                 <span>{item.quantity}</span>
                 <button
-                  onClick={() => updateQuantity(item.id, 1)}
+                  onClick={() => {
+                    dispatch(incrementQuantity({ id: item.id, name: item.name, quantity:item.quantity+1,image:item.image,price:item.price}));
+                  }}
                   className="p-1 border rounded hover:bg-gray-100"
                 >
                   <FontAwesomeIcon icon={faPlus} />
                 </button>
               </div>
               <button
-                onClick={() => removeItem(item.id)}
+                onClick={() => {
+                  dispatch(removeItem({ id: item.id}));
+                }}
                 className="ml-2 text-red-500 hover:text-red-700"
               >
                 <FontAwesomeIcon icon={faTrash} />
@@ -128,7 +134,7 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
       </div>
 
       {/* Order Summary */}
-      {cartItems.length > 0 && (
+      {cartItem.length > 0 && (
         <div className="p-4 border-t space-y-2">
           <div className="flex justify-between">
             <span>Subtotal</span>

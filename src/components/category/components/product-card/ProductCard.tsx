@@ -12,30 +12,57 @@ import ProductModal from "@/components/product-modal/ProductModal";
 
 //constants
 import { product } from "@/constants/constants";
-
+import { useAppDispatch } from "@/lib/hooks";
+import { decrementQuantity, incrementQuantity } from "@/lib/slices/cartSlice";
 
 //types
 type ProductCardProps = {
+  id:string,
   title: string;
   subtitle: string;
   price: number;
   quantityText?: string;
   image: string;
+  stock?: number;
+  category?: string;
 };
 
 const ProductCard: React.FC<ProductCardProps> = ({
+  id,
   title,
   subtitle,
   price,
+  stock,
+  category,
   quantityText = "1 pack (200g)",
   image,
 }) => {
   const [quantity, setQuantity] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
+   const dispatch = useAppDispatch();
 
   const increment = () => setQuantity((prev) => prev + 1);
   const decrement = () => setQuantity((prev) => (prev > 0 ? prev - 1 : 0));
-  
+
+  const product = {
+    id:id,
+    title: title,
+    description: "testing hhgdcf ngfdd",
+    price: price,
+    stock: stock,
+    category: category,
+    tags: ["category"],
+    image: image,
+  };
+
+
+  const handleAddButton = (e:React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    increment();
+    dispatch(incrementQuantity({ id: id, name: title, quantity:quantity+1,image:image,price:price}))
+  }
+
+
   return (
     <>
       <article
@@ -61,13 +88,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
             <div>
               {quantity === 0 ? (
                 <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    increment();
-                  }}
+                  onClick={(e) => handleAddButton(e)}
                   className="bg-red-600 text-white rounded-full px-3 py-1 text-sm font-semibold shadow hover:bg-red-700"
                 >
-                  <FontAwesomeIcon icon={faPlus} />
+                  Add
                 </button>
               ) : (
                 <div className="flex items-center bg-red-600 text-white rounded-full px-3 py-1 gap-2 text-sm font-semibold">
@@ -75,6 +99,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                     onClick={(e) => {
                       e.stopPropagation();
                       decrement();
+                      dispatch(decrementQuantity({ id: id}))
                     }}
                     className="hover:text-gray-200"
                   >
@@ -85,6 +110,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                     onClick={(e) => {
                       e.stopPropagation();
                       increment();
+                      dispatch(incrementQuantity({ id: id, name: title, quantity:quantity+1,image:image,price:price}));
                     }}
                     className="hover:text-gray-200"
                   >

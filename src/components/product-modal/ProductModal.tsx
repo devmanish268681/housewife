@@ -2,14 +2,18 @@
 
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { decrementQuantity, incrementQuantity } from "@/lib/slices/cartSlice";
 
 //types
 type Product = {
+  id: string;
   title: string;
   description: string;
   price: number;
-  stock: number;
-  category: string;
+  stock?: number;
+  category?: string;
   tags: string[];
   image: string;
 };
@@ -31,11 +35,16 @@ const ProductModal: React.FC<ProductModalProps> = ({
   onAddToCart,
   onRelatedProductClick,
 }) => {
-  const [quantity, setQuantity] = useState(1);
-
-  useEffect(() => {
-    if (isOpen) setQuantity(1);
-  }, [isOpen, product]);
+  const [quantity, setQuantity] = useState(0);
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+  const searchParams = useSearchParams();
+  const params = new URLSearchParams(searchParams.toString());
+  const cartItems = useAppSelector((state) => state.cart.items);
+  const productQuantityCount = cartItems.filter(
+    (item) => item.id === product.id
+  );
+  console.log(productQuantityCount);
 
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
@@ -53,12 +62,33 @@ const ProductModal: React.FC<ProductModalProps> = ({
     };
   }, [isOpen, onClose]);
 
+  useEffect(() => {
+    if (productQuantityCount.length > 0) {
+      setQuantity(productQuantityCount?.[0]?.quantity);
+    }
+  }, [productQuantityCount]);
+
   const increaseQty = () => {
-    if (quantity < product.stock) setQuantity(quantity + 1);
+    if (quantity < Number(product?.stock)) setQuantity(quantity + 1);
   };
 
   const decreaseQty = () => {
     if (quantity > 1) setQuantity(quantity - 1);
+  };
+
+  const handleCartClick = () => {
+    if (quantity === 0) {
+      setQuantity(quantity + 1);
+    } else {
+      params.set("open", "true");
+      router.push(`?${params.toString()}`);
+      onClose();
+    }
+  };
+
+  const handleOnClose = () => {
+    onClose();
+    setQuantity(0);
   };
 
   if (!isOpen) return null;
@@ -83,7 +113,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
             {product.title}
           </h3>
           <button
-            onClick={onClose}
+            onClick={() => handleOnClose()}
             aria-label="Close modal"
             className="text-gray-600 hover:text-gray-900 font-bold text-2xl leading-none"
           >
@@ -145,31 +175,43 @@ const ProductModal: React.FC<ProductModalProps> = ({
         </div>
 
         {/* Quantity selector */}
-        <div className="flex items-center mb-4" aria-label="Select quantity">
-          <button
-            onClick={decreaseQty}
-            className="px-3 py-1 border rounded-l bg-gray-100 hover:bg-gray-200"
-            disabled={quantity === 1 || product.stock === 0}
-            aria-label="Decrease quantity"
-          >
-            -
-          </button>
-          <span className="px-4 py-1 border-t border-b" aria-live="polite">
-            {quantity}
-          </span>
-          <button
-            onClick={increaseQty}
-            className="px-3 py-1 border rounded-r bg-gray-100 hover:bg-gray-200"
-            disabled={quantity === product.stock || product.stock === 0}
-            aria-label="Increase quantity"
-          >
-            +
-          </button>
-        </div>
+        {quantity !== 0 && (
+          <div className="flex items-center mb-4" aria-label="Select quantity">
+            <button
+              onClick={() => {
+                decreaseQty();
+                dispatch(
+                  decrementQuantity({ id: product.id})
+                );
+              }}
+              className="px-3 py-1 border rounded-l bg-gray-100 hover:bg-gray-200"
+              disabled={quantity === 1 || product.stock === 0}
+              aria-label="Decrease quantity"
+            >
+              -
+            </button>
+            <span className="px-4 py-1 border-t border-b" aria-live="polite">
+              {quantity}
+            </span>
+            <button
+              onClick={() => {
+                increaseQty();
+                dispatch(
+                  incrementQuantity({ id: product.id, name:product.title, quantity: quantity + 1,image:product.image,price:product.price})
+                );
+              }}
+              className="px-3 py-1 border rounded-r bg-gray-100 hover:bg-gray-200"
+              disabled={quantity === product.stock || product.stock === 0}
+              aria-label="Increase quantity"
+            >
+              +
+            </button>
+          </div>
+        )}
 
         {/* Add to Cart button */}
         <button
-          onClick={() => onAddToCart?.(product, quantity)}
+          onClick={() => handleCartClick()}
           className={`w-full py-2 rounded text-white transition ${
             product.stock === 0
               ? "bg-gray-400 cursor-not-allowed"
@@ -178,7 +220,11 @@ const ProductModal: React.FC<ProductModalProps> = ({
           disabled={product.stock === 0}
           aria-disabled={product.stock === 0}
         >
-          {product.stock === 0 ? "Out of Stock" : "Add to Cart"}
+          {product.stock === 0
+            ? "Out of Stock"
+            : quantity === 0
+            ? "Add to Cart"
+            : "Go to Cart"}
         </button>
 
         {/* Related Products */}

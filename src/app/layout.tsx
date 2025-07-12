@@ -21,11 +21,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <AuthProvider>
-          <Header />
-          <StoreProvider>{children}</StoreProvider>
-          <Footer />
-        </AuthProvider>
+        <StoreProvider>
+          <AuthProvider>
+            <Header />
+            {children}
+            <Footer />
+          </AuthProvider>
+        </StoreProvider>
         <Toaster
           position="top-right"
           reverseOrder={false}
