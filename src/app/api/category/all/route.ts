@@ -12,7 +12,7 @@ export async function GET(request: Request) {
       categories,
     });
   } catch (error: any) {
-    console.error("Catalog API error:", error);
+    console.error("Category API error:", error);
     return NextResponse.json(
       { message: error.message || "Internal Server Error" },
       { status: 500 }
