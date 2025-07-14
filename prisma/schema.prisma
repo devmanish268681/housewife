@@ -49,28 +49,32 @@ model Account {
 }
 
 model User {
-  id            String    @id @default(uuid())
+  id            String     @id @default(uuid())
   name          String
-  email         String    @unique
+  email         String     @unique
   password      String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  deleted       Boolean   @default(false)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  deleted       Boolean    @default(false)
   profileImage  String
   emailVerified String?
-  roles         Role      @relation(fields: [roleId], references: [id])
+  roles         Role       @relation(fields: [roleId], references: [id])
   roleId        String
   Session       Session[]
   Account       Account[]
   Order         Order[]
   Address       Address[]
   OtpCode       OtpCode[]
+  CartItem      CartItem[]
 }
 
 model VerificationToken {
   identifier String
   token      String   @unique
   expires    DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  deleted    Boolean  @default(false)
 
   @@unique([identifier, token])
 }
@@ -80,11 +84,17 @@ model Session {
   sessionToken String   @unique
   userId       String
   expires      DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  deleted      Boolean  @default(false)
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Product {
   id            String           @id @default(uuid())
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  deleted       Boolean          @default(false)
   name          String
   description   String
   price         Float
@@ -92,18 +102,20 @@ model Product {
   category      Category         @relation(fields: [categoryId], references: [id])
   categoryId    String
   images        String[]
-  createdAt     DateTime         @default(now())
-  updatedAt     DateTime         @updatedAt
   orderItems    OrderItem[]
   subCategory   SubCategory      @relation(fields: [subCategoryId], references: [id])
   subCategoryId String
   brand         Brand            @relation(fields: [brandId], references: [id])
   brandId       String
   variants      ProductVariant[]
+  CartItem      CartItem[]
 }
 
 model Category {
   id          String        @id @default(uuid())
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  deleted     Boolean       @default(false)
   name        String        @unique
   image       String?
   products    Product[]
@@ -117,9 +129,11 @@ model ProductVariant {
   size       String // e.g., "500ml", "1L", "5kg"
   price      Float // price for this variant
   stock      Int
+  orderItems OrderItem[]
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
-  orderItems OrderItem[]
+  deleted    Boolean     @default(false)
+  CartItem   CartItem[]
 }
 
 model SubCategory {
@@ -128,30 +142,40 @@ model SubCategory {
   category   Category  @relation(fields: [categoryId], references: [id])
   categoryId String
   products   Product[]
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  deleted    Boolean   @default(false)
 }
 
 model Brand {
-  id       String    @id @default(uuid())
-  name     String    @unique
-  image    String?
-  products Product[]
+  id        String    @id @default(uuid())
+  name      String    @unique
+  image     String?
+  products  Product[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deleted   Boolean   @default(false)
 }
 
 model Order {
   id        String      @id @default(uuid())
   user      User        @relation(fields: [userId], references: [id])
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  deleted   Boolean     @default(false)
   userId    String
   items     OrderItem[]
   total     Float
   status    OrderStatus @default(PENDING)
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
   address   Address     @relation(fields: [addressId], references: [id])
   addressId String
 }
 
 model OrderItem {
   id               String          @id @default(uuid())
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  deleted          Boolean         @default(false)
   order            Order           @relation(fields: [orderId], references: [id])
   orderId          String
   product          Product         @relation(fields: [productId], references: [id])
@@ -162,23 +186,42 @@ model OrderItem {
   productVariantId String?
 }
 
+model CartItem {
+  id               String          @id @default(uuid())
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  deleted          Boolean         @default(false)
+  user             User            @relation(fields: [userId], references: [id])
+  userId           String
+  product          Product         @relation(fields: [productId], references: [id])
+  productId        String
+  ProductVariant   ProductVariant? @relation(fields: [productVariantId], references: [id])
+  productVariantId String?
+  quantity         Int
+}
+
 model Address {
-  id      String  @id @default(uuid())
-  user    User    @relation(fields: [userId], references: [id])
-  userId  String
-  street  String
-  city    String
-  state   String
-  country String
-  zipCode String
-  orders  Order[]
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deleted   Boolean  @default(false)
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  street    String
+  city      String
+  state     String
+  country   String
+  zipCode   String
+  orders    Order[]
 }
 
 model OtpCode {
   id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deleted   Boolean  @default(false)
   userId    String
   otpHash   String
-  createdAt DateTime @default(now())
   expiresAt DateTime
 
   // Optional: relation to User model
