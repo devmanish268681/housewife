@@ -25,10 +25,7 @@ export async function GET(request: Request) {
       image: cart.product.images,
     }));
 
-    return NextResponse.json({
-      formattedRes,
-      userCartItems,
-    });
+    return NextResponse.json({ result: formattedRes });
   } catch (error: any) {
     console.log("Internal server error", error);
     return NextResponse.json(
