@@ -8,11 +8,17 @@ import { addToCartSchema } from "./addToCartSchema ";
 export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions);
-    console.log("session", session);
     const userId = session?.user?.id as string;
+
+    if (!userId) {
+      return NextResponse.json(
+        { message: "userId is missing" },
+        { status: 400 }
+      );
+    }
+
     const body = await request.json();
     const { productId, productVariantId, quantity } = body;
-    let baseProductVariantId = productVariantId;
 
     const validation = await validateRequest(body, addToCartSchema);
 
@@ -20,35 +26,49 @@ export async function POST(request: Request) {
       return NextResponse.json({ errors: validation.error }, { status: 400 });
     }
 
-    if (!productVariantId) {
-      const productVarients = await prisma.productVariant.findFirst({
-        where: { productId: productId },
+    // If no variant passed, use the first one
+    let baseProductVariantId = productVariantId;
+    if (!baseProductVariantId) {
+      const variant = await prisma.productVariant.findFirst({
+        where: { productId },
       });
-
-      baseProductVariantId = productVarients?.id;
+      baseProductVariantId = variant?.id;
+      if (!baseProductVariantId) {
+        return NextResponse.json(
+          { message: "No variant found" },
+          { status: 400 }
+        );
+      }
     }
 
+    // Check if item is already in cart
     const existingCartItem = await prisma.cartItem.findFirst({
       where: {
-        productId: productId,
+        userId,
+        productId,
         productVariantId: baseProductVariantId,
-        userId: userId,
       },
     });
 
+    // If exists → update quantity
     if (existingCartItem) {
-      return NextResponse.json(
-        { message: "Item already aded to cart" },
-        { status: 409 }
-      );
+      await prisma.cartItem.update({
+        where: { id: existingCartItem.id },
+        data: { quantity },
+      });
+
+      return NextResponse.json({
+        message: "Cart item updated successfully",
+      });
     }
 
-    const productAddedToCart = await prisma.cartItem.create({
+    // If not exists → create new cart item
+    await prisma.cartItem.create({
       data: {
-        quantity: quantity,
-        productId: productId,
+        quantity,
+        productId,
         productVariantId: baseProductVariantId,
-        userId: userId,
+        userId,
       },
     });
 
@@ -56,7 +76,7 @@ export async function POST(request: Request) {
       message: "Product added to cart successfully",
     });
   } catch (error: any) {
-    console.log("Internal server error", error);
+    console.error("Internal server error", error);
     return NextResponse.json(
       {
         message: error.message || "Internal Server Error",
