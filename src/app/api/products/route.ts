@@ -17,18 +17,52 @@ export async function GET(request: Request) {
     };
 
     if (category) {
-      const categoryData = await prisma.category.findMany({
+      const categoryData = await prisma.category.findFirst({
         where: { name: category },
       });
-      whereClause.categoryId = categoryData[0].id;
+      if (!categoryData) {
+        return NextResponse.json(
+          { message: "category not found" },
+          { status: 404 }
+        );
+      }
+      whereClause.categoryId = categoryData.id;
     }
 
     const products = await prisma.product.findMany({
       where: whereClause,
-      include: { category: true },
+      include: {
+        category: true,
+        variants: {
+          where: { deleted: false },
+          orderBy: {
+            price: "asc",
+          },
+        },
+      },
     });
 
-    return NextResponse.json(products);
+    let formattedData;
+    formattedData = products.map((product) => ({
+      id: product.id,
+      name: product.name,
+      description: product.description,
+      categoryId: product.categoryId,
+      images: product.images,
+      subCategoryId: product.subCategoryId,
+      brandId: product.brandId,
+      price: product.variants[0].price,
+      unit: product.variants[0].unit,
+      unitSize: product.variants[0].unitSize,
+      stock: product.variants[0].stock,
+      category: {
+        id: product.category.id,
+        name: product.category.name,
+        image: product.category.image,
+      },
+    }));
+
+    return NextResponse.json(formattedData);
   } catch (error: any) {
     console.log("Internal server error", error);
     return NextResponse.json(
