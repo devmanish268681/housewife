@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import Image from "next/image";
 
 //third-party
@@ -11,57 +12,131 @@ import { faPlus, faMinus } from "@fortawesome/free-solid-svg-icons";
 import ProductModal from "@/components/product-modal/ProductModal";
 
 //constants
-import { product } from "@/constants/constants";
-import { useAppDispatch } from "@/lib/hooks";
 import { decrementQuantity, incrementQuantity } from "@/lib/slices/cartSlice";
 
+//slices
+import {
+  useAddToCartMutation,
+  useDeleteFromCartMutation,
+  useGetAllCartItemsQuery,
+} from "@/lib/slices/cartApiSlice";
+
+//context & hooks
+import { useAppDispatch } from "@/lib/hooks";
+import { useAuth } from "@/lib/context/authContext";
+
 //types
-type ProductCardProps = {
-  id:string,
-  title: string;
-  subtitle: string;
-  price: number;
-  quantityText?: string;
-  image: string;
-  stock?: number;
-  category?: string;
-};
+import { ProductCardProps } from "./types";
 
 const ProductCard: React.FC<ProductCardProps> = ({
   id,
   title,
-  subtitle,
+  description,
   price,
   stock,
+  variantId,
   category,
   quantityText = "1 pack (200g)",
   image,
 }) => {
+  //hooks
   const [quantity, setQuantity] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
-   const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch();
+  const { user } = useAuth();
 
-  const increment = () => setQuantity((prev) => prev + 1);
-  const decrement = () => setQuantity((prev) => (prev > 0 ? prev - 1 : 0));
+  //slices
+  const [addToCart] = useAddToCartMutation();
+  const [deleteFromCart] = useDeleteFromCartMutation();
+  const { data: cartItems } = useGetAllCartItemsQuery();
+
+  const isProductInCart = cartItems?.result?.filter(
+    (item) => item.productId === id
+  );
 
   const product = {
-    id:id,
+    id: id,
     title: title,
-    description: "testing hhgdcf ngfdd",
+    description: description,
     price: price,
+    variantId: variantId,
     stock: stock,
     category: category,
     tags: ["category"],
     image: image,
   };
 
-
-  const handleAddButton = (e:React.MouseEvent<HTMLButtonElement>) => {
+  const handleAddButton = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    increment();
-    dispatch(incrementQuantity({ id: id, name: title, quantity:quantity+1,image:image,price:price}))
-  }
+    const newQuantity = quantity + 1;
+    const payload = {
+      productId: id,
+      productVariantId: variantId,
+      quantity: newQuantity,
+    };
 
+    if (user) {
+      await addToCart(payload)
+        .then(() => toast.success("Product added successfully to cart"))
+        .catch(() => toast.error("Failed to add product to cart"));
+      setQuantity(newQuantity);
+    } else {
+      dispatch(
+        incrementQuantity({
+          id: id,
+          name: title,
+          image: image,
+          price: price,
+          quantity: newQuantity,
+        })
+      );
+      setQuantity(newQuantity);
+    }
+  };
+
+  const handleIncrementQuantity = async (action: string) => {
+    const newQuantity = quantity + 1;
+    const payload = {
+      productId: id,
+      productVariantId: variantId,
+      quantity: newQuantity,
+    };
+    if (action === "increment") {
+      if (user) {
+        await addToCart(payload);
+        setQuantity(newQuantity);
+      } else {
+        dispatch(
+          incrementQuantity({
+            id: id,
+            name: title,
+            image: image,
+            price: price,
+            quantity: newQuantity,
+          })
+        );
+        setQuantity(newQuantity);
+      }
+    } else {
+      if (user) {
+        await deleteFromCart(id);
+        setQuantity(quantity - 1);
+      } else {
+        dispatch(
+          decrementQuantity({
+            id: id,
+          })
+        );
+        setQuantity(quantity - 1);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (isProductInCart && isProductInCart.length > 0) {
+      setQuantity(isProductInCart[0].quantity);
+    }
+  }, [isProductInCart]);
 
   return (
     <>
@@ -98,8 +173,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      decrement();
-                      dispatch(decrementQuantity({ id: id}))
+                      handleIncrementQuantity("decrement");
                     }}
                     className="hover:text-gray-200"
                   >
@@ -109,8 +183,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      increment();
-                      dispatch(incrementQuantity({ id: id, name: title, quantity:quantity+1,image:image,price:price}));
+                      handleIncrementQuantity("increment");
                     }}
                     className="hover:text-gray-200"
                   >

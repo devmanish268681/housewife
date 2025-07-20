@@ -3,9 +3,9 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 type CartItem = {
   id: string;
   name: string;
-  image:string;
+  image: string;
   quantity: number;
-  price:number;
+  price: number;
 };
 
 interface CartState {
@@ -44,5 +44,5 @@ export const cartSlice = createSlice({
   },
 });
 
-export const { incrementQuantity, decrementQuantity, removeItem} = cartSlice.actions;
+export const { incrementQuantity, decrementQuantity, removeItem } = cartSlice.actions;
 export default cartSlice.reducer;

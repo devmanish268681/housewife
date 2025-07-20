@@ -5,10 +5,15 @@ export type CategoriesData = {
     id: string,
     name: string,
     description: string,
-    price: number,
-    stock: number,
     categoryId: string,
     images: string[],
+    subCategoryId: string,
+    brandId: string,
+    price: number,
+    variantId: string,
+    unit: string,
+    unitSize: string,
+    stock: number,
     createdAt: string,
     updatedAt: string,
     category: {
@@ -23,6 +28,10 @@ export type Categories = {
     name: string,
     image: string,
     subCategory: {
+        id: string,
+        name: string
+    }[];
+    brands: {
         id: string,
         name: string
     }[]

@@ -22,7 +22,9 @@ const CategoriesCard = ({products}:CategoriesCardProps) => {
             key={index}
             id={product.id}
             title={product.name}
+            variantId={product?.variantId}
             subtitle={"tetsing"}
+            description={product.description}
             price={Number(product.price)}
             quantityText={"1 pack (200g)"}
             image={product.images[0]}

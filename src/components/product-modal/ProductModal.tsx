@@ -1,50 +1,54 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import Image from "next/image";
+
+//hooks
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+
+//slices
 import { decrementQuantity, incrementQuantity } from "@/lib/slices/cartSlice";
+import {
+  useAddToCartMutation,
+  useDeleteFromCartMutation,
+  useGetAllCartItemsQuery,
+} from "@/lib/slices/cartApiSlice";
+
+//context
+import { useAuth } from "@/lib/context/authContext";
 
 //types
-type Product = {
-  id: string;
-  title: string;
-  description: string;
-  price: number;
-  stock?: number;
-  category?: string;
-  tags: string[];
-  image: string;
-};
+import { ProductModalProps } from "./types";
 
-type ProductModalProps = {
-  isOpen: boolean;
-  onClose: () => void;
-  product: Product;
-  relatedProducts?: Product[];
-  onAddToCart?: (product: Product, quantity: number) => void;
-  onRelatedProductClick?: (product: Product) => void;
-};
 
 const ProductModal: React.FC<ProductModalProps> = ({
   isOpen,
   onClose,
   product,
   relatedProducts = [],
-  onAddToCart,
   onRelatedProductClick,
 }) => {
+  //hooks
   const [quantity, setQuantity] = useState(0);
   const router = useRouter();
   const dispatch = useAppDispatch();
   const searchParams = useSearchParams();
   const params = new URLSearchParams(searchParams.toString());
-  const cartItems = useAppSelector((state) => state.cart.items);
-  const productQuantityCount = cartItems.filter(
-    (item) => item.id === product.id
+  const { user } = useAuth();
+
+  //slices
+  const [addToCart] = useAddToCartMutation();
+  const [deleteFromCart] = useDeleteFromCartMutation();
+  const { data: cartItemsData } = useGetAllCartItemsQuery();
+  
+  const isProductInCart = cartItemsData?.result?.filter(
+    (item) => item.productId === product.id
   );
-  console.log(productQuantityCount);
+  const productQuantityCount = cartItemsData?.result.filter(
+    (item) => item.productId === product.id
+  );
 
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
@@ -63,22 +67,43 @@ const ProductModal: React.FC<ProductModalProps> = ({
   }, [isOpen, onClose]);
 
   useEffect(() => {
-    if (productQuantityCount.length > 0) {
+    if (productQuantityCount && productQuantityCount?.length > 0) {
       setQuantity(productQuantityCount?.[0]?.quantity);
     }
   }, [productQuantityCount]);
 
-  const increaseQty = () => {
-    if (quantity < Number(product?.stock)) setQuantity(quantity + 1);
-  };
+  useEffect(() => {
+    if (isProductInCart && isProductInCart.length > 0) {
+      setQuantity(isProductInCart[0].quantity);
+    }
+  }, [isProductInCart]);
 
-  const decreaseQty = () => {
-    if (quantity > 1) setQuantity(quantity - 1);
-  };
-
-  const handleCartClick = () => {
+  const handleCartClick = async () => {
     if (quantity === 0) {
-      setQuantity(quantity + 1);
+      const newQuantity = quantity + 1;
+      const payload = {
+        productId: product.id,
+        productVariantId: product.variantId,
+        quantity: newQuantity,
+      };
+
+      if (user) {
+        await addToCart(payload)
+          .then(() => toast.success("Product added successfully to cart"))
+          .catch(() => toast.error("Failed to add product to cart"));
+        setQuantity(newQuantity);
+      } else {
+        dispatch(
+          incrementQuantity({
+            id: product.id,
+            name: product.title,
+            image: product.image,
+            price: product.price,
+            quantity: newQuantity,
+          })
+        );
+        setQuantity(newQuantity);
+      }
     } else {
       params.set("open", "true");
       router.push(`?${params.toString()}`);
@@ -89,6 +114,54 @@ const ProductModal: React.FC<ProductModalProps> = ({
   const handleOnClose = () => {
     onClose();
     setQuantity(0);
+  };
+
+  const handleIncrementQuantity = async (action: string) => {
+    const newQuantity = quantity + 1;
+    const payload = {
+      productId: product.id,
+      productVariantId: product.variantId,
+      quantity: newQuantity,
+    };
+    if (action === "increment") {
+      if (user) {
+        try {
+          await addToCart(payload);
+          setQuantity(newQuantity);
+          toast.success("Product added successfully to cart");
+        } catch (error) {
+          toast.error("Failed to add product to cart");
+        }
+      } else {
+        dispatch(
+          incrementQuantity({
+            id: product.id,
+            name: product.title,
+            image: product.image,
+            price: product.price,
+            quantity: newQuantity,
+          })
+        );
+        setQuantity(newQuantity);
+      }
+    } else {
+      if (user) {
+        try {
+          await deleteFromCart(product.id);
+          setQuantity(quantity - 1);
+          toast.success("Product removed successfully from cart");
+        } catch (error) {
+          toast.error("Failed to remove product from cart");
+        }
+      } else {
+        dispatch(
+          decrementQuantity({
+            id: product.id,
+          })
+        );
+        setQuantity(quantity - 1);
+      }
+    }
   };
 
   if (!isOpen) return null;
@@ -178,11 +251,9 @@ const ProductModal: React.FC<ProductModalProps> = ({
         {quantity !== 0 && (
           <div className="flex items-center mb-4" aria-label="Select quantity">
             <button
-              onClick={() => {
-                decreaseQty();
-                dispatch(
-                  decrementQuantity({ id: product.id})
-                );
+              onClick={(e) => {
+                e.stopPropagation();
+                handleIncrementQuantity("decrement");
               }}
               className="px-3 py-1 border rounded-l bg-gray-100 hover:bg-gray-200"
               disabled={quantity === 1 || product.stock === 0}
@@ -194,11 +265,9 @@ const ProductModal: React.FC<ProductModalProps> = ({
               {quantity}
             </span>
             <button
-              onClick={() => {
-                increaseQty();
-                dispatch(
-                  incrementQuantity({ id: product.id, name:product.title, quantity: quantity + 1,image:product.image,price:product.price})
-                );
+              onClick={(e) => {
+                e.stopPropagation();
+                handleIncrementQuantity("increment");
               }}
               className="px-3 py-1 border rounded-r bg-gray-100 hover:bg-gray-200"
               disabled={quantity === product.stock || product.stock === 0}
@@ -223,8 +292,8 @@ const ProductModal: React.FC<ProductModalProps> = ({
           {product.stock === 0
             ? "Out of Stock"
             : quantity === 0
-            ? "Add to Cart"
-            : "Go to Cart"}
+              ? "Add to Cart"
+              : "Go to Cart"}
         </button>
 
         {/* Related Products */}

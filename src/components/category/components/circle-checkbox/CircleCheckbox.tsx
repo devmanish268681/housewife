@@ -2,9 +2,12 @@
 
 import React, { useState } from "react";
 
-export default function CircleCheckbox() {
-  const [checked, setChecked] = useState(false);
 
+interface CircleCheckboxProps{
+  checked:boolean;
+  setChecked:(value:boolean) => void;
+}
+export default function CircleCheckbox({checked,setChecked}:CircleCheckboxProps) {
   return (
     <label className="inline-block cursor-pointer relative w-6 h-6">
       <input

@@ -13,18 +13,11 @@ import { faTimes, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { faGoogle } from "@fortawesome/free-brands-svg-icons";
 
 // types
-type SignupModalProps = {
-  isOpen: boolean;
-  onClose: () => void;
-  onSignIn: () => void;
-  onGoogleSignIn?: () => void;
-  loadingGoogle?: boolean;
-};
+import { SignupModalProps } from "./types";
 
 const SignupModal: React.FC<SignupModalProps> = ({
   isOpen,
   onClose,
-  onGoogleSignIn,
   onSignIn,
   loadingGoogle,
 }) => {
@@ -61,6 +54,7 @@ const SignupModal: React.FC<SignupModalProps> = ({
       } else {
         toast.success("Account created successfully!");
         resetForm();
+        onClose();
         router.push("/");
       }
     },

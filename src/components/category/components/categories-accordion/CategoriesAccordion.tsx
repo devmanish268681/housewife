@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 
 // third-party
@@ -9,12 +9,14 @@ import { faAngleDown, faAngleUp } from "@fortawesome/free-solid-svg-icons";
 
 // components
 import CircleCheckbox from "../circle-checkbox/CircleCheckbox";
+import { useRouter, useSearchParams } from "next/navigation";
 
 // types
 type category = {
   id: string;
   name: string;
 };
+
 type CategoryAccordionProps = {
   title: string;
   image: string;
@@ -29,6 +31,25 @@ const CategoryAccordion: React.FC<CategoryAccordionProps> = ({
   isLast,
 }) => {
   const [dropdown, setDropdown] = useState(false);
+  const [checkedItems, setCheckedItems] = useState<category | null>(null);
+  const searchParams = useSearchParams();
+  const params = new URLSearchParams(searchParams.toString());
+  const router = useRouter();
+
+  const handleCheck = (id: string, name: string, value: boolean) => {
+    if(value){
+      setCheckedItems({id,name});
+    }else{
+      setCheckedItems(null);
+    }
+  };
+
+  useEffect(() => {
+    if(checkedItems?.id){
+      params.set('subCategoryId',checkedItems?.id);
+      router.push(`?${params?.toString()}`);
+    }
+  },[checkedItems])
 
   return (
     <div>
@@ -62,7 +83,7 @@ const CategoryAccordion: React.FC<CategoryAccordionProps> = ({
         >
           {subcategories.map((item, index) => (
             <div
-              key={index}
+              key={item.id}
               className={`flex justify-between items-center py-3 ${
                 index !== subcategories.length - 1
                   ? "border-b border-gray-200"
@@ -70,7 +91,10 @@ const CategoryAccordion: React.FC<CategoryAccordionProps> = ({
               }`}
             >
               <p>{item.name}</p>
-              <CircleCheckbox />
+              <CircleCheckbox
+                checked={checkedItems?.id === item?.id}
+                setChecked={(value) => handleCheck(item.id, item.name, value)}
+              />
             </div>
           ))}
         </div>

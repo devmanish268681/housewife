@@ -2,17 +2,19 @@ import { configureStore } from '@reduxjs/toolkit'
 import { categoriesApiSlice } from '../slices/categoriesApiSlice'
 import { brandsApiSlice } from '../slices/brandsApiSlice'
 import cartReducer from '../slices/cartSlice';
+import { cartApiSlice } from '../slices/cartApiSlice';
 
 export const makeStore = () => {
     return configureStore({
         reducer: {
             //reducers
-            [categoriesApiSlice.reducerPath]:categoriesApiSlice.reducer,
-            [brandsApiSlice.reducerPath]:brandsApiSlice.reducer,
+            [categoriesApiSlice.reducerPath]: categoriesApiSlice.reducer,
+            [brandsApiSlice.reducerPath]: brandsApiSlice.reducer,
+            [cartApiSlice.reducerPath]: cartApiSlice.reducer,
             //slices
             cart: cartReducer,
         },
-        middleware:(getDefaultMiddleware) => getDefaultMiddleware().concat(categoriesApiSlice.middleware).concat(brandsApiSlice.middleware)
+        middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(categoriesApiSlice.middleware).concat(brandsApiSlice.middleware).concat(cartApiSlice.middleware)
     })
 }
 

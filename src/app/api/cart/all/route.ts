@@ -23,6 +23,8 @@ export async function GET(request: Request) {
       unitSize: cart.productVariant?.unitSize,
       quantity: cart.quantity,
       image: cart.product.images,
+      productId: cart.productId,
+      variantId:cart.productVariantId
     }));
 
     return NextResponse.json({ result: formattedRes });

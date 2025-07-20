@@ -1,12 +1,14 @@
 'use client'
 
 import React from "react";
+import { useParams, useRouter } from "next/navigation";
 
 //components
 import CategoriesFilter from "./components/categories-filter/CategoriesFilter";
 import CategoriesCard from "./components/categories-card/CategoriesCard";
+
+//slices
 import { useGetProductsByCategoryQuery } from "@/lib/slices/categoriesApiSlice";
-import { useParams, useRouter } from "next/navigation";
 
 const Categories = () => {
   const params = useParams();
