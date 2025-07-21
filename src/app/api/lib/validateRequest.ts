@@ -1,7 +1,7 @@
 // lib/middleware/validateRequest.ts
-import { ZodSchema } from "zod";
+import { ZodType } from "zod";
 
-export async function validateRequest<T>(body: Request, schema: ZodSchema<T>) {
+export async function validateRequest<T>(body: Request, schema: ZodType<T>) {
   const result = schema.safeParse(body);
 
   if (!result.success) {

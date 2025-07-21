@@ -52,6 +52,17 @@ export async function POST(request: Request) {
 
     // If exists → update quantity
     if (existingCartItem) {
+      if (Number(quantity) <= 0 && !isNaN(Number(quantity))) {
+        await prisma.cartItem.delete({
+          where: {
+            id: existingCartItem.id,
+          },
+        });
+
+        return NextResponse.json({
+          message: "Cart item removed successfully",
+        });
+      }
       await prisma.cartItem.update({
         where: { id: existingCartItem.id },
         data: { quantity },
