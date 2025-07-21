@@ -1,0 +1,183 @@
+"use client";
+
+import React, { useState } from "react";
+
+//components
+import StatsCard from "./stats-card/StatsCard";
+import SalesChart from "./sales-chart/SalesChart";
+
+//constants
+import { mockStats } from "./constants";
+
+const Dashboard = () => {
+  const [dark, setDark] = useState(false);
+  return (
+    <div className="min-h-screen">
+      <div className="flex justify-between items-center mb-8">
+        <div className="flex items-center space-x-4">
+          <img
+            src="https://randomuser.me/api/portraits/men/32.jpg"
+            alt="Admin Avatar"
+            className="w-16 h-16 rounded-full border-4 border-blue-500 shadow"
+          />
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Welcome back, Admin!
+            </h1>
+            <p className="text-gray-500">
+              Here’s what’s happening in your store today.
+            </p>
+          </div>
+        </div>
+        {/* <button
+          className="px-4 py-2 rounded bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 shadow hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+          onClick={() => setDark(!dark)}
+        >
+          {dark ? "☀️ Light Mode" : "🌙 Dark Mode"}
+        </button> */}
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <StatsCard
+          icon={
+            <svg
+              className="w-10 h-10"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M3 7h18M3 12h18M3 17h18"
+              />
+            </svg>
+          }
+          label="Total Products"
+          value={mockStats.totalProducts}
+          gradient="bg-gradient-to-tr from-green-400 to-green-600"
+        />
+        <StatsCard
+          icon={
+            <svg
+              className="w-10 h-10"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M9 17v-6a2 2 0 012-2h2a2 2 0 012 2v6m-6 0h6"
+              />
+            </svg>
+          }
+          label="Total Orders"
+          value={mockStats.totalOrders}
+          gradient="bg-gradient-to-tr from-blue-400 to-blue-600"
+        />
+        <StatsCard
+          icon={
+            <svg
+              className="w-10 h-10"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 8v4l3 3"
+              />
+            </svg>
+          }
+          label="Low Stock"
+          value={mockStats.lowStock}
+          gradient="bg-gradient-to-tr from-red-400 to-red-600"
+        />
+      </div>
+      <SalesChart
+        data={mockStats.salesTrend}
+        days={mockStats.salesDays}
+        dark={dark}
+      />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div className="rounded-xl shadow-md p-6">
+          <h2 className="text-xl font-semibold mb-4 text-gray-900">
+            Recent Activity
+          </h2>
+          <ul className="space-y-4">
+            {mockStats.recentOrders.map((order) => (
+              <li key={order.id} className="flex items-center space-x-4">
+                <span className="inline-block w-3 h-3 rounded-full bg-blue-500"></span>
+                <div className="flex-1">
+                  <div className="text-gray-800 font-medium">
+                    Order <span className="font-mono">{order.id}</span>{" "}
+                    {order.status === "Pending"
+                      ? "placed"
+                      : order.status === "Shipped"
+                        ? "shipped"
+                        : "delivered"}{" "}
+                    by {order.customer}
+                  </div>
+                  <div className="text-xs text-gray-400">
+                    {order.time} • {order.total}
+                  </div>
+                </div>
+                <span
+                  className={`px-2 py-1 rounded text-xs font-semibold ${order.status === "Pending" ? "bg-yellow-100 text-yellow-800" : order.status === "Shipped" ? "bg-blue-100 text-blue-800" : "bg-green-100 text-green-800"}`}
+                >
+                  {order.status}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="rounded-xl shadow-md p-6">
+          <h2 className="text-xl font-semibold mb-4 text-gray-900">
+            Low Stock Products
+          </h2>
+          <ul className="divide-y divide-gray-200">
+            {mockStats.lowStockProducts.map((product) => (
+              <li key={product.name} className="flex items-center py-3">
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  className="w-12 h-12 rounded-full mr-4 border-2 border-red-400"
+                />
+                <div className="flex-1">
+                  <div className="text-gray-900 font-semibold">
+                    {product.name}
+                  </div>
+                  <div className="text-sm text-gray-500">
+                    Stock:{" "}
+                    <span className="text-red-600 font-bold">
+                      {product.stock}
+                    </span>
+                  </div>
+                </div>
+                <svg
+                  className="w-6 h-6 text-red-500"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M13 16h-1v-4h-1m1-4h.01"
+                  />
+                </svg>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Dashboard;
