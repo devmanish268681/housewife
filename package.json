@@ -9,7 +9,8 @@
     "lint": "next lint",
     "seed": "ts-node prisma/seed.ts",
     "reset": "npx prisma migrate reset",
-    "reset:seed": "npx prisma migrate reset && npm run seed",
+    "db:up": "npm run reset && npm run migrate && npm run reset:seed",
+    "reset:seed": "npx prisma migrate reset --force && npm run seed",
     "migrate": "npx prisma migrate dev"
   },
   "dependencies": {
@@ -23,10 +24,12 @@
     "@reduxjs/toolkit": "^2.8.2",
     "axios": "^1.10.0",
     "bcryptjs": "^3.0.2",
+    "cheerio": "^1.1.0",
     "formik": "^2.4.6",
     "next": "15.3.4",
     "next-auth": "^4.24.11",
     "node-cache": "^5.1.2",
+    "node-fetch": "^3.3.2",
     "nodemailer": "^6.10.1",
     "prisma": "^6.10.1",
     "react": "^19.0.0",
