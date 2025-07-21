@@ -66,9 +66,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
     image: image,
   };
 
-  const handleAddButton = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    const newQuantity = quantity + 1;
+  const updateCart = async (newQuantity: number) => {
     const payload = {
       productId: id,
       productVariantId: variantId,
@@ -76,67 +74,51 @@ const ProductCard: React.FC<ProductCardProps> = ({
     };
 
     if (user) {
-      await addToCart(payload)
-        .then(() => toast.success("Product added successfully to cart"))
-        .catch(() => toast.error("Failed to add product to cart"));
-      setQuantity(newQuantity);
+      try {
+        await addToCart(payload).then(() => setQuantity(newQuantity));
+      } catch (error) {
+        toast.error("Failed to update cart");
+      }
     } else {
-      dispatch(
-        incrementQuantity({
-          id: id,
-          name: title,
-          image: image,
-          price: price,
-          quantity: newQuantity,
-        })
-      );
+      if (newQuantity > quantity) {
+        dispatch(
+          incrementQuantity({
+            id,
+            name: title,
+            image,
+            price,
+            quantity: newQuantity,
+          })
+        );
+      } else {
+        dispatch(
+          decrementQuantity({
+            id,
+          })
+        );
+      }
       setQuantity(newQuantity);
     }
   };
 
-  const handleIncrementQuantity = async (action: string) => {
+  const handleAddButton = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
     const newQuantity = quantity + 1;
-    const payload = {
-      productId: id,
-      productVariantId: variantId,
-      quantity: newQuantity,
-    };
-    if (action === "increment") {
-      if (user) {
-        await addToCart(payload);
-        setQuantity(newQuantity);
-      } else {
-        dispatch(
-          incrementQuantity({
-            id: id,
-            name: title,
-            image: image,
-            price: price,
-            quantity: newQuantity,
-          })
-        );
-        setQuantity(newQuantity);
-      }
-    } else {
-      if (user) {
-        await deleteFromCart(id);
-        setQuantity(quantity - 1);
-      } else {
-        dispatch(
-          decrementQuantity({
-            id: id,
-          })
-        );
-        setQuantity(quantity - 1);
-      }
-    }
+    await updateCart(newQuantity);
+    toast.success("Product added successfully to cart");
+  };
+
+  const handleIncrementQuantity = async (action: "increment" | "decrement") => {
+    const newQuantity = action === "increment" ? quantity + 1 : quantity !== 1 ? quantity - 1 : 0;
+    if (newQuantity < 1) return;
+    await updateCart(newQuantity);
   };
 
   useEffect(() => {
     if (isProductInCart && isProductInCart.length > 0) {
       setQuantity(isProductInCart[0].quantity);
     }
-  }, [isProductInCart]);
+  }, []);
 
   return (
     <>

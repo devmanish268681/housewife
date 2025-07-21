@@ -8,6 +8,7 @@ import Input from "../common/Input";
 import Chip from "../common/Chip";
 import Category from "./components/category/Category";
 import Recommended from "./components/recommended/Recommended";
+import BannerCarousel from "./components/banner/BannerCarousel";
 
 //constants
 import { categories, popularSearches } from "@/constants/constants";
@@ -17,6 +18,8 @@ const HomePage = () => {
 
   return (
     <div className="mt-12">
+      {/* Banners Section */}
+      <BannerCarousel />
       <Input placeholder="Search for products" />
       <div className="flex gap-3 p-3 flex-wrap pr-4 pt-5">
         {categories.map((category, index) => (
