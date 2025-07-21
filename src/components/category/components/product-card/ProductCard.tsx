@@ -127,7 +127,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         onClick={() => setIsModalOpen(true)}
       >
         {/* Product Image */}
-        <div className="relative flex justify-center">
+        <div className="relative flex justify-center w-[150px] h-[150px] mx-auto">
           <Image
             src={image}
             alt={title}

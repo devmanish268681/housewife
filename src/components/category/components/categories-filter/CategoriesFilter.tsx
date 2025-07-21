@@ -15,6 +15,7 @@ import { useGetCategoriesQuery } from "@/lib/slices/categoriesApiSlice";
 const CategoriesFilter = ({ category }: { category: string }) => {
   const { data: categoriesData, isLoading: isCategoryLoading } = useGetCategoriesQuery();
   const [search, setSearch] = useState("");
+  const [drawerOpen, setDrawerOpen] = useState(false); // NEW
 
   // Find the current category object
   const currentCategory = categoriesData?.categories?.find(
@@ -46,8 +47,9 @@ const CategoriesFilter = ({ category }: { category: string }) => {
     brand.name.toLowerCase().includes(search.toLowerCase())
   );
 
-  return (
-    <div className="sticky top-16 hidden shrink-0 lg:block h-full w-80 xl:w-96 pt-4 ltr:pr-8 rtl:pl-8 xl:ltr:pr-16 xl:rtl:pl-16 overflow-y-auto max-h-[90vh]">
+  // Filter UI content (reusable for sidebar and drawer)
+  const filterContent = (
+    <div className="h-full w-full p-4 lg:w-80 xl:w-96 lg:pt-4 ltr:pr-8 rtl:pl-8 xl:ltr:pr-16 xl:rtl:pl-16 overflow-y-auto max-h-[90vh] bg-white">
       <h2 className="text-xl font-bold mb-6 text-center">{currentCategory.name}</h2>
       {/* Search Bar */}
       <div className="mb-4 px-2">
@@ -101,6 +103,42 @@ const CategoriesFilter = ({ category }: { category: string }) => {
         </div>
       )}
     </div>
+  );
+
+  return (
+    <>
+      {/* Mobile: Filter Button */}
+      <button
+        className="fixed bottom-6 right-6 z-40 bg-[#e82630] text-white px-6 py-3 rounded-full shadow-lg font-bold text-lg lg:hidden"
+        onClick={() => setDrawerOpen(true)}
+      >
+        Filter
+      </button>
+      {/* Mobile: Drawer */}
+      {drawerOpen && (
+        <div className="fixed inset-0 z-50 flex lg:hidden">
+          {/* Overlay */}
+          <div className="fixed inset-0 bg-black bg-opacity-40" onClick={() => setDrawerOpen(false)}></div>
+          {/* Drawer - now full width and from left */}
+          <div className="absolute top-0 left-0 h-full w-full bg-white shadow-2xl flex flex-col animate-slideInLeft relative">
+            <button
+              className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100"
+              onClick={() => setDrawerOpen(false)}
+              aria-label="Close filter"
+            >
+              <svg width="24" height="24" fill="none" stroke="#181111" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M6 6l12 12M6 18L18 6" />
+              </svg>
+            </button>
+            {filterContent}
+          </div>
+        </div>
+      )}
+      {/* Desktop: Sidebar */}
+      <div className="sticky top-16 hidden shrink-0 lg:block h-full w-80 xl:w-96 pt-4 ltr:pr-8 rtl:pl-8 xl:ltr:pr-16 xl:rtl:pl-16 overflow-y-auto max-h-[90vh]">
+        {filterContent}
+      </div>
+    </>
   );
 };
 

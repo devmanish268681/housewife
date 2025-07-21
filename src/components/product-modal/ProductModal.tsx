@@ -177,7 +177,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
       onClick={onClose}
     >
       <div
-        className="bg-white rounded p-6 max-w-xl w-full shadow-lg overflow-y-auto max-h-[90vh] relative"
+        className="bg-white rounded m-3 p-6 max-w-xl w-full shadow-lg overflow-y-auto max-h-[90vh] relative"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
