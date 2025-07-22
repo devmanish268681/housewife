@@ -19,8 +19,10 @@ const HomePage = () => {
   return (
     <div className="mt-12">
       {/* Banners Section */}
+      <div className="m-3 md:m-0">
       <BannerCarousel />
       <Input placeholder="Search for products" />
+      </div>
       <div className="flex gap-3 p-3 flex-wrap pr-4 pt-5">
         {categories.map((category, index) => (
           <Chip

@@ -11,6 +11,7 @@ import SigninModal from "../sign-in/SIgnIn";
 //context and hooks
 import { useAppSelector } from "@/lib/hooks";
 import { useAuth } from "@/lib/context/authContext";
+import { useGetAllCartItemsQuery } from "@/lib/slices/cartApiSlice";
 
 const Header = () => {
   //hooks
@@ -24,9 +25,12 @@ const Header = () => {
   const [cartOpen, setCartOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false); // NEW
   const { isLoggedIn } = useAuth();
+  const { data: cartItemsData } = useGetAllCartItemsQuery();
 
-  const cartItems = useAppSelector((state) => state.cart.items);
-  const cartCount = cartItems.reduce((acc, value) => acc + value.quantity, 0);
+  const cartCount = cartItemsData?.result?.reduce(
+    (acc, value) => acc + value.quantity,
+    0
+  );
 
   const handleCartClose = () => {
     setCartOpen(false);
@@ -40,7 +44,7 @@ const Header = () => {
 
   useEffect(() => {
     setSignInModalOpen(Boolean(isSignIn));
-  },[isSignIn])
+  }, [isSignIn]);
 
   return (
     <>
@@ -51,7 +55,7 @@ const Header = () => {
             onClick={() => router.push("/")}
           >
             HouseWife
-          </h2>          
+          </h2>
           {/* Nav links - hidden on mobile */}
           <nav className="hidden lg:flex items-center gap-6 text-sm text-[#181111] font-medium">
             <a href="#">Offers</a>
@@ -95,48 +99,123 @@ const Header = () => {
             onClick={() => setCartOpen(true)}
           >
             🛒
-            {cartItems?.length > 0 && cartCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full">
-                {cartCount}
-              </span>
-            )}
+            {cartItemsData &&
+              cartItemsData?.result?.length > 0 &&
+              cartCount &&
+              cartCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full">
+                  {cartCount}
+                </span>
+              )}
           </button>
         </div>
         <button
-            className="lg:hidden ml-2 p-2 rounded focus:outline-none focus:ring-2 focus:ring-red-400"
-            onClick={() => setMobileMenuOpen((prev) => !prev)}
-            aria-label="Open menu"
+          className="lg:hidden ml-2 p-2 rounded focus:outline-none focus:ring-2 focus:ring-red-400"
+          onClick={() => setMobileMenuOpen((prev) => !prev)}
+          aria-label="Open menu"
+        >
+          <svg
+            width="28"
+            height="28"
+            fill="none"
+            stroke="#181111"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
           >
-            <svg width="28" height="28" fill="none" stroke="#181111" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M4 7h20M4 14h20M4 21h20" />
-            </svg>
-          </button>
+            <path d="M4 7h20M4 14h20M4 21h20" />
+          </svg>
+        </button>
       </header>
       {/* Mobile Menu Drawer/Dropdown */}
       {mobileMenuOpen && (
-        <div className="lg:hidden fixed inset-0 z-40 bg-black bg-opacity-40" onClick={() => setMobileMenuOpen(false)}>
-          <div className="absolute top-0 left-0 w-full h-full bg-white shadow-2xl p-6 flex flex-col gap-6 animate-slideDown" onClick={e => e.stopPropagation()} style={{minHeight:'60vh'}}>
-            <button className="self-end mb-4 p-2" onClick={() => setMobileMenuOpen(false)} aria-label="Close menu">
-              <svg width="24" height="24" fill="none" stroke="#181111" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <div
+          className="lg:hidden fixed inset-0 z-40 bg-black bg-opacity-40"
+          onClick={() => setMobileMenuOpen(false)}
+        >
+          <div
+            className="absolute top-0 left-0 w-full h-full bg-white shadow-2xl p-6 flex flex-col gap-6 animate-slideDown"
+            onClick={(e) => e.stopPropagation()}
+            style={{ minHeight: "60vh" }}
+          >
+            <button
+              className="self-end mb-4 p-2"
+              onClick={() => setMobileMenuOpen(false)}
+              aria-label="Close menu"
+            >
+              <svg
+                width="24"
+                height="24"
+                fill="none"
+                stroke="#181111"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <path d="M6 6l12 12M6 18L18 6" />
               </svg>
             </button>
-            <a href="#" className="flex items-center gap-3 text-[#000000] text-lg font-semibold py-3 px-4 rounded-xl bg-white/80 shadow border-b border-[#ffe3e3] hover:bg-[#fffbe6] transition">
-              <svg width="22" height="22" fill="none" stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="9" /><path d="M7 11h8" /></svg>
+            <a
+              href="#"
+              className="flex items-center gap-3 text-[#000000] text-lg font-semibold py-3 px-4 rounded-xl bg-white/80 shadow border-b border-[#ffe3e3] hover:bg-[#fffbe6] transition"
+            >
+              <svg
+                width="22"
+                height="22"
+                fill="none"
+                stroke="#000000"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="11" cy="11" r="9" />
+                <path d="M7 11h8" />
+              </svg>
               Offers
             </a>
-            <a href="#" className="flex items-center gap-3 text-[#000000] text-lg font-semibold py-3 px-4 rounded-xl bg-white/80 shadow border-b border-[#ffe3e3] hover:bg-[#fffbe6] transition">
-              <svg width="22" height="22" fill="none" stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="4" width="16" height="16" rx="4" /><path d="M8 8h8v8H8z" /></svg>
+            <a
+              href="#"
+              className="flex items-center gap-3 text-[#000000] text-lg font-semibold py-3 px-4 rounded-xl bg-white/80 shadow border-b border-[#ffe3e3] hover:bg-[#fffbe6] transition"
+            >
+              <svg
+                width="22"
+                height="22"
+                fill="none"
+                stroke="#000000"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <rect x="4" y="4" width="16" height="16" rx="4" />
+                <path d="M8 8h8v8H8z" />
+              </svg>
               Categories
             </a>
-            <a href="#" className="flex items-center gap-3 text-[#000000] text-lg font-semibold py-3 px-4 rounded-xl bg-white/80 shadow border-b border-[#ffe3e3] hover:bg-[#fffbe6] transition">
-              <svg width="22" height="22" fill="none" stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="9" /><path d="M11 7v4l3 3" /></svg>
+            <a
+              href="#"
+              className="flex items-center gap-3 text-[#000000] text-lg font-semibold py-3 px-4 rounded-xl bg-white/80 shadow border-b border-[#ffe3e3] hover:bg-[#fffbe6] transition"
+            >
+              <svg
+                width="22"
+                height="22"
+                fill="none"
+                stroke="#000000"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="11" cy="11" r="9" />
+                <path d="M11 7v4l3 3" />
+              </svg>
               Help
             </a>
             <div className="flex flex-col gap-4 mt-8">
               {isLoggedIn ? (
                 <button
-                  onClick={() => { router.push("/profile"); setMobileMenuOpen(false); }}
+                  onClick={() => {
+                    router.push("/profile");
+                    setMobileMenuOpen(false);
+                  }}
                   className="h-12 w-full bg-[#e82630] text-white rounded-full flex items-center justify-center gap-2 text-lg font-bold shadow hover:bg-[#d91c1c] transition"
                 >
                   <svg
@@ -156,7 +235,10 @@ const Header = () => {
                 </button>
               ) : (
                 <button
-                  onClick={() => { setSignInModalOpen(true); setMobileMenuOpen(false); }}
+                  onClick={() => {
+                    setSignInModalOpen(true);
+                    setMobileMenuOpen(false);
+                  }}
                   className="h-12 w-full bg-[#e82630] text-white rounded-full text-lg font-bold shadow hover:bg-[#d91c1c] transition"
                 >
                   Log In
@@ -164,15 +246,21 @@ const Header = () => {
               )}
               <button
                 className="relative h-12 w-full bg-white/80 text-[#e82630] rounded-full flex items-center justify-center font-bold shadow border hover:bg-[#fffbe6] transition"
-                onClick={() => { setCartOpen(true); setMobileMenuOpen(false); }}
+                onClick={() => {
+                  setCartOpen(true);
+                  setMobileMenuOpen(false);
+                }}
               >
                 <span className="mr-2">🛒</span>
                 Cart
-                {cartItems?.length > 0 && cartCount > 0 && (
-                  <span className="absolute top-1 right-6 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full">
-                    {cartCount}
-                  </span>
-                )}
+                {cartItemsData &&
+                  cartItemsData?.result?.length > 0 &&
+                  cartCount &&
+                  cartCount > 0 && (
+                    <span className="absolute top-1 right-6 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full">
+                      {cartCount}
+                    </span>
+                  )}
               </button>
             </div>
           </div>

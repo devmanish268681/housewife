@@ -1,13 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { useParams } from "next/navigation";
 
 //components
-import CircleCheckbox from "../circle-checkbox/CircleCheckbox";
-import CategoryAccordion from "../categories-accordion/CategoriesAccordion";
 import { products as mockProducts } from "@/constants/constants";
-import ProductCard from "../product-card/ProductCard";
 
 //constants
 import { useGetCategoriesQuery } from "@/lib/slices/categoriesApiSlice";
@@ -24,25 +20,11 @@ const CategoriesFilter = ({ category }: { category: string }) => {
 
   if (!currentCategory) return null;
 
-  // Prepare mock products for this category with all required fields
-  const filteredProducts = mockProducts
-    .map((product, idx) => ({
-      id: String(('id' in product && product.id) ? product.id : idx),
-      title: product.title,
-      subtitle: String(('subtitle' in product && product.subtitle) ? product.subtitle : ""),
-      description: String(('description' in product && product.description) ? product.description : "Sample description for demo."),
-      price: typeof product.price === "string" ? Number(product.price.replace(/[^\d.]/g, "")) : (product.price || 0),
-      quantityText: product.quantityText,
-      image: product.image,
-      stock: Number(('stock' in product && product.stock) ? product.stock : 10),
-      category: currentCategory.name,
-      variantId: ('variantId' in product && product.variantId) ? String(product.variantId) : undefined,
-    }));
-
   // Filtered subcategories and brands
   const filteredSubcategories = currentCategory.subCategory?.filter((sub) =>
     sub.name.toLowerCase().includes(search.toLowerCase())
   );
+
   const filteredBrands = currentCategory.brands?.filter((brand) =>
     brand.name.toLowerCase().includes(search.toLowerCase())
   );
