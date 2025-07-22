@@ -6,8 +6,8 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen">
-      <aside className="w-64 bg-gray-800 text-white flex flex-col p-4 space-y-4">
+    <div className="flex md:flex-row flex-col min-h-screen">
+      <aside className="w-100 md:w-65 bg-gray-800 text-white flex flex-col p-4 space-y-4">
         <h2 className="text-2xl font-bold mb-6">Admin Panel</h2>
         <nav className="flex flex-col space-y-2">
           <Link href="/admin" className="hover:bg-gray-700 rounded px-3 py-2">
