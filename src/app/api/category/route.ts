@@ -4,42 +4,87 @@ import { NextResponse } from "next/server";
 export async function GET(request: Request) {
   try {
     const categories = await prisma.category.findMany({
-      orderBy: { name: "asc" },
+      where: { deleted: false },
       include: {
-        products: { include: { brand: true } },
         subCategory: {
-          orderBy: { name: "asc" },
-          select: { id: true, name: true },
+          where: { deleted: false },
+        },
+        products: {
+          where: { deleted: false },
+          include: {
+            brand: true,
+            subCategory: true,
+            variants: {
+              where: { deleted: false },
+            },
+          },
         },
       },
     });
 
-    let formattedRes = categories.map((category) => {
-      const uniqueBrandsMap = new Map();
+    const formatted = categories.map((category) => {
+      // Group products by subcategory
+      const subCategoryMap: Record<
+        string,
+        {
+          id: string;
+          name: string;
+          subCategoryProductStock: number;
+          brands: {
+            id: string;
+            name: string;
+            individualBrandStock: number;
+          }[];
+        }
+      > = {};
 
-      category.products.forEach((product) => {
-        if (product.brand) {
-          uniqueBrandsMap.set(product.brand.id, {
-            id: product.brand.id,
-            name: product.brand.name,
+      for (const product of category.products) {
+        const subCat = product.subCategory;
+        if (!subCat) continue;
+
+        const subCatId = subCat.id;
+        const brandId = product.brand?.id || "unknown";
+        const brandName = product.brand?.name || "Unknown Brand";
+
+        // Initialize subcategory if not already
+        if (!subCategoryMap[subCatId]) {
+          subCategoryMap[subCatId] = {
+            id: subCatId,
+            name: subCat.name,
+            subCategoryProductStock: 0,
+            brands: [],
+          };
+        }
+
+        let productTotalStock = 0;
+        for (const variant of product.variants) {
+          productTotalStock += variant.stock;
+          subCategoryMap[subCatId].subCategoryProductStock += variant.stock;
+        }
+
+        // Update indivdualProductStock per brand
+        const brandEntry = subCategoryMap[subCatId].brands.find(
+          (b) => b.id === brandId
+        );
+        if (brandEntry) {
+          brandEntry.individualBrandStock += productTotalStock;
+        } else {
+          subCategoryMap[subCatId].brands.push({
+            id: brandId,
+            name: brandName,
+            individualBrandStock: productTotalStock,
           });
         }
-      });
-
-      const brands = Array.from(uniqueBrandsMap.values());
+      }
 
       return {
         id: category.id,
         name: category.name,
-        image: category.image,
-        subCategory: category.subCategory,
-        brands,
+        subCategories: Object.values(subCategoryMap),
       };
     });
 
-    return NextResponse.json({
-      categories: formattedRes,
-    });
+    return NextResponse.json({ categories: formatted });
   } catch (error: any) {
     console.error("Catalog API error:", error);
     return NextResponse.json(
