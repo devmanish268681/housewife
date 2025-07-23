@@ -1,32 +1,15 @@
-import { authOptions } from "@/lib/authOptions";
 import { prisma } from "@/lib/prisma";
-import { validateAccess } from "@/lib/roles/validateAccess";
-import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
   try {
-    const session = await getServerSession(authOptions);
-    console.log("session", session);
-
     const { searchParams } = new URL(request.url);
-    const category = searchParams.get("category");
+    const categoryId = searchParams.get("categoryId");
 
-    const whereClause: { categoryId: string | undefined } = {
-      categoryId: undefined,
-    };
+    const whereClause: any = {};
 
-    if (category) {
-      const categoryData = await prisma.category.findFirst({
-        where: { name: category },
-      });
-      if (!categoryData) {
-        return NextResponse.json(
-          { message: "category not found" },
-          { status: 404 }
-        );
-      }
-      whereClause.categoryId = categoryData.id;
+    if (categoryId) {
+      whereClause.categoryId = categoryId;
     }
 
     const products = await prisma.product.findMany({
