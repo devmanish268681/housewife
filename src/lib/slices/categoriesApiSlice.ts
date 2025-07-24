@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { Categories } from '../types/categories';
+import { Categories, CategoryProduct, GetProductsParams } from '../types/categories';
 
 // Define base query
 const baseQuery = fetchBaseQuery({
@@ -17,29 +17,19 @@ export const categoriesApiSlice = createApi({
         method: "GET"
       })
     }),
-    
-    getProductsByCategory: builder.query({
-      query: ({ category, subCategoryIds = [], brandIds = [] }) => {
-        const params = new URLSearchParams();
 
-        if (category) {
-          params.append('category', category);
-        }
-
-        subCategoryIds.forEach(id => params.append('subCategoryId', id));
-
-        brandIds.forEach(id => params.append('brandId', id));
-
-        return {
-          url: `/products?${params.toString()}`,
-          method: 'GET',
-        };
-      },
-    }),
+    getProductsByCategory: builder.query<CategoryProduct, GetProductsParams>({
+      query: (params) => ({
+        url: `category/products`,
+        method: "GET",
+        params
+      })
+    })
   }),
 });
 
 export const {
   useGetCategoriesQuery,
-  useGetProductsByCategoryQuery
+  useGetProductsByCategoryQuery,
+  useLazyGetProductsByCategoryQuery
 } = categoriesApiSlice;

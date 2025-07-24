@@ -6,14 +6,17 @@ import ProductCard from "../product-card/ProductCard";
 
 //constants
 import { products } from "@/constants/constants";
-import { CategoriesData } from "@/lib/types/categories";
+import {
+  CategoriesData,
+  CategoryProduct,
+  Product,
+} from "@/lib/types/categories";
 
-interface CategoriesCardProps{
-  products:CategoriesData[]
+interface CategoriesCardProps {
+  products: Product[];
 }
 
-const CategoriesCard = ({products}:CategoriesCardProps) => {
-
+const CategoriesCard = ({ products }: CategoriesCardProps) => {
   return (
     <div className="w-full lg:pt-[4rem] lg:ltr:-ml-4 lg:rtl:-mr-2 xl:ltr:-ml-8 xl:rtl:-mr-8 lg:-mt-1">
       <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-3 md:gap-4 2xl:gap-5">
@@ -22,14 +25,14 @@ const CategoriesCard = ({products}:CategoriesCardProps) => {
             key={index}
             id={product.id}
             title={product.name}
-            variantId={product?.variantId}
+            variantId={product?.variants[0]?.id}
             subtitle={"tetsing"}
             description={product.description}
-            price={Number(product.price)}
+            price={Number(product?.variants[0]?.price)}
             quantityText={"1 pack (200g)"}
             image={product.images[0]}
-            stock={product.stock}
-            category={product.category.name}
+            stock={product.variants[0]?.stock}
+            category={"manidh"}
           />
         ))}
       </div>

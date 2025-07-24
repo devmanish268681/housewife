@@ -80,6 +80,7 @@ export async function GET(request: Request) {
       return {
         id: category.id,
         name: category.name,
+        image: category.image,
         subCategories: Object.values(subCategoryMap),
       };
     });

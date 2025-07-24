@@ -8,8 +8,6 @@ import Loading from "@/components/common/Loading";
 const CategoriesSection = () => {
   const { data: categoriesData, isLoading: isCategoryLoading } =
     useGetCategoriesQuery();
-  
-  console.log(categoriesData)
 
   const router = useRouter();
   return (
@@ -19,7 +17,7 @@ const CategoriesSection = () => {
           Shop by Category
         </h2>
         {isCategoryLoading ? (
-          <Loading size={60} thickness={5} color="#dc2626"/>
+          <Loading size={60} thickness={5} color="#dc2626" />
         ) : (
           <div className="grid grid-cols-[repeat(auto-fit,minmax(158px,1fr))] gap-3 p-4 cursor-pointer">
             {categoriesData?.categories?.map((category, index) => (
@@ -27,7 +25,9 @@ const CategoriesSection = () => {
                 key={index}
                 className="flex flex-col gap-3 pb-3"
                 onClick={() =>
-                  router.push(`/category/${category.name.toLowerCase()}`)
+                  router.push(
+                    `/category/${category?.name?.toLowerCase()}?categoryId=${category?.id}`
+                  )
                 }
               >
                 <div
