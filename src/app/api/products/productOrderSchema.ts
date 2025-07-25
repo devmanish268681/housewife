@@ -1,0 +1,18 @@
+import { z } from "zod";
+
+export const productOrderSchema = z.object({
+  products: z
+    .array(
+      z.object({
+        productId: z.string().uuid(),
+        productVariantId: z.string().uuid(),
+        quantity: z.number().int().min(1),
+      })
+    )
+    .min(1, "At least one product must be included in the order"),
+  street: z.string().min(1),
+  city: z.string().min(1),
+  state: z.string().min(1),
+  country: z.string().min(1),
+  zipCode: z.string().min(4),
+});
