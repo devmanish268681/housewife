@@ -171,18 +171,18 @@ model Order {
 }
 
 model OrderItem {
-  id               String          @id @default(uuid())
-  createdAt        DateTime        @default(now())
-  updatedAt        DateTime        @updatedAt
-  deleted          Boolean         @default(false)
-  order            Order           @relation(fields: [orderId], references: [id])
+  id               String         @id @default(uuid())
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  deleted          Boolean        @default(false)
+  order            Order          @relation(fields: [orderId], references: [id])
   orderId          String
-  product          Product         @relation(fields: [productId], references: [id])
+  product          Product        @relation(fields: [productId], references: [id])
   productId        String
   quantity         Int
   price            Float // price at time of order
-  ProductVariant   ProductVariant? @relation(fields: [productVariantId], references: [id])
-  productVariantId String?
+  ProductVariant   ProductVariant @relation(fields: [productVariantId], references: [id])
+  productVariantId String
 }
 
 model CartItem {
