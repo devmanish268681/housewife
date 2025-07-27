@@ -9,15 +9,24 @@ import SignupModal from "../sign-up/SignUp";
 import SigninModal from "../sign-in/SIgnIn";
 
 //context and hooks
-import { useAppSelector } from "@/lib/hooks";
+import { useAppDispatch} from "@/lib/hooks";
 import { useAuth } from "@/lib/context/authContext";
 import { useGetAllCartItemsQuery } from "@/lib/slices/cartApiSlice";
+import { Button } from "../common/Button";
+import { useGeolocation } from "@/lib/hooks/use-geolocation";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faLocationArrow,
+  faLocationDot,
+} from "@fortawesome/free-solid-svg-icons";
+import { setLocationData } from "@/lib/slices/userLocationSlice";
 
 const Header = () => {
   //hooks
   const router = useRouter();
   const searchParams = useSearchParams();
   const params = new URLSearchParams(searchParams.toString());
+  const dispatch = useAppDispatch();
   const isCartOpen = searchParams.get("open");
   const isSignIn = searchParams.get("signIn");
   const [signInModalOpen, setSignInModalOpen] = useState(false);
@@ -26,6 +35,17 @@ const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false); // NEW
   const { isLoggedIn } = useAuth();
   const { data: cartItemsData } = useGetAllCartItemsQuery();
+  const {
+    latitude,
+    longitude,
+    pinCode,
+    address,
+    isLoading: locationLoading,
+    error: locationError,
+    getCurrentLocation,
+    clearLocation,
+    hasLocation,
+  } = useGeolocation();
 
   const cartCount = cartItemsData?.result?.reduce(
     (acc, value) => acc + value.quantity,
@@ -35,7 +55,16 @@ const Header = () => {
   const handleCartClose = () => {
     setCartOpen(false);
     params.delete("open");
+
     router.push(`?${params.toString()}`);
+  };
+
+  const handleLocationClick = () => {
+    if (hasLocation) {
+      clearLocation();
+    } else {
+      getCurrentLocation();
+    }
   };
 
   useEffect(() => {
@@ -45,6 +74,19 @@ const Header = () => {
   useEffect(() => {
     setSignInModalOpen(Boolean(isSignIn));
   }, [isSignIn]);
+
+  useEffect(() => {
+    if (latitude || address || pinCode || longitude) {
+      dispatch(
+        setLocationData({
+          address: String(address),
+          pincode: String(pinCode),
+          latitude: Number(latitude),
+          longitude: Number(longitude),
+        })
+      );
+    }
+  }, [address, latitude, longitude, pinCode]);
 
   return (
     <>
@@ -65,6 +107,42 @@ const Header = () => {
         </div>
         {/* Hide login/profile and cart on mobile, show only on lg+ */}
         <div className="hidden lg:flex gap-2 sm:gap-3 md:gap-4 items-center">
+          <Button
+            onClick={handleLocationClick}
+            className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-200 shadow-sm border ${
+              hasLocation
+                ? "bg-white text-black border-red-600 hover:bg-red-50"
+                : "bg-red-600 hover:bg-red-700 text-white border-transparent hover:opacity-90"
+            }`}
+            disabled={locationLoading}
+          >
+            {/* Icon changes dynamically */}
+            <FontAwesomeIcon
+              icon={hasLocation ? faLocationDot : faLocationArrow}
+              className={`w-4 h-4 ${
+                hasLocation ? "text-red-600" : "text-white"
+              }`}
+            />
+
+            {/* Main Text */}
+            <div className="flex flex-col items-start text-sm leading-tight">
+              <span className="font-medium">
+                {locationLoading
+                  ? "Getting location..."
+                  : hasLocation
+                    ? "Delivering to"
+                    : "Use Current Location"}
+              </span>
+
+              {/* Address Preview */}
+              {hasLocation && address && (
+                <span className="text-xs text-gray-500 truncate max-w-[150px]">
+                  {address}
+                </span>
+              )}
+            </div>
+          </Button>
+
           {isLoggedIn && (
             <button
               onClick={() => router.push("/profile")}

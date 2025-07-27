@@ -117,7 +117,7 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
                   className="flex items-center gap-3 border rounded-lg p-3"
                 >
                   <Image
-                    src={item.image}
+                    src={item?.image[0]}
                     alt={item.productName}
                     width={60}
                     height={60}

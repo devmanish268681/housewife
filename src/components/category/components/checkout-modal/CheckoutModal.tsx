@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 //third-party
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -13,6 +13,10 @@ import {
 
 //constants
 import { cartItemsMock } from "@/constants/constants";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import { useGeolocation } from "@/lib/hooks/use-geolocation";
+import { useAppSelector } from "@/lib/hooks";
 
 //types
 export type CartItem = {
@@ -28,9 +32,43 @@ type CheckoutModalProps = {
 };
 
 const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
-  const [paymentMethod, setPaymentMethod] = useState<"COD" | "UPI" | "Card">(
-    "COD"
+  const { address: userAddress } = useAppSelector(
+    (state) => state.userLocation
   );
+  const validationSchema = Yup.object({
+    fullName: Yup.string().required("Name is required"),
+    phone: Yup.string().required("Password is required"),
+    address: Yup.string().required("Address is required"),
+  });
+
+  const { values, setFieldValue, handleSubmit } = useFormik({
+    initialValues: {
+      fullName: "",
+      phone: "",
+      address: userAddress || "",
+      doorno: "",
+      area: "",
+      landmark: "",
+      pincode: "",
+      deliveryMethod: "",
+      paymentMethod: "",
+    },
+    validationSchema,
+    onSubmit: (value) => {
+      console.log(value);
+    },
+  });
+
+  const {
+    fullName,
+    phone,
+    address,
+    doorno,
+    area,
+    landmark,
+    pincode,
+    paymentMethod,
+  } = values;
 
   const subtotal = cartItemsMock.reduce(
     (sum, item) => sum + item.price * item.quantity,
@@ -43,6 +81,8 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
     alert(`Order placed successfully with ${paymentMethod} payment!`);
     onClose(); // Close modal after placing order
   };
+
+  const paymentMethods = ["COD", "UPI", "Card"];
 
   if (!isOpen) return null; // Don't render if modal is closed
 
@@ -69,47 +109,79 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
             <h3 className="font-semibold">Customer Details</h3>
             <input
               type="text"
+              value={fullName}
               placeholder="Full Name"
+              onChange={(e) => setFieldValue("fullName", e.target.value)}
               className="w-full border rounded p-2"
             />
             <input
               type="tel"
+              value={phone}
+              onChange={(e) => setFieldValue("phone", e.target.value)}
               placeholder="Phone Number"
-              className="w-full border rounded p-2"
-            />
-            <input
-              type="email"
-              placeholder="Email Address"
               className="w-full border rounded p-2"
             />
           </div>
 
           {/* Delivery Address */}
           <div className="space-y-3">
-            <h3 className="font-semibold">Delivery Address</h3>
-            <textarea
-              placeholder="Enter your delivery address"
-              rows={3}
+            <h3 className="font-semibold">Address</h3>
+            <input
+              type="text"
+              value={address}
+              onChange={(e) => setFieldValue("address", e.target.value)}
+              placeholder="Enter Address"
               className="w-full border rounded p-2"
             />
-            <select
+          </div>
+          <div className="space-y-3">
+            <h3 className="font-semibold">Door / Flat No.</h3>
+            <input
+              type="text"
+              value={doorno}
+              onChange={(e) => setFieldValue("doorno", e.target.value)}
+              placeholder="Enter Door number"
               className="w-full border rounded p-2"
-              aria-label="Select delivery slot"
-              defaultValue=""
-            >
-              <option value="" disabled>
-                Select Delivery Slot
-              </option>
-              <option value="ASAP">ASAP (within 30 min)</option>
-              <option value="Schedule">Schedule for later</option>
-            </select>
+            />
+          </div>
+          <div className="space-y-3">
+            <h3 className="font-semibold">Street</h3>
+            <input
+              type="tel"
+              value={area}
+              onChange={(e) => setFieldValue("area", e.target.value)}
+              placeholder="Enter Area"
+              className="w-full border rounded p-2"
+            />
+          </div>
+
+          <div className="space-y-3">
+            <h3 className="font-semibold">Landmark</h3>
+            <input
+              type="tel"
+              value={landmark}
+              onChange={(e) => setFieldValue("landmark", e.target.value)}
+              placeholder="Enter Landmark"
+              className="w-full border rounded p-2"
+            />
+          </div>
+
+          <div className="space-y-3">
+            <h3 className="font-semibold">Pin Code</h3>
+            <input
+              type="tel"
+              value={pincode}
+              onChange={(e) => setFieldValue("pincode", e.target.value)}
+              placeholder="Enter Pincode"
+              className="w-full border rounded p-2"
+            />
           </div>
 
           {/* Payment Options */}
           <div className="space-y-3">
             <h3 className="font-semibold">Payment Method</h3>
             <div className="space-y-2">
-              {(["COD", "UPI", "Card"] as const).map((method) => {
+              {paymentMethods.map((method) => {
                 const iconsMap = {
                   COD: faMoneyBillWave,
                   UPI: faWallet,
@@ -132,7 +204,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
                       name="payment"
                       value={method}
                       checked={paymentMethod === method}
-                      onChange={() => setPaymentMethod(method)}
+                      onChange={() => setFieldValue("paymentMethod", method)}
                       className="cursor-pointer"
                     />
                     <FontAwesomeIcon
@@ -142,8 +214,8 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
                     {method === "COD"
                       ? "Cash on Delivery"
                       : method === "UPI"
-                      ? "UPI / Wallet"
-                      : "Credit / Debit Card"}
+                        ? "UPI / Wallet"
+                        : "Credit / Debit Card"}
                   </label>
                 );
               })}
@@ -179,10 +251,10 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
         {/* Sticky Place Order Button */}
         <div className="p-4 border-t">
           <button
-            onClick={handlePlaceOrder}
+            onClick={() => handleSubmit()}
             className="w-full py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg transition"
           >
-            Place Order
+            Proceed to Pay
           </button>
         </div>
       </div>
