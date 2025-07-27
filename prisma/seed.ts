@@ -139,7 +139,9 @@ async function seedProducts(
         name: item.productName,
         description:
           item.description ?? `${item.productName} by ${item.brandName}`,
-        images: ["https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"],
+        images: [
+          "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        ],
         categoryId: categoryData.id,
         subCategoryId: subCategoryData.id,
         brandId: brand!.id,
@@ -217,32 +219,80 @@ async function main() {
   console.log("🌱 Starting seed...");
   // Roles
   // Create roles, with "user" as default
+
   await Promise.all([
     prisma.role.create({ data: { name: "admin" } }),
     prisma.role.create({ data: { name: "delivery_agent" } }),
     prisma.role.create({ data: { name: "user" } }),
   ]);
-  (prisma.user.create({ data: { name: "admin" } }),
-    await seedProducts(
-      cookingOilProducts,
-      "Groceries",
-      "Cooking Oil",
-      imageUrlWithProductName,
-      [
-        {
-          unit: "L",
-          unitSize: 1,
-          price: 150,
-          stock: 100,
+  // 1. Get all roles first
+  const roles = await prisma.role.findMany();
+
+  const roleMap = Object.fromEntries(
+    roles.map((role: any) => [role.name, role.id])
+  );
+  // 2. Define users to be created with role names
+  const usersToCreate = [
+    {
+      name: "Admin User",
+      email: "admin@example.com",
+      profileImage: "admin.png",
+      roleName: "admin",
+    },
+    {
+      name: "Delivery Agent 1",
+      email: "agent1@example.com",
+      profileImage: "agent1.png",
+      roleName: "delivery_agent",
+    },
+    {
+      name: "Manish Patil",
+      email: "manishpatil@gmail.com",
+      profileImage: "manish.png",
+      roleName: "user",
+    },
+  ];
+
+  // 3. Convert roleName to roleId and create users
+  await Promise.all(
+    usersToCreate.map((user) =>
+      prisma.user.create({
+        data: {
+          name: user.name,
+          email: user.email,
+          profileImage: user.profileImage,
+          roleId: roleMap[user.roleName], // ✅ resolve roleId
         },
-        {
-          unit: "L",
-          unitSize: 5,
-          price: 700,
-          stock: 50,
-        },
-      ]
-    ));
+      })
+    )
+  );
+
+  // 4. Verify
+  const allUsers = await prisma.user.findMany({
+    include: { roles: true },
+  });
+  console.log(allUsers);
+
+  await seedProducts(
+    cookingOilProducts,
+    "Groceries",
+    "Cooking Oil",
+    imageUrlWithProductName,
+    [
+      {
+        unit: "L",
+        unitSize: 1,
+        price: 150,
+        stock: 100,
+      },
+      {
+        unit: "L",
+        unitSize: 5,
+        price: 700,
+        stock: 50,
+      },
+    ]
+  );
 
   await seedProducts(
     sugarSaltProducts,
