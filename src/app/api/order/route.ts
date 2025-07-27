@@ -8,6 +8,7 @@ import { createOrderRecord } from "@/app/services/OrdersService";
 import { createOrderItemsRecord } from "@/app/services/OrderItemsService";
 import { updatedProductVariant } from "@/app/services/ProductsService";
 import { productOrderSchema } from "../products/productOrderSchema";
+import { getUserById } from "@/app/services/userService";
 
 export async function POST(request: Request) {
   try {
@@ -38,8 +39,10 @@ export async function POST(request: Request) {
       );
     }
 
+    const user = await getUserById(userId);
+
     const adressObj = {
-      userId,
+      userId: user.id,
       street,
       city,
       country,
