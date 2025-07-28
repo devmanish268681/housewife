@@ -220,6 +220,15 @@ async function main() {
   // Roles
   // Create roles, with "user" as default
 
+  await prisma.paymentMethod.createMany({
+    data: [
+      { methodName: "cod" },
+      { methodName: "upi" },
+      { methodName: "card" },
+    ],
+    skipDuplicates: true,
+  });
+
   await Promise.all([
     prisma.role.create({ data: { name: "admin" } }),
     prisma.role.create({ data: { name: "delivery_agent" } }),

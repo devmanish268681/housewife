@@ -9,6 +9,7 @@ import { createOrderItemsRecord } from "@/app/services/OrderItemsService";
 import { updatedProductVariant } from "@/app/services/ProductsService";
 import { productOrderSchema } from "../products/productOrderSchema";
 import { getUserById } from "@/app/services/userService";
+import OrderStatus from "@/app/enums";
 
 export async function POST(request: Request) {
   try {
@@ -24,7 +25,18 @@ export async function POST(request: Request) {
 
     const body = await request.json();
 
-    const { products, street, city, country, zipCode, state } = body;
+    const {
+      products,
+      street,
+      city,
+      country,
+      zipCode,
+      state,
+      addrees,
+      landmark,
+      flatno,
+      paymentMethod,
+    } = body;
 
     const validation = await validateRequest(body, productOrderSchema);
 
@@ -41,9 +53,23 @@ export async function POST(request: Request) {
 
     const user = await getUserById(userId);
 
+    const paymentMethodRecord = await prisma.paymentMethod.findUnique({
+      where: { methodName: paymentMethod }, // 'cod', 'upi',card.
+    });
+
+    if (!paymentMethodRecord) {
+      return NextResponse.json(
+        { message: "Invalid payment method" },
+        { status: 400 }
+      );
+    }
+
+    const parts = [flatno, landmark, addrees, street].filter(Boolean);
+    const fullStreet = parts.join(", ");
+
     const adressObj = {
       userId: user.id,
-      street,
+      street: fullStreet,
       city,
       country,
       zipCode,
@@ -51,7 +77,6 @@ export async function POST(request: Request) {
     };
 
     const userAdress = await createAddressRecord(adressObj);
-    console.log("userAdress", userAdress);
 
     let total = 0;
     const orderItemsData = [];
@@ -92,11 +117,11 @@ export async function POST(request: Request) {
       userId,
       addressId: userAdress.id,
       total,
-      status: "PENDING",
+      status: OrderStatus.Pending,
+      paymentMethodId: paymentMethodRecord.id,
     };
 
     const order = await createOrderRecord(orderObj);
-    console.log("order", order);
 
     const orderItemPromises = orderItemsData.map(async (item) => {
       const orderItemObj = {
@@ -108,18 +133,14 @@ export async function POST(request: Request) {
       };
 
       const orderItems = await createOrderItemsRecord(orderItemObj);
-      console.log("orderItems", orderItems);
 
       const updatedProduct = await updatedProductVariant(
         item.productVariantId,
         item.quantity
       );
-      console.log("updatedProduct", updatedProduct);
     });
 
     await Promise.all(orderItemPromises);
-
-    // console.log("updatedProduct", updatedProduct);
 
     return NextResponse.json({
       message: "order placed successfully",
