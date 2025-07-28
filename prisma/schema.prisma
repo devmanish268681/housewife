@@ -13,14 +13,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum OrderStatus {
-  PENDING
-  PROCESSING
-  SHIPPED
-  DELIVERED
-  CANCELLED
-}
-
 model Role {
   id    String @id @default(uuid())
   name  String @unique // e.g. "USER", "ADMIN", "DELIVERY_AGENT"
@@ -157,17 +149,25 @@ model Brand {
 }
 
 model Order {
-  id        String      @id @default(uuid())
-  user      User        @relation(fields: [userId], references: [id])
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
-  deleted   Boolean     @default(false)
-  userId    String
-  items     OrderItem[]
-  total     Float
-  status    OrderStatus @default(PENDING)
-  address   Address     @relation(fields: [addressId], references: [id])
-  addressId String
+  id              String        @id @default(uuid())
+  user            User          @relation(fields: [userId], references: [id])
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  deleted         Boolean       @default(false)
+  userId          String
+  items           OrderItem[]
+  total           Float
+  status          String
+  address         Address       @relation(fields: [addressId], references: [id])
+  addressId       String
+  PaymentMethod   PaymentMethod @relation(fields: [paymentMethodId], references: [id])
+  paymentMethodId String
+}
+
+model PaymentMethod {
+  id         String  @id @default(uuid())
+  methodName String  @unique // e.g., 'cod', 'upi', 'card'
+  orders     Order[] // One-to-many relation with Order
 }
 
 model OrderItem {
