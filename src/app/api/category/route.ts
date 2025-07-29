@@ -29,6 +29,7 @@ export async function GET(request: Request) {
         {
           id: string;
           name: string;
+          image: string;
           subCategoryProductStock: number;
           brands: {
             id: string;
@@ -51,6 +52,7 @@ export async function GET(request: Request) {
           subCategoryMap[subCatId] = {
             id: subCatId,
             name: subCat.name,
+            image: subCat.image,
             subCategoryProductStock: 0,
             brands: [],
           };
@@ -81,6 +83,7 @@ export async function GET(request: Request) {
         id: category.id,
         name: category.name,
         image: category.image,
+        description: category.description,
         subCategories: Object.values(subCategoryMap),
       };
     });
