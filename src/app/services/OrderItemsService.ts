@@ -1,8 +1,11 @@
-import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 
-export const createOrderItemsRecord = async (orderItemObj: any) => {
+export const createOrderItemsRecord = async (
+  tx: Prisma.TransactionClient,
+  orderItemObj: Prisma.OrderItemUncheckedCreateInput
+) => {
   try {
-    const orderItem = await prisma.orderItem.create({ data: orderItemObj });
+    const orderItem = await tx.orderItem.create({ data: orderItemObj });
     return orderItem;
   } catch (error: any) {
     console.error("Internal server error", error);
