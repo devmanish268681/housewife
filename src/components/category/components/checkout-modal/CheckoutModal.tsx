@@ -1,6 +1,9 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import toast from "react-hot-toast";
 
 //third-party
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -11,12 +14,12 @@ import {
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 
-//constants
-import { cartItemsMock } from "@/constants/constants";
-import { useFormik } from "formik";
-import * as Yup from "yup";
-import { useGeolocation } from "@/lib/hooks/use-geolocation";
+//hooks
 import { useAppSelector } from "@/lib/hooks";
+
+//slices
+import { useGetAllCartItemsQuery } from "@/lib/slices/cartApiSlice";
+import { usePlaceOrdersMutation } from "@/lib/slices/orderApiSlice";
 
 //types
 export type CartItem = {
@@ -35,13 +38,18 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
   const { address: userAddress } = useAppSelector(
     (state) => state.userLocation
   );
+
+  const [street, state, country] = userAddress?.split(",") || [];
   const validationSchema = Yup.object({
     fullName: Yup.string().required("Name is required"),
     phone: Yup.string().required("Password is required"),
     address: Yup.string().required("Address is required"),
   });
 
-  const { values, setFieldValue, handleSubmit } = useFormik({
+  const { data: cartItemsData } = useGetAllCartItemsQuery();
+  const [placeOrders] = usePlaceOrdersMutation();
+
+  const { values, setFieldValue } = useFormik({
     initialValues: {
       fullName: "",
       phone: "",
@@ -54,8 +62,8 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
       paymentMethod: "",
     },
     validationSchema,
-    onSubmit: (value) => {
-      console.log(value);
+    onSubmit: () => {
+      console.log("submitted");
     },
   });
 
@@ -70,16 +78,36 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
     paymentMethod,
   } = values;
 
-  const subtotal = cartItemsMock.reduce(
+  const subtotal = cartItemsData?.result?.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
   );
-  const deliveryFee = subtotal > 500 ? 0 : 40;
-  const total = subtotal + deliveryFee;
 
-  const handlePlaceOrder = () => {
-    alert(`Order placed successfully with ${paymentMethod} payment!`);
-    onClose(); // Close modal after placing order
+  const deliveryFee = 50;
+  const total = Number(subtotal) + deliveryFee;
+
+  const handlePlaceOrder = async () => {
+    const products = cartItemsData?.result.map((item) => ({
+      productId: item.productId,
+      productVariantId: item.variantId,
+      quantity: item.quantity,
+    }));
+    const payload = {
+      products: products,
+      street: area,
+      flatNo: doorno,
+      state: state,
+      city: state,
+      country: country,
+      landmark: landmark,
+      zipCode: pincode,
+      paymentMethod: paymentMethod.toLowerCase(),
+      addrees: address,
+    };
+    await placeOrders(payload).then(() =>
+      toast.success("Order placed successfully!!!")
+    );
+    onClose();
   };
 
   const paymentMethods = ["COD", "UPI", "Card"];
@@ -225,10 +253,13 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
           {/* Order Summary */}
           <div className="space-y-3 border-t pt-4">
             <h3 className="font-semibold">Order Summary</h3>
-            {cartItemsMock.map((item) => (
-              <div key={item.id} className="flex justify-between text-gray-700">
+            {cartItemsData?.result.map((item) => (
+              <div
+                key={item.productId}
+                className="flex justify-between text-gray-700"
+              >
                 <span>
-                  {item.name} x {item.quantity}
+                  {item.productName} x {item.quantity}
                 </span>
                 <span>₹{item.price * item.quantity}</span>
               </div>
@@ -239,7 +270,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
             </div>
             <div className="flex justify-between">
               <span>Delivery Fee</span>
-              <span>{deliveryFee === 0 ? "Free" : `₹${deliveryFee}`}</span>
+              <span>{`₹${deliveryFee}`}</span>
             </div>
             <div className="flex justify-between font-bold text-lg">
               <span>Total</span>
@@ -251,7 +282,8 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
         {/* Sticky Place Order Button */}
         <div className="p-4 border-t">
           <button
-            onClick={() => handleSubmit()}
+            type="button"
+            onClick={() => handlePlaceOrder()}
             className="w-full py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg transition"
           >
             Proceed to Pay

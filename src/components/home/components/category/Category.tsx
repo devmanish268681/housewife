@@ -23,7 +23,7 @@ const CategoriesSection = () => {
             {categoriesData?.categories?.map((category, index) => (
               <div
                 key={index}
-                className="flex flex-col gap-3 pb-3"
+                className="flex flex-col relative gap-3 shadow-md rounded-xl"
                 onClick={() =>
                   router.push(
                     `/category/${category?.name?.toLowerCase()}?categoryId=${category?.id}`
@@ -34,9 +34,13 @@ const CategoriesSection = () => {
                   className="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl"
                   style={{ backgroundImage: `url(${category.image})` }}
                 ></div>
-                <p className="text-[#181111] text-base font-medium leading-normal">
-                  {category.name}
-                </p>
+                <div
+                  className="bg-white p-4 absolute bottom-0 w-full h-[70px] rounded-b-[12px]"
+                >
+                  <p className="text-[#181111] text-lg font-semibold leading-normal">
+                    {category.name}
+                  </p>
+                </div>
               </div>
             ))}
           </div>

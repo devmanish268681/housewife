@@ -12,6 +12,18 @@ import StoreProvider from "@/lib/store/StoreProvider";
 
 //utils
 import AuthProvider from "@/lib/auth/AuthProvider";
+import { icon } from "@fortawesome/fontawesome-svg-core";
+
+export const metadata = {
+  title: {
+    default: "Maxymart – Freshness at Your Doorstep",
+    template: "%s | My App",
+  },
+  icons: {
+    icon: "assets/maxymart_logo.svg",
+  },
+  description: "Maxymart - Your one-stop grocery stor",
+};
 
 export default function RootLayout({
   children,

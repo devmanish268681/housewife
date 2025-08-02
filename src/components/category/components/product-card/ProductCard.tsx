@@ -17,7 +17,6 @@ import { decrementQuantity, incrementQuantity } from "@/lib/slices/cartSlice";
 //slices
 import {
   useAddToCartMutation,
-  useDeleteFromCartMutation,
   useGetAllCartItemsQuery,
 } from "@/lib/slices/cartApiSlice";
 
@@ -47,7 +46,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
   //slices
   const [addToCart] = useAddToCartMutation();
-  const [deleteFromCart] = useDeleteFromCartMutation();
   const { data: cartItems } = useGetAllCartItemsQuery();
 
   const isProductInCart = cartItems?.result?.filter(
@@ -109,7 +107,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
   };
 
   const handleIncrementQuantity = async (action: "increment" | "decrement") => {
-    const newQuantity = action === "increment" ? quantity + 1 : quantity !== 1 ? quantity - 1 : 0;
+    const newQuantity =
+      action === "increment" ? quantity + 1 : quantity !== 1 ? quantity - 1 : 0;
     if (newQuantity < 1) return;
     await updateCart(newQuantity);
   };

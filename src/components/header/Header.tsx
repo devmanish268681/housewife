@@ -1,25 +1,33 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
+
+//images
+import maxymart from "../../../public/assets/maxymart_logo.svg";
 
 //components
 import Cart from "../cart/Cart";
 import SignupModal from "../sign-up/SignUp";
 import SigninModal from "../sign-in/SIgnIn";
+import { Button } from "../common/Button";
 
 //context and hooks
-import { useAppDispatch} from "@/lib/hooks";
+import { useAppDispatch } from "@/lib/hooks";
 import { useAuth } from "@/lib/context/authContext";
-import { useGetAllCartItemsQuery } from "@/lib/slices/cartApiSlice";
-import { Button } from "../common/Button";
 import { useGeolocation } from "@/lib/hooks/use-geolocation";
+
+//slices
+import { useGetAllCartItemsQuery } from "@/lib/slices/cartApiSlice";
+import { setLocationData } from "@/lib/slices/userLocationSlice";
+
+//third-party
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faLocationArrow,
   faLocationDot,
 } from "@fortawesome/free-solid-svg-icons";
-import { setLocationData } from "@/lib/slices/userLocationSlice";
 
 const Header = () => {
   //hooks
@@ -90,14 +98,15 @@ const Header = () => {
 
   return (
     <>
-      <header className="flex items-center justify-between border-b border-[#f4f0f0] px-4 sm:px-6 md:px-8 lg:px-10 py-2 sm:py-3">
+      <header className="flex items-center justify-between border-b border-[#f4f0f0] px-4 sm:px-6 md:px-8 lg:px-10 py-2 sm:py-2">
         <div className="flex items-center gap-4 sm:gap-6 md:gap-8">
-          <h2
-            className="text-[#181111] text-lg font-bold cursor-pointer"
-            onClick={() => router.push("/")}
-          >
-            HouseWife
-          </h2>
+          <Image
+            src={maxymart}
+            alt="maxmart_logo"
+            width={65}
+            height={65}
+            style={{ position: "relative", bottom: "8px" }}
+          />
           {/* Nav links - hidden on mobile */}
           <nav className="hidden lg:flex items-center gap-6 text-sm text-[#181111] font-medium">
             <a href="#">Offers</a>
@@ -131,7 +140,7 @@ const Header = () => {
                   ? "Getting location..."
                   : hasLocation
                     ? "Delivering to"
-                    : "Use Current Location"}
+                    : "Location"}
               </span>
 
               {/* Address Preview */}
