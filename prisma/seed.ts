@@ -22,7 +22,7 @@ const {
   imagePublicLinks,
 } = require("./data");
 
-const { PrismaClient, OrderStatus } = require("@prisma/client");
+const { PrismaClient } = require("@prisma/client");
 const axios = require("axios");
 const { load } = require("cheerio");
 const path = require("path");
@@ -220,11 +220,17 @@ async function main() {
   // Roles
   // Create roles, with "user" as default
 
-  await Promise.all([
-    prisma.role.create({ data: { name: "admin" } }),
-    prisma.role.create({ data: { name: "delivery_agent" } }),
-    prisma.role.create({ data: { name: "user" } }),
-  ]);
+  const roleNames = ["admin", "delivery_agent", "user"];
+  await Promise.all(
+    roleNames.map((name) =>
+      prisma.role.upsert({
+        where: { name },
+        update: {},
+        create: { name },
+      })
+    )
+  );
+
   // 1. Get all roles first
   const roles = await prisma.role.findMany();
 
