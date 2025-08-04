@@ -8,7 +8,7 @@ import { placeOrderController } from "@/app/controller/orderController";
 export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions);
-    const userId = "7c19addf-e5e5-4b96-a57c-567df8b6cf99";
+    const userId = session?.user.id as string;
 
     if (!userId) {
       return NextResponse.json(
