@@ -1,14 +1,14 @@
 import { authOptions } from "@/lib/authOptions";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
-import { validateRequest } from "../lib/validateRequest";
+import { validateRequest } from "../../lib/validateRequest";
 import { productOrderSchema } from "../products/productOrderSchema";
 import { placeOrderController } from "@/app/controller/orderController";
 
 export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions);
-    const userId = session?.user.id;
+    const userId = "7c19addf-e5e5-4b96-a57c-567df8b6cf99";
 
     if (!userId) {
       return NextResponse.json(
@@ -59,7 +59,7 @@ export async function POST(request: Request) {
     console.log("placeOrder", placeOrder);
 
     return NextResponse.json({
-      message: "order placed successfully",
+      placeOrder,
     });
   } catch (error: any) {
     console.error("Internal server error", error);
