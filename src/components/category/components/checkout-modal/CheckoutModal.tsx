@@ -20,6 +20,7 @@ import { useAppSelector } from "@/lib/hooks";
 //slices
 import { useGetAllCartItemsQuery } from "@/lib/slices/cartApiSlice";
 import { usePlaceOrdersMutation } from "@/lib/slices/orderApiSlice";
+import { loadRazorpayScript } from "@/app/lib/utils/loadRazorpay";
 
 //types
 export type CartItem = {
@@ -86,28 +87,29 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
   const deliveryFee = 50;
   const total = Number(subtotal) + deliveryFee;
 
-  const handlePlaceOrder = async () => {
+  const handlePlaceOrder = () => {
     const products = cartItemsData?.result.map((item) => ({
       productId: item.productId,
       productVariantId: item.variantId,
       quantity: item.quantity,
     }));
+
     const payload = {
-      products: products,
+      products,
       street: area,
       flatNo: doorno,
-      state: state,
+      state,
       city: state,
-      country: country,
-      landmark: landmark,
+      country,
+      landmark,
       zipCode: pincode,
       paymentMethod: paymentMethod.toLowerCase(),
-      addrees: address,
+      address,
     };
-    await placeOrders(payload).then(() =>
-      toast.success("Order placed successfully!!!")
+
+    placeOrders(payload).then((res) =>
+      window.open(res.data?.placeOrder.placeOrder.url, "_self")
     );
-    onClose();
   };
 
   const paymentMethods = ["COD", "UPI", "Card"];

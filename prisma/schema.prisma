@@ -115,7 +115,7 @@ model Category {
   updatedAt   DateTime      @updatedAt
   deleted     Boolean       @default(false)
   name        String        @unique
-  description String
+  description String?
   image       String?
   products    Product[]
   subCategory SubCategory[]
@@ -142,7 +142,7 @@ model SubCategory {
   category   Category  @relation(fields: [categoryId], references: [id])
   categoryId String
   products   Product[]
-  image      String
+  image      String?
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
   deleted    Boolean   @default(false)
