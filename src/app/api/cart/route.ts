@@ -2,7 +2,7 @@ import { authOptions } from "@/lib/authOptions";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
-import { validateRequest } from "../lib/validateRequest";
+import { validateRequest } from "../../lib/validateRequest";
 import { addToCartSchema } from "./addToCartSchema ";
 
 export async function POST(request: Request) {

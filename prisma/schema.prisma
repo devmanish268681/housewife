@@ -13,6 +13,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// enum OrderStatus {
+//   PENDING
+//   PROCESSING
+//   SHIPPED
+//   DELIVERED
+//   CANCELLED
+// }
+
 model Role {
   id    String @id @default(uuid())
   name  String @unique // e.g. "USER", "ADMIN", "DELIVERY_AGENT"
@@ -107,7 +115,7 @@ model Category {
   updatedAt   DateTime      @updatedAt
   deleted     Boolean       @default(false)
   name        String        @unique
-  description String
+  description String?
   image       String?
   products    Product[]
   subCategory SubCategory[]
@@ -134,7 +142,7 @@ model SubCategory {
   category   Category  @relation(fields: [categoryId], references: [id])
   categoryId String
   products   Product[]
-  image      String
+  image      String?
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
   deleted    Boolean   @default(false)
@@ -151,25 +159,19 @@ model Brand {
 }
 
 model Order {
-  id              String        @id @default(uuid())
-  user            User          @relation(fields: [userId], references: [id])
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-  deleted         Boolean       @default(false)
-  userId          String
-  items           OrderItem[]
-  total           Float
-  status          String
-  address         Address       @relation(fields: [addressId], references: [id])
-  addressId       String
-  PaymentMethod   PaymentMethod @relation(fields: [paymentMethodId], references: [id])
-  paymentMethodId String
-}
-
-model PaymentMethod {
-  id         String  @id @default(uuid())
-  methodName String  @unique // e.g., 'cod', 'upi', 'card'
-  orders     Order[] // One-to-many relation with Order
+  id            String      @id @default(uuid())
+  user          User        @relation(fields: [userId], references: [id])
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  deleted       Boolean     @default(false)
+  userId        String
+  items         OrderItem[]
+  total         Float
+  paymentStatus String      @default("pending") // "pending", "success", "failed", etc.
+  status        String
+  address       Address     @relation(fields: [addressId], references: [id])
+  addressId     String
+  payments      Payments[]
 }
 
 model OrderItem {
@@ -230,4 +232,23 @@ model OtpCode {
 
   @@index([userId])
   @@index([expiresAt])
+}
+
+model Payments {
+  id                String   @id @default(uuid())
+  orderId           String // Foreign key to your local Order model
+  razorpayOrderId   String   @unique // e.g., "order_DslnoIgkIDL8Zt"
+  razorpayPaymentId String? // e.g., "pay_DslnoIgkIDL8Zt"
+  signature         String? // Razorpay signature
+  amount            Float // stored in rupees
+  currency          String   @default("INR")
+  status            String // "created", "paid", "failed", etc.
+  method            String? // "card", "upi", "netbanking"
+  captured          Boolean  @default(false)
+  email             String?
+  contact           String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id])
 }
