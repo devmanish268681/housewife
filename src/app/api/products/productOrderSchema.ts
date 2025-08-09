@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+const validMethods = ["cod", "upi", "card"] as const;
 export const productOrderSchema = z.object({
   products: z
     .array(
@@ -10,6 +11,7 @@ export const productOrderSchema = z.object({
       })
     )
     .min(1, "At least one product must be included in the order"),
+  paymentMethod: z.enum(validMethods),
   street: z.string().min(1),
   city: z.string().min(1),
   state: z.string().min(1),

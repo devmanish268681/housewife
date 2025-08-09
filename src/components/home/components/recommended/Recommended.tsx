@@ -3,13 +3,11 @@ import React, { useState } from "react";
 //components
 import Carousel from "../carousel/Carousel";
 import { useRouter } from "next/navigation";
-import ProductModal from "@/components/product-modal/ProductModal";
 
 //constants
 import {
   frequentlyBought,
   popularItems,
-  product,
   recommended,
 } from "@/constants/constants";
 
@@ -34,12 +32,12 @@ const Recommended = () => {
         items={popularItems}
         onClick={() => setIsModalOpen(true)}
       />
-
+      {/* 
       <ProductModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         product={product}
-      />
+      /> */}
     </div>
   );
 };

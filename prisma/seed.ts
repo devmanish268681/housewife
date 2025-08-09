@@ -49,65 +49,68 @@ type ProductVariantSpec = {
   stockMultiplier?: number;
 };
 
-function imageFileToProductName(imageFile: string) {
-  if (!imageFile) return null;
+// function imageFileToProductName(imageFile: string) {
+//   if (!imageFile) return null;
 
-  const nameWithoutExtension = imageFile.replace(/\.[^/.]+$/, ""); // Remove .jpg, .png, etc.
+//   const nameWithoutExtension = imageFile.replace(/\.[^/.]+$/, ""); // Remove .jpg, .png, etc.
 
-  const words = nameWithoutExtension
-    .split("-")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1));
+//   const words = nameWithoutExtension
+//     .split("-")
+//     .map((word) => word.charAt(0).toUpperCase() + word.slice(1));
 
-  return words.join(" ");
-}
+//   return words.join(" ");
+// }
 
-async function getImageFileNameFromPage(pageUrl: string) {
-  try {
-    const { data: html } = await axios.get(pageUrl);
-    const $ = load(html);
+// async function getImageFileNameFromPage(pageUrl: string) {
+//   try {
+//     const { data: html } = await axios.get(pageUrl);
+//     const $ = load(html);
 
-    const imageUrl = $("meta[property='og:image']").attr("content");
+//     const imageUrl = $("meta[property='og:image']").attr("content");
 
-    if (!imageUrl) return null;
+//     if (!imageUrl) return null;
 
-    // Extract just the filename
-    const fileName = path.basename(imageUrl);
-    return fileName;
-  } catch (err: any) {
-    console.error("Error fetching", pageUrl, err.message);
-    return null;
-  }
-}
+//     // Extract just the filename
+//     const fileName = path.basename(imageUrl);
+//     return fileName;
+//   } catch (err: any) {
+//     console.error("Error fetching", pageUrl, err.message);
+//     return null;
+//   }
+// }
+
 let imageUrlWithProductName: {
   originalLink: string;
   imageFile: string | null;
   productName: string | null;
 }[] = [];
 
-async function prepareImageData() {
-  const imageUrlWithProductName: {
-    originalLink: string;
-    imageFile: string | null;
-    productName: string | null;
-  }[] = [];
+// async function prepareImageData() {
+//   const imageUrlWithProductName: {
+//     originalLink: string;
+//     imageFile: string | null;
+//     productName: string | null;
+//   }[] = [];
 
-  for (const link of imagePublicLinks) {
-    const imageFile = await getImageFileNameFromPage(link);
-    const productName = imageFileToProductName(imageFile);
+//   for (const link of imagePublicLinks) {
+//     const imageFile = await getImageFileNameFromPage(link);
+//     const productName = imageFileToProductName(imageFile);
 
-    imageUrlWithProductName.push({
-      originalLink: link,
-      imageFile,
-      productName,
-    });
-  }
-  console.log("imageUrlWithProductName", imageUrlWithProductName);
+//     imageUrlWithProductName.push({
+//       originalLink: link,
+//       imageFile,
+//       productName,
+//     });
+//   }
+//   console.log("imageUrlWithProductName", imageUrlWithProductName);
 
-  return imageUrlWithProductName;
-}
+//   return imageUrlWithProductName;
+// }
+
 async function seedProducts(
   productList: ProductSeedItem[],
   category: string,
+  // categoryDescription?: string,
   subCategory: string,
   imageUrlWithProductName: ImageUrlWithProductName,
   variantSpecs: ProductVariantSpec[]
@@ -115,7 +118,10 @@ async function seedProducts(
   let priceCounter = 1;
   let stockCounter = 1;
 
-  const categoryData = await getOrCreateCategory(category);
+  const categoryData = await getOrCreateCategory(
+    category,
+    "categoryDescription"
+  );
 
   const subCategoryData = await getOrCreateSubCategory(
     subCategory,
@@ -128,9 +134,9 @@ async function seedProducts(
     const brands = await getOrCreateBrands(uniqueBrandNames);
     const brand = brands.find((b) => b.name === item.brandName);
 
-    const productImageUrl = imageUrlWithProductName.filter(
-      (data) => data.productName === item.productName
-    )[0];
+    // const productImageUrl = imageUrlWithProductName.filter(
+    //   (data) => data.productName === item.productName
+    // )[0];
 
     if (!brand) throw new Error(`Brand not found: ${item.brandName}`);
 
@@ -164,7 +170,11 @@ async function seedProducts(
     `🌱 Data seeded for category: ${category} and subCategory ${subCategory}`
   );
 }
-async function getOrCreateCategory(name: string) {
+async function getOrCreateCategory(
+  name: string,
+  description: string,
+  image?: string
+) {
   let category = await prisma.category.findFirst({
     where: {
       name,
@@ -175,6 +185,9 @@ async function getOrCreateCategory(name: string) {
     category = await prisma.category.create({
       data: {
         name,
+        description,
+        image:
+          "https://plus.unsplash.com/premium_photo-1671379041175-782d15092945?q=80&w=420&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       },
     });
   }
@@ -194,6 +207,8 @@ async function getOrCreateSubCategory(name: string, categoryId: string) {
       data: {
         name,
         categoryId,
+        image:
+          "https://img.freepik.com/free-psd/vibrant-vegetable-harvest-colorful-collection-fresh-produce_191095-79960.jpg?ga=GA1.1.740072159.1751448384&semt=ais_hybrid&w=740&q=80",
       },
     });
   }
@@ -214,7 +229,7 @@ async function getOrCreateBrands(brandNames: string[]) {
 }
 
 async function main() {
-  imageUrlWithProductName = await prepareImageData();
+  // imageUrlWithProductName = await prepareImageData();
 
   console.log("🌱 Starting seed...");
   // Roles

@@ -7,21 +7,22 @@ import { products as mockProducts } from "@/constants/constants";
 
 //constants
 import { useGetCategoriesQuery } from "@/lib/slices/categoriesApiSlice";
+import { Categories } from "@/lib/types/categories";
 
 interface CatgoriesFilterProps {
   categoryId?: string | null;
   subCatId?: string;
   setSubCatId?: (value: string) => void;
   setBrandId?: (value: string) => void;
+  categoriesData?:{ categories: Categories[] };
 }
 const CategoriesFilter = ({
   categoryId,
   subCatId,
   setSubCatId,
   setBrandId,
+  categoriesData
 }: CatgoriesFilterProps) => {
-  const { data: categoriesData, isLoading: isCategoryLoading } =
-    useGetCategoriesQuery();
   const [search, setSearch] = useState("");
 
   const [drawerOpen, setDrawerOpen] = useState(false); // NEW
@@ -65,9 +66,9 @@ const CategoriesFilter = ({
       {/* Subcategories List */}
       <div className="flex flex-col gap-2">
         {filteredSubcategories && filteredSubcategories.length > 0 ? (
-          filteredSubcategories.map((sub, idx) => (
+          filteredSubcategories.map((sub, index) => (
             <div
-              key={idx}
+              key={`${sub.id}-${index}`}
               className={`flex items-center gap-4 p-2 rounded-lg cursor-pointer hover:bg-gray-100`}
               onClick={() => setSubCatId && setSubCatId(sub?.id)}
             >
@@ -96,9 +97,9 @@ const CategoriesFilter = ({
         <div className="mt-8">
           <h3 className="text-lg font-semibold mb-3">Brands</h3>
           <div className="flex flex-col gap-2">
-            {filteredBrands.map((brand) => (
+            {filteredBrands.map((brand, index) => (
               <div
-                key={brand.id}
+                key={`${brand.id} - ${index}`}
                 onClick={() => setBrandId && setBrandId(brand.id)}
                 className="px-4 py-2 rounded bg-gray-100 text-gray-800 font-medium flex items-center justify-between"
               >

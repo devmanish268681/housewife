@@ -4,23 +4,39 @@ import { NextResponse } from "next/server";
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const subCategoryId = searchParams.get("subCategoryId") as string;
-    const brandId = searchParams.get("brandId") as string;
+    const categoryId = searchParams.get("categoryId") as string;
+    const subCategoryId = searchParams.get("subCategoryId") as string | null;
+    const brandId = searchParams.get("brandId") as string | null;
 
-    let productWhere: any = {};
-    if (subCategoryId) {
-      const validSubCategoryId = await prisma.subCategory.findUnique({
-        where: { id: subCategoryId },
+    if (!categoryId) {
+      return NextResponse.json(
+        { message: "categoryId is required" },
+        { status: 400 }
+      );
+    }
+
+    // Get all valid subCategoryIds and brandIds for this category
+    const [subCategories, productBrands] = await Promise.all([
+      await prisma.subCategory.findMany({
+        where: { categoryId },
         select: { id: true },
-      });
-      productWhere.subCategoryId = validSubCategoryId?.id;
-    }
+      }),
+      await prisma.product.findMany({
+        where: { categoryId },
+        select: { brandId: true },
+        distinct: ["brandId"],
+      }),
+    ]);
 
-    if (brandId) {
-      productWhere.brandId = brandId;
-    }
+    const allSubCategoryIds = subCategories.map((s) => s.id);
+    const brandIds = productBrands.map((p) => p.brandId);
 
-    // Step 3: Fetch products
+    // Build filters
+    const productWhere: any = {
+      subCategoryId: subCategoryId ? subCategoryId : { in: allSubCategoryIds },
+      brandId: brandId ? brandId : { in: brandIds },
+    };
+
     const products = await prisma.product.findMany({
       where: productWhere,
       include: {
