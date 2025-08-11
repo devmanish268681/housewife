@@ -14,6 +14,7 @@ export async function createRazorpayOrder(orderObj: any) {
       amount: orderObj.total * 100, // Razorpay expects amount in paise
       currency: "INR",
       receipt: orderObj.id,
+      payment_capture: true,
     });
 
     return {
