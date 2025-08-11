@@ -36,37 +36,17 @@ const razorpay = new Razorpay({
   key_secret: process.env.RAZORPAY_KEY_SECRET!,
 });
 
-export async function createRazorpayOrder(orderObj: {
-  total: number;
-  name: string;
-  email: string;
-  phone: string;
-  orderId: string;
-}) {
+export async function createRazorpayOrder(orderObj: any) {
   try {
-    const paymentLink = await razorpay.paymentLink.create({
-      amount: orderObj.total * 100, // Amount in paise
+    const razorpayOrder = await razorpay.orders.create({
+      amount: orderObj.total * 100, // Razorpay expects amount in paise
       currency: "INR",
-      accept_partial: false,
-      description: "Order Payment",
-      reference_id: orderObj.orderId,
-      customer: {
-        name: orderObj.name,
-        email: orderObj.email,
-        contact: orderObj.phone,
-      },
-      notify: {
-        sms: true,
-        email: true,
-      },
-      callback_url: "http://localhost:3000", // change to your callback
-      callback_method: "get",
+      receipt: orderObj.id,
     });
 
     return {
       success: true,
-      url: paymentLink.short_url,
-      id: paymentLink.id,
+      order: razorpayOrder,
     };
   } catch (error) {
     console.error("Error creating Razorpay payment link:", error);
