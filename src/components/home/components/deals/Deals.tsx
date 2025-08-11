@@ -1,273 +1,76 @@
-import React from "react";
+"use client";
 
-const DailyDeals = () => {
+import { useEffect, useState } from "react";
+
+//constants
+import { deals } from "../../constants";
+
+const DealSection = () => {
+  const [timeLeft, setTimeLeft] = useState<string>("00:00:00");
+
+  useEffect(() => {
+    const target = new Date().setHours(23, 59, 59, 999);
+
+    const interval = setInterval(() => {
+      const now = new Date().getTime();
+      const distance = target - now;
+
+      if (distance <= 0) {
+        clearInterval(interval);
+        setTimeLeft("00:00:00");
+        return;
+      }
+
+      const hours = Math.floor(
+        (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+      );
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+      setTimeLeft(
+        `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(
+          seconds
+        ).padStart(2, "0")}`
+      );
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <div
-      className="relative flex size-full min-h-screen flex-col bg-white group/design-root overflow-x-hidden"
-      style={{ fontFamily: '"Plus Jakarta Sans", "Noto Sans", sans-serif' }}
-    >
-      <div className="layout-container flex grow flex-col">
-        <div className="flex flex-1 py-5">
-          <div className="layout-content-container flex flex-col flex-1">
-            <h2 className="text-[#181111] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">
-              Daily Deals
-            </h2>
-            <div className="flex overflow-y-auto [-ms-scrollbar-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              <div className="flex items-stretch p-4 gap-3">
-                <div className="flex h-full flex-1 flex-col gap-4 rounded-lg min-w-40">
-                  <div
-                    className="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl flex flex-col"
-                    style={{
-                      backgroundImage:
-                        'url("https://lh3.googleusercontent.com/aida-public/AB6AXuBjVJSTyHjD5YjIt7txdR8qxa4gKATePAY-7gnp4qhCVPE1grWVuDyrNQZXfc1wugBAaQuhCU1hF-2SVJBIlqWzgagra1uDkb7yNw7vWljfSjVnJfTvGnbdRuZtXGIE9lrnhy6dko5Qb-9iZsrpaaBfNORaEJGNZ8UEXwoGtzZq1jij2L7mkYvBD7O1ZF_DteB3x1Bl4VrAvF-_AYwKv8YKVdUd9vCiEJEsTi9v_lMUBh3ELpkuL8N0cMcItXfAlg6ZqjSGTL07pN3W")',
-                    }}
-                  ></div>
-                  <div>
-                    <p className="text-[#181111] text-base font-medium leading-normal">
-                      Fresh Produce Sale
-                    </p>
-                    <p className="text-[#886364] text-sm font-normal leading-normal">
-                      Save on seasonal fruits and vegetables
-                    </p>
-                  </div>
-                </div>
-                <div className="flex h-full flex-1 flex-col gap-4 rounded-lg min-w-40">
-                  <div
-                    className="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl flex flex-col"
-                    style={{
-                      backgroundImage:
-                        'url("https://lh3.googleusercontent.com/aida-public/AB6AXuCct9ZYZEQk46o89KHGGVfaK_pO3czQu1k8TV9MvxSAgfTa0VmlYJ2SaKqV73jpP21kjy6Zn3mUc7dv0lHL8xuFEFWY_dnn605f-GzOTOAhF-19mg7rrxmRm4vYE0bM1JBRrqfg8pRIJY2jj0NUIxOkqWBvTmWxHlFi7E7vLN3Kh9zKJqrLNY8TcsXc0zdQ91n1etCK_KMY2gMsF-6tYoHz1SON_0VAtn88IuaSWoJzRekzC7zMpwoVBJ4IelDUmqXFvhC6wG7Fr3bZ")',
-                    }}
-                  ></div>
-                  <div>
-                    <p className="text-[#181111] text-base font-medium leading-normal">
-                      Dairy Discounts
-                    </p>
-                    <p className="text-[#886364] text-sm font-normal leading-normal">
-                      Deals on milk, cheese, and yogurt
-                    </p>
-                  </div>
-                </div>
-                <div className="flex h-full flex-1 flex-col gap-4 rounded-lg min-w-40">
-                  <div
-                    className="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl flex flex-col"
-                    style={{
-                      backgroundImage:
-                        'url("https://lh3.googleusercontent.com/aida-public/AB6AXuCct9ZYZEQk46o89KHGGVfaK_pO3czQu1k8TV9MvxSAgfTa0VmlYJ2SaKqV73jpP21kjy6Zn3mUc7dv0lHL8xuFEFWY_dnn605f-GzOTOAhF-19mg7rrxmRm4vYE0bM1JBRrqfg8pRIJY2jj0NUIxOkqWBvTmWxHlFi7E7vLN3Kh9zKJqrLNY8TcsXc0zdQ91n1etCK_KMY2gMsF-6tYoHz1SON_0VAtn88IuaSWoJzRekzC7zMpwoVBJ4IelDUmqXFvhC6wG7Fr3bZ")',
-                    }}
-                  ></div>
-                  <div>
-                    <p className="text-[#181111] text-base font-medium leading-normal">
-                      Dairy Discounts
-                    </p>
-                    <p className="text-[#886364] text-sm font-normal leading-normal">
-                      Deals on milk, cheese, and yogurt
-                    </p>
-                  </div>
-                </div>
-                <div className="flex h-full flex-1 flex-col gap-4 rounded-lg min-w-40">
-                  <div
-                    className="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl flex flex-col"
-                    style={{
-                      backgroundImage:
-                        'url("https://lh3.googleusercontent.com/aida-public/AB6AXuCct9ZYZEQk46o89KHGGVfaK_pO3czQu1k8TV9MvxSAgfTa0VmlYJ2SaKqV73jpP21kjy6Zn3mUc7dv0lHL8xuFEFWY_dnn605f-GzOTOAhF-19mg7rrxmRm4vYE0bM1JBRrqfg8pRIJY2jj0NUIxOkqWBvTmWxHlFi7E7vLN3Kh9zKJqrLNY8TcsXc0zdQ91n1etCK_KMY2gMsF-6tYoHz1SON_0VAtn88IuaSWoJzRekzC7zMpwoVBJ4IelDUmqXFvhC6wG7Fr3bZ")',
-                    }}
-                  ></div>
-                  <div>
-                    <p className="text-[#181111] text-base font-medium leading-normal">
-                      Dairy Discounts
-                    </p>
-                    <p className="text-[#886364] text-sm font-normal leading-normal">
-                      Deals on milk, cheese, and yogurt
-                    </p>
-                  </div>
-                </div>
-                <div className="flex h-full flex-1 flex-col gap-4 rounded-lg min-w-40">
-                  <div
-                    className="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl flex flex-col"
-                    style={{
-                      backgroundImage:
-                        'url("https://lh3.googleusercontent.com/aida-public/AB6AXuCct9ZYZEQk46o89KHGGVfaK_pO3czQu1k8TV9MvxSAgfTa0VmlYJ2SaKqV73jpP21kjy6Zn3mUc7dv0lHL8xuFEFWY_dnn605f-GzOTOAhF-19mg7rrxmRm4vYE0bM1JBRrqfg8pRIJY2jj0NUIxOkqWBvTmWxHlFi7E7vLN3Kh9zKJqrLNY8TcsXc0zdQ91n1etCK_KMY2gMsF-6tYoHz1SON_0VAtn88IuaSWoJzRekzC7zMpwoVBJ4IelDUmqXFvhC6wG7Fr3bZ")',
-                    }}
-                  ></div>
-                  <div>
-                    <p className="text-[#181111] text-base font-medium leading-normal">
-                      Dairy Discounts
-                    </p>
-                    <p className="text-[#886364] text-sm font-normal leading-normal">
-                      Deals on milk, cheese, and yogurt
-                    </p>
-                  </div>
-                </div>
-                <div className="flex h-full flex-1 flex-col gap-4 rounded-lg min-w-40">
-                  <div
-                    className="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl flex flex-col"
-                    style={{
-                      backgroundImage:
-                        'url("https://lh3.googleusercontent.com/aida-public/AB6AXuCct9ZYZEQk46o89KHGGVfaK_pO3czQu1k8TV9MvxSAgfTa0VmlYJ2SaKqV73jpP21kjy6Zn3mUc7dv0lHL8xuFEFWY_dnn605f-GzOTOAhF-19mg7rrxmRm4vYE0bM1JBRrqfg8pRIJY2jj0NUIxOkqWBvTmWxHlFi7E7vLN3Kh9zKJqrLNY8TcsXc0zdQ91n1etCK_KMY2gMsF-6tYoHz1SON_0VAtn88IuaSWoJzRekzC7zMpwoVBJ4IelDUmqXFvhC6wG7Fr3bZ")',
-                    }}
-                  ></div>
-                  <div>
-                    <p className="text-[#181111] text-base font-medium leading-normal">
-                      Dairy Discounts
-                    </p>
-                    <p className="text-[#886364] text-sm font-normal leading-normal">
-                      Deals on milk, cheese, and yogurt
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            {/* Timer Section */}
-            <div className="flex gap-4 py-6 px-4">
-              <div className="flex grow basis-0 flex-col items-stretch gap-4">
-                <div className="flex h-14 grow items-center justify-center rounded-xl px-3 bg-[#f4f0f0]">
-                  <p className="text-[#181111] text-lg font-bold leading-tight tracking-[-0.015em]">
-                    23
-                  </p>
-                </div>
-                <div className="flex items-center justify-center">
-                  <p className="text-[#181111] text-sm font-normal leading-normal">
-                    Hours
-                  </p>
-                </div>
-              </div>
-              <div className="flex grow basis-0 flex-col items-stretch gap-4">
-                <div className="flex h-14 grow items-center justify-center rounded-xl px-3 bg-[#f4f0f0]">
-                  <p className="text-[#181111] text-lg font-bold leading-tight tracking-[-0.015em]">
-                    59
-                  </p>
-                </div>
-                <div className="flex items-center justify-center">
-                  <p className="text-[#181111] text-sm font-normal leading-normal">
-                    Minutes
-                  </p>
-                </div>
-              </div>
-              <div className="flex grow basis-0 flex-col items-stretch gap-4">
-                <div className="flex h-14 grow items-center justify-center rounded-xl px-3 bg-[#f4f0f0]">
-                  <p className="text-[#181111] text-lg font-bold leading-tight tracking-[-0.015em]">
-                    59
-                  </p>
-                </div>
-                <div className="flex items-center justify-center">
-                  <p className="text-[#181111] text-sm font-normal leading-normal">
-                    Seconds
-                  </p>
-                </div>
-              </div>
-            </div>
-            {/* Grid Section */}
-            <div className="grid grid-cols-[repeat(auto-fit,minmax(158px,1fr))] gap-3 p-4">
-              {/* Cards go here: update class → className and style properly as above */}
-              <div className="flex h-full flex-1 flex-col gap-4 rounded-lg min-w-40">
-                <div
-                  className="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl flex flex-col"
-                  style={{
-                    backgroundImage:
-                      'url("https://lh3.googleusercontent.com/aida-public/AB6AXuCct9ZYZEQk46o89KHGGVfaK_pO3czQu1k8TV9MvxSAgfTa0VmlYJ2SaKqV73jpP21kjy6Zn3mUc7dv0lHL8xuFEFWY_dnn605f-GzOTOAhF-19mg7rrxmRm4vYE0bM1JBRrqfg8pRIJY2jj0NUIxOkqWBvTmWxHlFi7E7vLN3Kh9zKJqrLNY8TcsXc0zdQ91n1etCK_KMY2gMsF-6tYoHz1SON_0VAtn88IuaSWoJzRekzC7zMpwoVBJ4IelDUmqXFvhC6wG7Fr3bZ")',
-                  }}
-                ></div>
-                <div>
-                  <p className="text-[#181111] text-base font-medium leading-normal">
-                    Dairy Discounts
-                  </p>
-                  <p className="text-[#886364] text-sm font-normal leading-normal">
-                    $2
-                  </p>
-                </div>
-              </div>
-              <div className="flex h-full flex-1 flex-col gap-4 rounded-lg min-w-40">
-                <div
-                  className="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl flex flex-col"
-                  style={{
-                    backgroundImage:
-                      'url("https://lh3.googleusercontent.com/aida-public/AB6AXuCct9ZYZEQk46o89KHGGVfaK_pO3czQu1k8TV9MvxSAgfTa0VmlYJ2SaKqV73jpP21kjy6Zn3mUc7dv0lHL8xuFEFWY_dnn605f-GzOTOAhF-19mg7rrxmRm4vYE0bM1JBRrqfg8pRIJY2jj0NUIxOkqWBvTmWxHlFi7E7vLN3Kh9zKJqrLNY8TcsXc0zdQ91n1etCK_KMY2gMsF-6tYoHz1SON_0VAtn88IuaSWoJzRekzC7zMpwoVBJ4IelDUmqXFvhC6wG7Fr3bZ")',
-                  }}
-                ></div>
-                <div>
-                  <p className="text-[#181111] text-base font-medium leading-normal">
-                    Dairy Discounts
-                  </p>
-                  <p className="text-[#886364] text-sm font-normal leading-normal">
-                    $2
-                  </p>
-                </div>
-              </div>
-              <div className="flex h-full flex-1 flex-col gap-4 rounded-lg min-w-40">
-                <div
-                  className="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl flex flex-col"
-                  style={{
-                    backgroundImage:
-                      'url("https://lh3.googleusercontent.com/aida-public/AB6AXuCct9ZYZEQk46o89KHGGVfaK_pO3czQu1k8TV9MvxSAgfTa0VmlYJ2SaKqV73jpP21kjy6Zn3mUc7dv0lHL8xuFEFWY_dnn605f-GzOTOAhF-19mg7rrxmRm4vYE0bM1JBRrqfg8pRIJY2jj0NUIxOkqWBvTmWxHlFi7E7vLN3Kh9zKJqrLNY8TcsXc0zdQ91n1etCK_KMY2gMsF-6tYoHz1SON_0VAtn88IuaSWoJzRekzC7zMpwoVBJ4IelDUmqXFvhC6wG7Fr3bZ")',
-                  }}
-                ></div>
-                <div>
-                  <p className="text-[#181111] text-base font-medium leading-normal">
-                    Dairy Discounts
-                  </p>
-                  <p className="text-[#886364] text-sm font-normal leading-normal">
-                    $2
-                  </p>
-                </div>
-              </div>
-              <div className="flex h-full flex-1 flex-col gap-4 rounded-lg min-w-40">
-                <div
-                  className="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl flex flex-col"
-                  style={{
-                    backgroundImage:
-                      'url("https://lh3.googleusercontent.com/aida-public/AB6AXuCct9ZYZEQk46o89KHGGVfaK_pO3czQu1k8TV9MvxSAgfTa0VmlYJ2SaKqV73jpP21kjy6Zn3mUc7dv0lHL8xuFEFWY_dnn605f-GzOTOAhF-19mg7rrxmRm4vYE0bM1JBRrqfg8pRIJY2jj0NUIxOkqWBvTmWxHlFi7E7vLN3Kh9zKJqrLNY8TcsXc0zdQ91n1etCK_KMY2gMsF-6tYoHz1SON_0VAtn88IuaSWoJzRekzC7zMpwoVBJ4IelDUmqXFvhC6wG7Fr3bZ")',
-                  }}
-                ></div>
-                <div>
-                  <p className="text-[#181111] text-base font-medium leading-normal">
-                    Dairy Discounts
-                  </p>
-                  <p className="text-[#886364] text-sm font-normal leading-normal">
-                    $2
-                  </p>
-                </div>
-              </div>
-              <div className="flex h-full flex-1 flex-col gap-4 rounded-lg min-w-40">
-                <div
-                  className="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl flex flex-col"
-                  style={{
-                    backgroundImage:
-                      'url("https://lh3.googleusercontent.com/aida-public/AB6AXuCct9ZYZEQk46o89KHGGVfaK_pO3czQu1k8TV9MvxSAgfTa0VmlYJ2SaKqV73jpP21kjy6Zn3mUc7dv0lHL8xuFEFWY_dnn605f-GzOTOAhF-19mg7rrxmRm4vYE0bM1JBRrqfg8pRIJY2jj0NUIxOkqWBvTmWxHlFi7E7vLN3Kh9zKJqrLNY8TcsXc0zdQ91n1etCK_KMY2gMsF-6tYoHz1SON_0VAtn88IuaSWoJzRekzC7zMpwoVBJ4IelDUmqXFvhC6wG7Fr3bZ")',
-                  }}
-                ></div>
-                <div>
-                  <p className="text-[#181111] text-base font-medium leading-normal">
-                    Dairy Discounts
-                  </p>
-                  <p className="text-[#886364] text-sm font-normal leading-normal">
-                    $2
-                  </p>
-                </div>
-              </div>
-              <div className="flex h-full flex-1 flex-col gap-4 rounded-lg min-w-40">
-                <div
-                  className="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl flex flex-col"
-                  style={{
-                    backgroundImage:
-                      'url("https://lh3.googleusercontent.com/aida-public/AB6AXuCct9ZYZEQk46o89KHGGVfaK_pO3czQu1k8TV9MvxSAgfTa0VmlYJ2SaKqV73jpP21kjy6Zn3mUc7dv0lHL8xuFEFWY_dnn605f-GzOTOAhF-19mg7rrxmRm4vYE0bM1JBRrqfg8pRIJY2jj0NUIxOkqWBvTmWxHlFi7E7vLN3Kh9zKJqrLNY8TcsXc0zdQ91n1etCK_KMY2gMsF-6tYoHz1SON_0VAtn88IuaSWoJzRekzC7zMpwoVBJ4IelDUmqXFvhC6wG7Fr3bZ")',
-                  }}
-                ></div>
-                <div>
-                  <p className="text-[#181111] text-base font-medium leading-normal">
-                    Dairy Discounts
-                  </p>
-                  <p className="text-[#886364] text-sm font-normal leading-normal">
-                    $2
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
+    <section className="py-6 px-4 bg-white">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-xl font-semibold">🔥 Today’s Top Deals</h2>
+        <div className="text-sm text-red-600 font-medium">
+          Ends in {timeLeft}
         </div>
       </div>
-    </div>
+
+      <div className="flex overflow-x-auto space-x-4 snap-x scroll-smooth scrollbar-hide">
+        {deals.map((deal) => (
+          <div
+            key={deal.id}
+            className="min-w-[220px] bg-white border border-gray-200 rounded-xl shadow-sm snap-start"
+          >
+            <div className="relative">
+              <img
+                src={deal.image}
+                alt={deal.title}
+                className="w-full h-40 object-cover rounded-t-xl"
+              />
+              <span className="absolute top-2 left-2 bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded">
+                {deal.discount}
+              </span>
+            </div>
+            <div className="p-3">
+              <h3 className="text-sm font-medium line-clamp-2">{deal.title}</h3>
+              <p className="text-red-600 font-semibold mt-1">{deal.price}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
   );
 };
 
-export default DailyDeals;
+export default DealSection;

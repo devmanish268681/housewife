@@ -1,23 +1,40 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
+
+//images
+import maxymart from "../../../public/assets/maxymart_logo.svg";
 
 //components
 import Cart from "../cart/Cart";
 import SignupModal from "../sign-up/SignUp";
 import SigninModal from "../sign-in/SIgnIn";
+import { Button } from "../common/Button";
 
 //context and hooks
-import { useAppSelector } from "@/lib/hooks";
+import { useAppDispatch } from "@/lib/hooks";
 import { useAuth } from "@/lib/context/authContext";
+import { useGeolocation } from "@/lib/hooks/use-geolocation";
+
+//slices
 import { useGetAllCartItemsQuery } from "@/lib/slices/cartApiSlice";
+import { setLocationData } from "@/lib/slices/userLocationSlice";
+
+//third-party
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faLocationArrow,
+  faLocationDot,
+} from "@fortawesome/free-solid-svg-icons";
 
 const Header = () => {
   //hooks
   const router = useRouter();
   const searchParams = useSearchParams();
   const params = new URLSearchParams(searchParams.toString());
+  const dispatch = useAppDispatch();
   const isCartOpen = searchParams.get("open");
   const isSignIn = searchParams.get("signIn");
   const [signInModalOpen, setSignInModalOpen] = useState(false);
@@ -26,6 +43,17 @@ const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false); // NEW
   const { isLoggedIn } = useAuth();
   const { data: cartItemsData } = useGetAllCartItemsQuery();
+  const {
+    latitude,
+    longitude,
+    pinCode,
+    address,
+    isLoading: locationLoading,
+    error: locationError,
+    getCurrentLocation,
+    clearLocation,
+    hasLocation,
+  } = useGeolocation();
 
   const cartCount = cartItemsData?.result?.reduce(
     (acc, value) => acc + value.quantity,
@@ -35,7 +63,16 @@ const Header = () => {
   const handleCartClose = () => {
     setCartOpen(false);
     params.delete("open");
+
     router.push(`?${params.toString()}`);
+  };
+
+  const handleLocationClick = () => {
+    if (hasLocation) {
+      clearLocation();
+    } else {
+      getCurrentLocation();
+    }
   };
 
   useEffect(() => {
@@ -46,16 +83,30 @@ const Header = () => {
     setSignInModalOpen(Boolean(isSignIn));
   }, [isSignIn]);
 
+  useEffect(() => {
+    if (latitude || address || pinCode || longitude) {
+      dispatch(
+        setLocationData({
+          address: String(address),
+          pincode: String(pinCode),
+          latitude: Number(latitude),
+          longitude: Number(longitude),
+        })
+      );
+    }
+  }, [address, latitude, longitude, pinCode]);
+
   return (
     <>
-      <header className="flex items-center justify-between border-b border-[#f4f0f0] px-4 sm:px-6 md:px-8 lg:px-10 py-2 sm:py-3">
+      <header className="flex items-center justify-between border-b border-[#f4f0f0] px-4 sm:px-6 md:px-8 lg:px-10 py-2 sm:py-2">
         <div className="flex items-center gap-4 sm:gap-6 md:gap-8">
-          <h2
-            className="text-[#181111] text-lg font-bold cursor-pointer"
-            onClick={() => router.push("/")}
-          >
-            HouseWife
-          </h2>
+          <Image
+            src={maxymart}
+            alt="maxmart_logo"
+            width={65}
+            height={65}
+            style={{ position: "relative", bottom: "8px" }}
+          />
           {/* Nav links - hidden on mobile */}
           <nav className="hidden lg:flex items-center gap-6 text-sm text-[#181111] font-medium">
             <a href="#">Offers</a>
@@ -65,6 +116,42 @@ const Header = () => {
         </div>
         {/* Hide login/profile and cart on mobile, show only on lg+ */}
         <div className="hidden lg:flex gap-2 sm:gap-3 md:gap-4 items-center">
+          <Button
+            onClick={handleLocationClick}
+            className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-200 shadow-sm border ${
+              hasLocation
+                ? "bg-white text-black border-red-600 hover:bg-red-50"
+                : "bg-red-600 hover:bg-red-700 text-white border-transparent hover:opacity-90"
+            }`}
+            disabled={locationLoading}
+          >
+            {/* Icon changes dynamically */}
+            <FontAwesomeIcon
+              icon={hasLocation ? faLocationDot : faLocationArrow}
+              className={`w-4 h-4 ${
+                hasLocation ? "text-red-600" : "text-white"
+              }`}
+            />
+
+            {/* Main Text */}
+            <div className="flex flex-col items-start text-sm leading-tight">
+              <span className="font-medium">
+                {locationLoading
+                  ? "Getting location..."
+                  : hasLocation
+                    ? "Delivering to"
+                    : "Location"}
+              </span>
+
+              {/* Address Preview */}
+              {hasLocation && address && (
+                <span className="text-xs text-gray-500 truncate max-w-[150px]">
+                  {address}
+                </span>
+              )}
+            </div>
+          </Button>
+
           {isLoggedIn && (
             <button
               onClick={() => router.push("/profile")}

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import toast from "react-hot-toast";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 
@@ -37,7 +38,7 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const searchParams = useSearchParams();
   const params = new URLSearchParams(searchParams.toString());
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, user } = useAuth();
   const router = useRouter();
 
   //slices
@@ -51,28 +52,46 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
     router.push(`?${params.toString()}`);
   };
 
-  const handleIncrementQuantity = async ({
-    type,
-    quantity,
-    id,
-    variantId,
-  }: {
-    type: string;
-    quantity: number;
-    id: string;
-    variantId: string;
-  }) => {
-    const newQuantity = quantity + 1;
+  const updateCart = async (
+    newQuantity: number,
+    id: string,
+    variantId: string
+  ) => {
     const payload = {
       productId: id,
       productVariantId: variantId,
       quantity: newQuantity,
     };
-    if (type === "increment") {
-      await addToCart(payload);
-    } else {
-      await deleteFromCart(id);
+
+    if (user) {
+      try {
+        await addToCart(payload);
+      } catch (error) {
+        toast.error("Failed to update cart");
+      }
     }
+  };
+
+  const handleIncrementQuantity = async (
+    action: "increment" | "decrement",
+    quantity: number,
+    id: string,
+    variantId: string
+  ) => {
+    const newQuantity =
+      action === "increment" ? quantity + 1 : quantity !== 1 ? quantity - 1 : 0;
+    if (newQuantity < 1) return;
+    await updateCart(newQuantity, id, variantId);
+  };
+
+  const handleDelete = (id: string) => {
+    deleteFromCart(id).then(() =>
+      toast.success("Item removed from cart successfully")
+    );
+  };
+
+  const handleCheckout = () => {
+    setIsCheckoutOpen(true);
   };
 
   const getSubtotal = () =>
@@ -81,9 +100,8 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
       0
     );
 
-  const deliveryFee =
-    cartItemsData && cartItemsData?.result?.length > 0 ? 50 : 0;
-  const total = getSubtotal() || 0 + deliveryFee;
+  const deliveryFee = 50;
+  const total = Number(getSubtotal()) + deliveryFee;
 
   if (!isOpen) return null;
 
@@ -117,7 +135,7 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
                   className="flex items-center gap-3 border rounded-lg p-3"
                 >
                   <Image
-                    src={item.image}
+                    src={item?.image[0]}
                     alt={item.productName}
                     width={60}
                     height={60}
@@ -131,13 +149,14 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
                   </div>
                   <div className="flex items-center gap-2">
                     <button
-                      onClick={() => {
-                        handleIncrementQuantity({
-                          type: "decrement",
-                          quantity: item.quantity,
-                          id: item.productId,
-                          variantId: item.variantId,
-                        });
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleIncrementQuantity(
+                          "decrement",
+                          item.quantity,
+                          item.productId,
+                          item.variantId
+                        );
                       }}
                       className="p-1 border rounded hover:bg-gray-100"
                     >
@@ -146,12 +165,12 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
                     <span>{item.quantity}</span>
                     <button
                       onClick={() => {
-                        handleIncrementQuantity({
-                          type: "increment",
-                          quantity: item.quantity,
-                          id: item.productId,
-                          variantId: item.variantId,
-                        });
+                        handleIncrementQuantity(
+                          "increment",
+                          item.quantity,
+                          item.productId,
+                          item.variantId
+                        );
                       }}
                       className="p-1 border rounded hover:bg-gray-100"
                     >
@@ -160,12 +179,7 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
                   </div>
                   <button
                     onClick={() => {
-                      handleIncrementQuantity({
-                        type: "decrement",
-                        quantity: item.quantity,
-                        id: item.productId,
-                        variantId: item.variantId,
-                      });
+                      handleDelete(item.productId);
                     }}
                     className="ml-2 text-red-500 hover:text-red-700"
                   >
@@ -193,7 +207,7 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
               </div>
               <button
                 className="w-full px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-full transition"
-                onClick={() => setIsCheckoutOpen(true)}
+                onClick={() => handleCheckout()}
               >
                 Proceed to Checkout
               </button>

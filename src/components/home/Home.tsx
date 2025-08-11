@@ -4,35 +4,23 @@ import React from "react";
 import { useRouter } from "next/navigation";
 
 //components
-import Input from "../common/Input";
 import Chip from "../common/Chip";
 import Category from "./components/category/Category";
 import Recommended from "./components/recommended/Recommended";
-import BannerCarousel from "./components/banner/BannerCarousel";
+import DealSection from "./components/deals/Deals";
+import DeliverySteps from "./components/delivery-steps/DeliverySteps";
+import SectionCard from "./components/section-card/SectionCard";
+import FeatureProducts from "./components/feature-products/FeatureProducts";
 
 //constants
-import { categories, popularSearches } from "@/constants/constants";
+import {popularSearches } from "@/constants/constants";
+import { beautyItems, schoolItems } from "./constants";
 
 const HomePage = () => {
   const router = useRouter();
 
   return (
-    <div className="mt-12">
-      {/* Banners Section */}
-      <div className="m-3 md:m-0">
-      <BannerCarousel />
-      <Input placeholder="Search for products" />
-      </div>
-      <div className="flex gap-3 p-3 flex-wrap pr-4 pt-5">
-        {categories.map((category, index) => (
-          <Chip
-            key={index}
-            onClick={() => router.push(`/category/${category.toLowerCase()}`)}
-          >
-            {category}
-          </Chip>
-        ))}
-      </div>
+    <div className="mt-4">
       <h2 className="text-[#181111] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">
         Popular Searches
       </h2>
@@ -47,7 +35,14 @@ const HomePage = () => {
         ))}
       </div>
       <Category />
-      {/* <DailyDeals /> */}
+      <FeatureProducts />
+      <DealSection />
+      <SectionCard title="Beauty & Self-Care" items={beautyItems} />
+      <SectionCard
+        title="Back to School / Work Essentials"
+        items={schoolItems}
+      />
+      <DeliverySteps />
       <Recommended />
     </div>
   );

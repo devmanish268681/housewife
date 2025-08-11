@@ -6,7 +6,7 @@ import Image from "next/image";
 
 //hooks
 import { useRouter, useSearchParams } from "next/navigation";
-import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { useAppDispatch } from "@/lib/hooks";
 
 //slices
 import { decrementQuantity, incrementQuantity } from "@/lib/slices/cartSlice";
@@ -21,7 +21,6 @@ import { useAuth } from "@/lib/context/authContext";
 
 //types
 import { ProductModalProps } from "./types";
-
 
 const ProductModal: React.FC<ProductModalProps> = ({
   isOpen,
@@ -40,9 +39,8 @@ const ProductModal: React.FC<ProductModalProps> = ({
 
   //slices
   const [addToCart] = useAddToCartMutation();
-  const [deleteFromCart] = useDeleteFromCartMutation();
   const { data: cartItemsData } = useGetAllCartItemsQuery();
-  
+
   const isProductInCart = cartItemsData?.result?.filter(
     (item) => item.productId === product.id
   );
@@ -76,7 +74,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
     if (isProductInCart && isProductInCart.length > 0) {
       setQuantity(isProductInCart[0].quantity);
     }
-  }, [isProductInCart]);
+  }, []);
 
   const handleCartClick = async () => {
     if (quantity === 0) {
@@ -116,23 +114,21 @@ const ProductModal: React.FC<ProductModalProps> = ({
     setQuantity(0);
   };
 
-  const handleIncrementQuantity = async (action: string) => {
-    const newQuantity = quantity + 1;
+  const updateCart = async (newQuantity: number) => {
     const payload = {
       productId: product.id,
       productVariantId: product.variantId,
       quantity: newQuantity,
     };
-    if (action === "increment") {
-      if (user) {
-        try {
-          await addToCart(payload);
-          setQuantity(newQuantity);
-          toast.success("Product added successfully to cart");
-        } catch (error) {
-          toast.error("Failed to add product to cart");
-        }
-      } else {
+
+    if (user) {
+      try {
+        await addToCart(payload).then(() => setQuantity(newQuantity));
+      } catch (error) {
+        toast.error("Failed to update cart");
+      }
+    } else {
+      if (newQuantity > quantity) {
         dispatch(
           incrementQuantity({
             id: product.id,
@@ -142,26 +138,22 @@ const ProductModal: React.FC<ProductModalProps> = ({
             quantity: newQuantity,
           })
         );
-        setQuantity(newQuantity);
-      }
-    } else {
-      if (user) {
-        try {
-          await deleteFromCart(product.id);
-          setQuantity(quantity - 1);
-          toast.success("Product removed successfully from cart");
-        } catch (error) {
-          toast.error("Failed to remove product from cart");
-        }
       } else {
         dispatch(
           decrementQuantity({
             id: product.id,
           })
         );
-        setQuantity(quantity - 1);
       }
+      setQuantity(newQuantity);
     }
+  };
+
+  const handleIncrementQuantity = async (action: "increment" | "decrement") => {
+    const newQuantity =
+      action === "increment" ? quantity + 1 : quantity !== 1 ? quantity - 1 : 0;
+    if (newQuantity < 1) return;
+    await updateCart(newQuantity);
   };
 
   if (!isOpen) return null;

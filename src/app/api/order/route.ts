@@ -19,7 +19,18 @@ export async function POST(request: Request) {
 
     const body = await request.json();
 
-    const { products, street, city, country, zipCode, state } = body;
+    const {
+      products,
+      street,
+      city,
+      country,
+      zipCode,
+      state,
+      addrees,
+      landmark,
+      flatno,
+      paymentMethod,
+    } = body;
 
     const validation = await validateRequest(body, productOrderSchema);
 
