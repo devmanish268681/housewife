@@ -1,11 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import toast from "react-hot-toast";
 
 //third-party
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -14,7 +12,7 @@ import { faGoogle } from "@fortawesome/free-brands-svg-icons";
 
 //types
 import { SigninModalProps } from "./types";
-
+import toast from "react-hot-toast";
 
 const SigninModal: React.FC<SigninModalProps> = ({
   isOpen,
@@ -22,44 +20,45 @@ const SigninModal: React.FC<SigninModalProps> = ({
   onSignUp,
   loadingGoogle,
 }) => {
-  const router = useRouter();
+  const [otpSent, setOtpSent] = useState(false);
 
   const validationSchema = Yup.object({
-    email: Yup.string()
-      .email("Invalid email address")
-      .required("Email is required"),
-    password: Yup.string()
-      .min(6, "Password must be at least 6 characters")
-      .required("Password is required"),
+    mobile: Yup.string()
+      .matches(/^[0-9]{10}$/, "Enter a valid 10-digit number")
+      .required("Mobile number is required"),
+    otp: otpSent
+      ? Yup.string()
+          .length(6, "OTP must be 6 digits")
+          .required("OTP is required")
+      : Yup.string().notRequired(),
   });
 
-  const { values, setFieldValue, handleSubmit } = useFormik({
+  const formik = useFormik({
     initialValues: {
-      name: "",
-      email: "",
-      password: "",
+      mobile: "",
+      otp: "",
     },
     validationSchema,
-    onSubmit: async (values, { resetForm }) => {
-      const res = await signIn("credentials", {
-        redirect: false, // avoid auto redirect
-        email,
-        password,
-        mode: "login",
-      });
+    onSubmit: async (values) => {
+      if (!otpSent) {
+        // Simulate sending OTP
+        toast.success(`OTP sent to ${values.mobile}`);
+        setOtpSent(true);
+        return;
+      }
 
-      if (res?.error) {
-        toast.error("Signup failed. Try again");
-      } else {
-        toast?.success("Logged in successfully!");
-        resetForm();
+      // Simulate OTP verification
+      if (values.otp === "123456") {
+        toast.success("Signup successful!");
         onClose();
-        router.push("/");
+      } else {
+        toast.error("Invalid OTP");
       }
     },
   });
 
-  const { email, password } = values;
+  const { values, handleSubmit, setFieldValue, touched, errors } = formik;
+
   if (!isOpen) return null;
 
   return (
@@ -81,37 +80,56 @@ const SigninModal: React.FC<SigninModalProps> = ({
           Sign in to your account
         </p>
 
-        <form className="space-y-4">
+        <form className="space-y-4" onSubmit={handleSubmit}>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Email
+              Mobile Number
             </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setFieldValue("email", e.target.value)}
-              placeholder="you@example.com"
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-red-600 focus:ring-2 focus:ring-red-100 outline-none"
-            />
+            <div className="flex">
+              <span className="flex items-center px-3 rounded-l-lg border border-gray-300 bg-gray-100 text-gray-700 text-sm">
+                +91
+              </span>
+              <input
+                type="text"
+                value={values.mobile}
+                placeholder="9876543210"
+                maxLength={10}
+                onChange={(e) => {
+                  const onlyNums = e.target.value.replace(/[^0-9]/g, "");
+                  if (onlyNums.length <= 10) {
+                    setFieldValue("mobile", onlyNums);
+                  }
+                }}
+                className="w-full rounded-r-lg border border-gray-300 px-3 py-2 text-sm focus:border-red-600 focus:ring-2 focus:ring-red-100 outline-none"
+              />
+            </div>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Password
-            </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setFieldValue("password", e.target.value)}
-              placeholder="••••••••"
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-red-600 focus:ring-2 focus:ring-red-100 outline-none"
-            />
-          </div>
+
+          {/* OTP Field */}
+          {otpSent && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                OTP
+              </label>
+              <input
+                type="text"
+                value={values.otp}
+                placeholder="Enter OTP"
+                onChange={(e) => setFieldValue("otp", e.target.value)}
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-red-600 focus:ring-2 focus:ring-red-100 outline-none"
+              />
+              {touched.otp && errors.otp && (
+                <p className="text-red-500 text-sm mt-1">{errors.otp}</p>
+              )}
+            </div>
+          )}
+
+          {/* Submit */}
           <button
-            type="button"
-            onClick={() => handleSubmit()}
+            type="submit"
             className="w-full rounded-full bg-red-600 px-4 py-2 text-white font-medium hover:bg-red-700 transition"
           >
-            Sign In
+            {otpSent ? "Verify OTP" : "Send OTP"}
           </button>
         </form>
 
@@ -143,7 +161,7 @@ const SigninModal: React.FC<SigninModalProps> = ({
         </button>
 
         <p className="text-sm text-center text-gray-500 mt-4">
-          Don’t have an account?{" "}
+          Already have an account?{" "}
           <span
             onClick={onSignUp}
             className="text-red-600 cursor-pointer font-medium hover:underline"
