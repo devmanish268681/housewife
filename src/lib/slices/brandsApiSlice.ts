@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { brands, Categories } from '../types/categories';
+import { brands} from '../types/categories';
 
 // Define base query
 const baseQuery = fetchBaseQuery({

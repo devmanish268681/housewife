@@ -2,6 +2,8 @@ import { Toaster } from "react-hot-toast";
 
 //styles
 import "./globals.css";
+import 'ag-grid-community/styles/ag-grid.css';
+import 'ag-grid-community/styles/ag-theme-alpine.css';
 
 //components
 import Header from "@/components/header/Header";
@@ -13,6 +15,9 @@ import StoreProvider from "@/lib/store/StoreProvider";
 //utils
 import AuthProvider from "@/lib/auth/AuthProvider";
 import { icon } from "@fortawesome/fontawesome-svg-core";
+import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
+
+ModuleRegistry.registerModules([AllCommunityModule]);
 
 export const metadata = {
   title: {
@@ -66,6 +71,7 @@ export default function RootLayout({
             },
           }}
         />
+        <div id="modalRoot"></div>
       </body>
     </html>
   );

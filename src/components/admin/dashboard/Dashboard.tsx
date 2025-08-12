@@ -8,33 +8,39 @@ import SalesChart from "./sales-chart/SalesChart";
 
 //constants
 import { mockStats } from "./constants";
+import { useAuth } from "@/lib/context/authContext";
+import { useGetLowStocksQuery, useGetProductsQuery } from "@/lib/slices/productsApiSlice";
+import { useGetAllOrdersQuery } from "@/lib/slices/orderApiSlice";
 
 const Dashboard = () => {
   const [dark, setDark] = useState(false);
+  const {user} = useAuth();
+  const {data:productsData} = useGetProductsQuery();
+  const {data:ordersData} = useGetAllOrdersQuery();
+  const {data:lowStockData} = useGetLowStocksQuery();
+
+  const firstName = user?.name
+  ? user.name.split(" ")[0].replace(/^./, (c:string) => c.toUpperCase())
+  : "";
+
   return (
     <div className="min-h-screen">
       <div className="flex justify-between items-center mb-8">
         <div className="flex items-center space-x-4">
           <img
-            src="https://randomuser.me/api/portraits/men/32.jpg"
+            src={user?.image || 'assets/noProfile.svg'}
             alt="Admin Avatar"
             className="w-16 h-16 rounded-full border-4 border-blue-500 shadow"
           />
           <div>
             <h1 className="text-3xl font-bold text-gray-900">
-              Welcome back, Admin!
+              Welcome back, {firstName}!
             </h1>
             <p className="text-gray-500">
               Here’s what’s happening in your store today.
             </p>
           </div>
         </div>
-        {/* <button
-          className="px-4 py-2 rounded bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 shadow hover:bg-gray-300 dark:hover:bg-gray-600 transition"
-          onClick={() => setDark(!dark)}
-        >
-          {dark ? "☀️ Light Mode" : "🌙 Dark Mode"}
-        </button> */}
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <StatsCard
@@ -54,7 +60,7 @@ const Dashboard = () => {
             </svg>
           }
           label="Total Products"
-          value={mockStats.totalProducts}
+          value={productsData?.totalCount || 0}
           gradient="bg-gradient-to-tr from-green-400 to-green-600"
         />
         <StatsCard
@@ -74,7 +80,7 @@ const Dashboard = () => {
             </svg>
           }
           label="Total Orders"
-          value={mockStats.totalOrders}
+          value={ordersData?.totalCount || 0}
           gradient="bg-gradient-to-tr from-blue-400 to-blue-600"
         />
         <StatsCard
@@ -94,7 +100,7 @@ const Dashboard = () => {
             </svg>
           }
           label="Low Stock"
-          value={mockStats.lowStock}
+          value={lowStockData?.lowStocksProductsCount || 0}
           gradient="bg-gradient-to-tr from-red-400 to-red-600"
         />
       </div>
@@ -135,15 +141,15 @@ const Dashboard = () => {
             ))}
           </ul>
         </div>
-        <div className="rounded-xl shadow-md p-6">
+        <div className="rounded-xl shadow-md p-6 overflow-x-auto max-h-[286px]">
           <h2 className="text-xl font-semibold mb-4 text-gray-900">
             Low Stock Products
           </h2>
           <ul className="divide-y divide-gray-200">
-            {mockStats.lowStockProducts.map((product) => (
+            {lowStockData?.lowStocksProducts?.map((product) => (
               <li key={product.name} className="flex items-center py-3">
                 <img
-                  src={product.image}
+                  src={product.images[0] || ''}
                   alt={product.name}
                   className="w-12 h-12 rounded-full mr-4 border-2 border-red-400"
                 />
@@ -154,7 +160,7 @@ const Dashboard = () => {
                   <div className="text-sm text-gray-500">
                     Stock:{" "}
                     <span className="text-red-600 font-bold">
-                      {product.stock}
+                      {product.variants[0]?.stock || 0}
                     </span>
                   </div>
                 </div>

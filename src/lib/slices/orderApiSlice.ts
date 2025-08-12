@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { PlaceOrderResponse, RazorpayPaymentLinkResponse } from "../types/order";
+import { Orders,RazorpayPaymentLinkResponse } from "../types/order";
 
 const baseQuery = fetchBaseQuery({
     baseUrl: "/api/order",
@@ -16,8 +16,14 @@ export const orderApiSlice = createApi({
                 method: "POST",
                 body
             })
+        }),
+        getAllOrders:builder.query<Orders,void>({
+            query:() => ({
+                url:'/',
+                method:"GET"
+            })
         })
     })
 })
 
-export const { usePlaceOrdersMutation } = orderApiSlice
+export const { usePlaceOrdersMutation, useGetAllOrdersQuery} = orderApiSlice

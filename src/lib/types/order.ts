@@ -51,3 +51,22 @@ export type RazorpayPaymentLinkResponse = {
     };
   };
 };
+
+
+export type Order = {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  deleted: boolean;
+  userId: string;
+  total: number;
+  paymentStatus: "pending" | "paid" | "failed";
+  status: "pending" | "confirmed" | "shipped" | "delivered" | "cancelled";
+  addressId: string;
+};
+
+
+export type Orders = {
+  order:Orders[],
+  totalCount:number
+}

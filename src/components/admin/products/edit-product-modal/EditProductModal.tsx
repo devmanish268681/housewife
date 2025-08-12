@@ -1,122 +1,274 @@
-import React, { useState, useEffect } from "react";
+"use client";
 
-//types
-import { Product } from "../types";
+import { useGetCategoriesQuery } from "@/lib/slices/categoriesApiSlice";
+import {
+  useCreateProductsMutation,
+  useUpdateProductsMutation,
+} from "@/lib/slices/productsApiSlice";
+import { Product } from "@/lib/types/products";
+import { useFormik } from "formik";
+import { useMemo } from "react";
+import toast from "react-hot-toast";
+import isNil from "lodash.isnil";
 
-export default function EditProductModal({
-  product,
-  open,
+const INITIAL_REVIEW_FORM_VALUES = {
+  name: "",
+  description: "",
+  categoryId: "",
+  brandId: "",
+  subCategoryId: "",
+  price: "",
+  stock: "",
+  images: "",
+  unit: "",
+  unitSize: "",
+};
+const AddProductModal = ({
+  isOpen,
   onClose,
-  onSave,
+  details,
 }: {
-  product: Product | null;
-  open: boolean;
+  isOpen: boolean;
   onClose: () => void;
-  onSave: (p: Product) => void;
-}) {
-  const [form, setForm] = useState(product);
+  details?: Product;
+}) => {
+  const { data: categoryData } = useGetCategoriesQuery();
+  const [createProducts] = useCreateProductsMutation();
+  const [updateProducts] = useUpdateProductsMutation();
 
-  useEffect(() => {
-    setForm(product);
-  }, [product]);
+  const initialFormValues = useMemo(
+    () => (!isNil(details) ? { ...details } : INITIAL_REVIEW_FORM_VALUES),
+    [details]
+  );
 
-  if (!open || !form) return null;
+  const { values, setFieldValue } = useFormik({
+    initialValues: initialFormValues,
+    onSubmit: () => {
+      console.log("submitted");
+    },
+  });
+
+  const {
+    name,
+    description,
+    categoryId,
+    brandId,
+    subCategoryId,
+    images,
+    price,
+    stock,
+    unit,
+    unitSize,
+  } = values;
+
+  const currentCategory = categoryData?.categories?.find(
+    (cat) => cat?.id === categoryId
+  );
+
+  const brands =
+    currentCategory?.subCategories?.flatMap((sub) => sub.brands) ?? [];
+
+  const handleAddProduct = async () => {
+    const payload = {
+      name: name,
+      description: description,
+      categoryId: categoryId,
+      images: images,
+      brandId: brandId,
+      subCategoryId: subCategoryId,
+      price: Number(price),
+      stock: Number(stock),
+      unit: unit,
+      unitSize: Number(unitSize),
+    };
+
+    if (details) {
+      await updateProducts({
+        productId: details.id,
+        variantId: details.variantId,
+        body: payload,
+      })
+        .then(() => {
+          toast.success("Product updated successfully");
+        })
+        .catch(() => {
+          toast.error("Something went wrong");
+        });
+    } else {
+      await createProducts(payload)
+        .then(() => {
+          toast.success("Product added successfully");
+          onClose();
+        })
+        .catch(() => {
+          toast.error("Something went wrong");
+        });
+    }
+  };
+
+  if (!isOpen) return null;
+
   return (
-    <div className="fixed inset-0 z-30 flex items-center justify-center bg-black bg-opacity-40">
-      <div className="m-3 bg-white border border-gray-200 dark:border-gray-700 rounded-2xl shadow-2xl p-8 w-full max-w-md relative animate-fadeIn">
-        <button
-          className="absolute top-4 right-4 text-2xl"
-          onClick={onClose}
-        >
-          &times;
-        </button>
-        <h2 className="text-xl font-bold mb-6">
-          Edit Product
-        </h2>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            onSave(form);
-          }}
-          className="space-y-4"
-        >
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg max-w-3xl w-full p-6 shadow-lg relative">
+        <h2 className="text-xl font-semibold mb-4">Add New Product</h2>
+        <form className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div>
-            <label className="block text-sm font-semibold mb-1">Name</label>
+            <label className="block mb-1 font-medium">Product Name</label>
             <input
-              className="w-full px-3 py-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-              required
+              type="text"
+              name="name"
+              value={name}
+              onChange={(e) => setFieldValue("name", e.target.value)}
+              className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring}`}
             />
           </div>
           <div>
-            <label className="block text-sm font-semibold mb-1">Category</label>
+            <label className="block mb-1 font-medium">Description</label>
             <input
-              className="w-full px-3 py-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
-              value={form.category}
-              onChange={(e) => setForm({ ...form, category: e.target.value })}
-              required
+              type="text"
+              name="name"
+              value={description}
+              onChange={(e) => setFieldValue("description", e.target.value)}
+              className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring`}
             />
           </div>
-          <div className="flex gap-2">
-            <div className="flex-1">
-              <label className="block text-sm font-semibold mb-1">
-                Price ($)
-              </label>
-              <input
-                type="number"
-                step="0.01"
-                min="0"
-                className="w-full px-3 py-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                value={form.price}
-                onChange={(e) =>
-                  setForm({ ...form, price: parseFloat(e.target.value) })
-                }
-                required
-              />
-            </div>
-            <div className="flex-1">
-              <label className="block text-sm font-semibold mb-1">Stock</label>
-              <input
-                type="number"
-                min="0"
-                className="w-full px-3 py-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                value={form.stock}
-                onChange={(e) =>
-                  setForm({ ...form, stock: parseInt(e.target.value) })
-                }
-                required
-              />
-            </div>
-          </div>
+
           <div>
-            <label className="block text-sm font-semibold mb-1">
-              Image URL
-            </label>
-            <input
-              className="w-full px-3 py-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
-              value={form.image}
-              onChange={(e) => setForm({ ...form, image: e.target.value })}
-              required
-            />
-          </div>
-          <div className="flex justify-end gap-2 mt-6">
-            <button
-              type="button"
-              className="px-4 py-2 rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition"
-              onClick={onClose}
+            <label className="block mb-1 font-medium">Category</label>
+            <select
+              name="category"
+              value={categoryId}
+              onChange={(e) => setFieldValue("categoryId", e.target.value)}
+              className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring`}
             >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="px-4 py-2 rounded bg-blue-600 text-white font-semibold shadow hover:bg-blue-700 transition"
+              <option value="">Select Category</option>
+              {categoryData?.categories.map((category) => (
+                <option value={category.id} key={category.id}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block mb-1 font-medium">Brand</label>
+            <select
+              name="category"
+              value={brandId}
+              onChange={(e) => setFieldValue("brandId", e.target.value)}
+              className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring`}
             >
-              Save
-            </button>
+              <option value="">Select Brand</option>
+              {brands.map((brand, index) => (
+                <option value={brand.id} key={`${brand.id} - ${index}`}>
+                  {brand.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block mb-1 font-medium">Sub Category</label>
+            <select
+              name="category"
+              value={subCategoryId}
+              onChange={(e) => setFieldValue("subCategoryId", e.target.value)}
+              className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring`}
+            >
+              <option value="">Select Sub Category</option>
+              {currentCategory?.subCategories?.map((category) => (
+                <option value={category.id} key={category.id}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block mb-1 font-medium">Unit</label>
+            <input
+              type="text"
+              name="name"
+              value={unit}
+              onChange={(e) => setFieldValue("unit", e.target.value)}
+              className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring}`}
+            />
+          </div>
+
+          <div>
+            <label className="block mb-1 font-medium">Unit Size</label>
+            <input
+              type="text"
+              name="name"
+              value={unitSize}
+              onChange={(e) => setFieldValue("unitSize", e.target.value)}
+              className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring}`}
+            />
+          </div>
+
+          <div>
+            <label className="block mb-1 font-medium">Price (₹)</label>
+            <input
+              type="number"
+              name="price"
+              value={price}
+              onChange={(e) => setFieldValue("price", e.target.value)}
+              min={0}
+              step="0.01"
+              className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring`}
+            />
+          </div>
+
+          <div>
+            <label className="block mb-1 font-medium">Stock</label>
+            <input
+              type="number"
+              name="stock"
+              value={stock}
+              onChange={(e) => setFieldValue("stock", e.target.value)}
+              min={0}
+              step="1"
+              className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring `}
+            />
+          </div>
+
+          <div>
+            <label className="block mb-1 font-medium">Image URL</label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => {
+                const file = e.currentTarget.files?.[0];
+                if (file) {
+                  setFieldValue("images", file); // Store the File object
+                }
+              }}
+              name="image"
+              placeholder="Optional - URL of product image"
+              className="w-full border rounded px-3 py-2 focus:outline-none focus:ring border-gray-300"
+            />
           </div>
         </form>
+        <div className="flex justify-end gap-3 mt-6">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 transition"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            className="px-4 py-2 rounded bg-red-600 hover:bg-red-700 text-white transition"
+            onClick={() => handleAddProduct()}
+          >
+            Add Product
+          </button>
+        </div>
       </div>
     </div>
   );
-}
+};
+
+export default AddProductModal;

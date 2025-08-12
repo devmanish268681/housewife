@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import { validateRequest } from "../../lib/validateRequest";
 import { productOrderSchema } from "../products/productOrderSchema";
 import { placeOrderController } from "@/app/controller/orderController";
+import { prisma } from "@/lib/prisma";
 
 export async function POST(request: Request) {
   try {
@@ -69,6 +70,25 @@ export async function POST(request: Request) {
       },
       { status: 500 }
     );
+  }
+}
+
+export async function GET(request:Request){
+  try {
+    const orders = await prisma.order.findMany({
+      orderBy:{
+        createdAt:"asc"
+      }
+    })
+    const ordersCount = await prisma.order.count();
+    return NextResponse.json({orders:orders,totalCount:ordersCount})
+  } catch (error:any) {
+    return NextResponse.json(
+      {
+        message:error.message || "Internal Server Error",
+      },
+      {status:500}
+    )
   }
 }
 
