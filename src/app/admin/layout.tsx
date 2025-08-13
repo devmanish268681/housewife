@@ -20,16 +20,28 @@ export default function AdminLayout({
             Products
           </Link>
           <Link
-            href="/admin/orders"
-            className="hover:bg-gray-700 rounded px-3 py-2"
-          >
-            Orders
-          </Link>
-          <Link
             href="/admin/categories"
             className="hover:bg-gray-700 rounded px-3 py-2"
           >
             Categories
+          </Link>
+          <Link
+            href="/admin/brands"
+            className="hover:bg-gray-700 rounded px-3 py-2"
+          >
+            Brands
+          </Link>
+          <Link
+            href="/admin/sub-categories"
+            className="hover:bg-gray-700 rounded px-3 py-2"
+          >
+            Sub Categories
+          </Link>
+          <Link
+            href="/admin/orders"
+            className="hover:bg-gray-700 rounded px-3 py-2"
+          >
+            Orders
           </Link>
         </nav>
       </aside>

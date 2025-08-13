@@ -11,7 +11,7 @@ export interface Product {
   updatedAt: string;
   description: string;
   categoryId: string;
-  images: string[];
+  images: any;
   subCategoryId: string;
   brandId: string;
   price: number;
