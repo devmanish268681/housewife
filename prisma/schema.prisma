@@ -123,7 +123,7 @@ model Category {
 
 model ProductVariant {
   id         String      @id @default(uuid())
-  product    Product     @relation(fields: [productId], references: [id])
+  product    Product     @relation(fields: [productId], references: [id],onDelete: Cascade)
   productId  String
   unit       String // e.g., "ml", "L", "kg"
   unitSize   Int // e.g., 500, 1, 2

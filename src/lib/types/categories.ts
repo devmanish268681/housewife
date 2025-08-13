@@ -26,7 +26,10 @@ export type CategoriesData = {
 export type Categories = {
     id: string,
     name: string,
-    image: string,
+    image: any,
+    createdAt:string;
+    description:string;
+    updatedAt:string;
     subCategories: {
         id: string,
         name: string,

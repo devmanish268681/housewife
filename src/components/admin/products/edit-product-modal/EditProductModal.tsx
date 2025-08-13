@@ -36,12 +36,14 @@ const AddProductModal = ({
   const [createProducts] = useCreateProductsMutation();
   const [updateProducts] = useUpdateProductsMutation();
 
+  const isEdit = details;
+
   const initialFormValues = useMemo(
     () => (!isNil(details) ? { ...details } : INITIAL_REVIEW_FORM_VALUES),
     [details]
   );
 
-  const { values, setFieldValue } = useFormik({
+  const { values, setFieldValue,resetForm } = useFormik({
     initialValues: initialFormValues,
     onSubmit: () => {
       console.log("submitted");
@@ -73,7 +75,7 @@ const AddProductModal = ({
       name: name,
       description: description,
       categoryId: categoryId,
-      images: images,
+      images: Array(images?.name),
       brandId: brandId,
       subCategoryId: subCategoryId,
       price: Number(price),
@@ -90,6 +92,8 @@ const AddProductModal = ({
       })
         .then(() => {
           toast.success("Product updated successfully");
+          resetForm();
+          onClose();
         })
         .catch(() => {
           toast.error("Something went wrong");
@@ -98,6 +102,7 @@ const AddProductModal = ({
       await createProducts(payload)
         .then(() => {
           toast.success("Product added successfully");
+          resetForm();
           onClose();
         })
         .catch(() => {
@@ -106,12 +111,14 @@ const AddProductModal = ({
     }
   };
 
+  console.log(images, "imagees");
+
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg max-w-3xl w-full p-6 shadow-lg relative">
-        <h2 className="text-xl font-semibold mb-4">Add New Product</h2>
+        <h2 className="text-xl font-semibold mb-4">{`${isEdit ? "Edit Product" : "Add Product"}`}</h2>
         <form className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div>
             <label className="block mb-1 font-medium">Product Name</label>
@@ -263,7 +270,7 @@ const AddProductModal = ({
             className="px-4 py-2 rounded bg-red-600 hover:bg-red-700 text-white transition"
             onClick={() => handleAddProduct()}
           >
-            Add Product
+            {`${isEdit ? "Update" : "Add"}`}
           </button>
         </div>
       </div>

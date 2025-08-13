@@ -178,3 +178,28 @@ export async function PUT(request: Request) {
     );
   }
 }
+
+export async function DELETE(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get("id") as string;
+
+    await prisma.product.delete({
+      where: {
+        id: id
+      }
+    })
+
+    return NextResponse.json({
+      message: "Product deleted successfully"
+    })
+  } catch (error: any) {
+    console.log("Internal server error", error);
+    return NextResponse.json(
+      {
+        message: error.message || "Internal Server Error",
+      },
+      { status: 500 }
+    );
+  }
+}
