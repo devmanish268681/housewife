@@ -46,7 +46,9 @@ export type Categories = {
 export type brands = {
     id: string,
     name: string,
-    image: string
+    image: any,
+    createdAt:string,
+    updatedAt:string
 }
 
 
