@@ -51,9 +51,9 @@ model Account {
 model User {
   id            String     @id @default(uuid())
   name          String
-  email         String?
+  email         String?    @unique
   password      String?
-  phoneNumber   String?
+  phoneNumber   String?    @unique
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
   deleted       Boolean    @default(false)
