@@ -67,6 +67,6 @@ export type Order = {
 
 
 export type Orders = {
-  order:Orders[],
+  orders:Orders[],
   totalCount:number
 }

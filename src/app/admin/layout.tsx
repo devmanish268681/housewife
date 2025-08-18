@@ -43,6 +43,12 @@ export default function AdminLayout({
           >
             Orders
           </Link>
+          <Link
+            href="/admin/users"
+            className="hover:bg-gray-700 rounded px-3 py-2"
+          >
+            Users
+          </Link>
         </nav>
       </aside>
       <main className="flex-1 p-8 min-h-screen">{children}</main>
