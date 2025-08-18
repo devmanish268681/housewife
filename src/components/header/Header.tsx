@@ -41,7 +41,7 @@ const Header = () => {
   const [signUpModalOpen, setSignUpModalOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false); // NEW
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, user } = useAuth();
   const { data: cartItemsData } = useGetAllCartItemsQuery();
   const {
     latitude,
@@ -110,6 +110,7 @@ const Header = () => {
           {/* Nav links - hidden on mobile */}
           <nav className="hidden lg:flex items-center gap-6 text-sm text-[#181111] font-medium">
             <a href="#">Offers</a>
+            {user?.role === "admin" && <a href="/admin">My Tools</a>}
             <a href="#">Categories</a>
             <a href="#">Help</a>
           </nav>

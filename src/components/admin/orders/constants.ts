@@ -1,7 +1,7 @@
 export const statusColors = {
-  Pending: "bg-yellow-100 text-yellow-800",
-  Shipped: "bg-blue-100 text-blue-800",
-  Delivered: "bg-green-100 text-green-800",
+  pending: "bg-yellow-100 text-yellow-800",
+  shipped: "bg-blue-100 text-blue-800",
+  delivered: "bg-green-100 text-green-800",
 };
 
 

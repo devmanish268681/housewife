@@ -87,3 +87,13 @@ export type GetProductsParams = {
     subCategoryId?: string;
     brandId?: string;
 };
+
+export interface SubCategory {
+  id: string;
+  name: string;
+  categoryId: string;
+  image:any;
+  createdAt: string;
+  updatedAt: string;
+  deleted: boolean;
+}

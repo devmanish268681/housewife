@@ -73,21 +73,30 @@ export async function POST(request: Request) {
   }
 }
 
-export async function GET(request:Request){
+export async function GET(request: Request) {
   try {
+    const session = await getServerSession(authOptions);
+    const userId = session?.user?.id as string;
+
+    if (!userId) {
+      return NextResponse.json(
+        { message: "userId is missing" },
+        { status: 400 }
+      );
+    }
     const orders = await prisma.order.findMany({
-      orderBy:{
-        createdAt:"asc"
+      orderBy: {
+        createdAt: "asc"
       }
     })
     const ordersCount = await prisma.order.count();
-    return NextResponse.json({orders:orders,totalCount:ordersCount})
-  } catch (error:any) {
+    return NextResponse.json({ orders: orders, totalCount: ordersCount })
+  } catch (error: any) {
     return NextResponse.json(
       {
-        message:error.message || "Internal Server Error",
+        message: error.message || "Internal Server Error",
       },
-      {status:500}
+      { status: 500 }
     )
   }
 }
