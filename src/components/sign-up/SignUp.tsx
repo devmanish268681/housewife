@@ -10,6 +10,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { faGoogle } from "@fortawesome/free-brands-svg-icons";
 import { SignupModalProps } from "./types";
+import { useSentOtpMutation } from "@/lib/slices/categoriesApiSlice";
 
 const SignupModal: React.FC<SignupModalProps> = ({
   isOpen,
@@ -19,6 +20,7 @@ const SignupModal: React.FC<SignupModalProps> = ({
 }) => {
   const router = useRouter();
   const [otpSent, setOtpSent] = useState(false);
+  const [sentOtp] = useSentOtpMutation();
 
   const validationSchema = Yup.object({
     name: Yup.string().required("Name is required"),
@@ -39,26 +41,41 @@ const SignupModal: React.FC<SignupModalProps> = ({
       otp: "",
     },
     validationSchema,
-    onSubmit: async (values) => {
-      if (!otpSent) {
-        // Simulate sending OTP
-        toast.success(`OTP sent to ${values.mobile}`);
-        setOtpSent(true);
-        return;
-      }
-
-      // Simulate OTP verification
-      if (values.otp === "123456") {
-        toast.success("Signup successful!");
-        onClose();
-        router.push("/");
-      } else {
-        toast.error("Invalid OTP");
-      }
-    },
+    onSubmit: async (values) => {},
   });
 
   const { values, handleSubmit, setFieldValue, touched, errors } = formik;
+  const { mobile, name, otp } = values;
+
+  const handleSignUp = async () => {
+    if (!otpSent) {
+      // Simulate sending OTP
+      const payload = {
+        phoneNumber: mobile,
+      };
+      await sentOtp(payload).then(() => {
+        toast.success(`OTP sent to ${values.mobile}`);
+        setOtpSent(true);
+      });
+    } else {
+      await signIn("credentials", {
+        redirect: false, // avoid auto redirect
+        phoneNumber: mobile,
+        fullName: name,
+        otp: otp,
+        mode: "otp",
+      });
+    }
+
+    // Simulate OTP verification
+    // if (values.otp === "123456") {
+    //   toast.success("Signup successful!");
+    //   onClose();
+    //   router.push("/");
+    // } else {
+    //   toast.error("Invalid OTP");
+    // }
+  };
 
   if (!isOpen) return null;
 
@@ -81,7 +98,7 @@ const SignupModal: React.FC<SignupModalProps> = ({
           Sign up using your mobile number or Google account.
         </p>
 
-        <form className="space-y-4" onSubmit={handleSubmit}>
+        <form className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               User name
@@ -142,7 +159,8 @@ const SignupModal: React.FC<SignupModalProps> = ({
 
           {/* Submit */}
           <button
-            type="submit"
+            type="button"
+            onClick={handleSignUp}
             className="w-full rounded-full bg-red-600 px-4 py-2 text-white font-medium hover:bg-red-700 transition"
           >
             {otpSent ? "Verify OTP" : "Send OTP"}

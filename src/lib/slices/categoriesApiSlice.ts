@@ -49,6 +49,13 @@ export const categoriesApiSlice = createApi({
         method: "GET",
         params
       })
+    }),
+    sentOtp:builder.mutation({
+      query:(body) => ({
+        url:'/otp',
+        method:"POST",
+        body
+      })
     })
   }),
 });
@@ -59,5 +66,6 @@ export const {
   useAddCategoriesMutation,
   useDeleteCategoryMutation,
   useUpdateCategoryMutation,
-  useLazyGetProductsByCategoryQuery
+  useLazyGetProductsByCategoryQuery,
+  useSentOtpMutation
 } = categoriesApiSlice;

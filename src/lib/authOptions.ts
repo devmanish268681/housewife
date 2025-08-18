@@ -58,6 +58,8 @@ export const authOptions = {
             orderBy: { createdAt: "desc" },
           });
 
+          console.log(otpRecord,"otpRecord")
+
           if (!otpRecord) {
             throw new Error("INVALID_OR_EXPIRED_OTP");
           }
