@@ -13,6 +13,8 @@ import { faGoogle } from "@fortawesome/free-brands-svg-icons";
 //types
 import { SigninModalProps } from "./types";
 import toast from "react-hot-toast";
+import { useSentOtpMutation } from "@/lib/slices/categoriesApiSlice";
+import { useRouter } from "next/navigation";
 
 const SigninModal: React.FC<SigninModalProps> = ({
   isOpen,
@@ -21,6 +23,7 @@ const SigninModal: React.FC<SigninModalProps> = ({
   loadingGoogle,
 }) => {
   const [otpSent, setOtpSent] = useState(false);
+  const [sentOtp] = useSentOtpMutation();
 
   const validationSchema = Yup.object({
     mobile: Yup.string()
@@ -33,31 +36,40 @@ const SigninModal: React.FC<SigninModalProps> = ({
       : Yup.string().notRequired(),
   });
 
-  const formik = useFormik({
+  const { values, setFieldValue, touched, errors, resetForm } = useFormik({
     initialValues: {
       mobile: "",
       otp: "",
     },
     validationSchema,
-    onSubmit: async (values) => {
-      if (!otpSent) {
-        // Simulate sending OTP
-        toast.success(`OTP sent to ${values.mobile}`);
-        setOtpSent(true);
-        return;
-      }
-
-      // Simulate OTP verification
-      if (values.otp === "123456") {
-        toast.success("Signup successful!");
-        onClose();
-      } else {
-        toast.error("Invalid OTP");
-      }
-    },
+    onSubmit: async (values) => {},
   });
 
-  const { values, handleSubmit, setFieldValue, touched, errors } = formik;
+  const { mobile, otp } = values;
+
+  const handleSignIn = async () => {
+    if (!otpSent) {
+      // Simulate sending OTP
+      const payload = {
+        phoneNumber: mobile,
+      };
+      await sentOtp(payload).then(() => {
+        toast.success(`OTP sent to ${values.mobile}`);
+        setOtpSent(true);
+      });
+    } else {
+      await signIn("credentials", {
+        redirect: false, // avoid auto redirect
+        phoneNumber: mobile,
+        fullName: "",
+        otp: otp,
+        mode: "otp",
+        callbackUrl: "/",
+      });
+      onClose();
+      resetForm();
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -80,7 +92,7 @@ const SigninModal: React.FC<SigninModalProps> = ({
           Sign in to your account
         </p>
 
-        <form className="space-y-4" onSubmit={handleSubmit}>
+        <form className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Mobile Number
@@ -126,7 +138,7 @@ const SigninModal: React.FC<SigninModalProps> = ({
 
           {/* Submit */}
           <button
-            type="submit"
+            onClick={handleSignIn}
             className="w-full rounded-full bg-red-600 px-4 py-2 text-white font-medium hover:bg-red-700 transition"
           >
             {otpSent ? "Verify OTP" : "Send OTP"}
