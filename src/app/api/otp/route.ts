@@ -22,7 +22,7 @@ export async function POST(request: Request) {
     const otpHash = crypto.createHash("sha256").update(otp).digest("hex");
     const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
 
-    await prisma.otpCode.create({
+     await prisma.otpCode.create({
       data: {
         phoneNumber: `+91${phoneNumber}`,
         otpHash: otpHash,

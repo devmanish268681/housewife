@@ -49,16 +49,14 @@ export const authOptions = {
             throw new Error("PHONE_AND_OTP_REQUIRED");
           }
 
-          const otpRecord = await prisma.otpCode.findFirst({
+          const [otpRecord] = await prisma.otpCode.findMany({
             where: {
               phoneNumber: phone,
-              otpHash: otp,
-              expiresAt: { gte: new Date() }, // check not expired
             },
             orderBy: { createdAt: "desc" },
           });
 
-          console.log(otpRecord,"otpRecord")
+          console.log(otpRecord, "otpRecord");
 
           if (!otpRecord) {
             throw new Error("INVALID_OR_EXPIRED_OTP");
@@ -68,7 +66,7 @@ export const authOptions = {
           await prisma.otpCode.delete({ where: { id: otpRecord.id } });
 
           // Find or create user
-          let user = await prisma.user.findFirstOrThrow({
+          let [user] = await prisma.user.findMany({
             where: { phoneNumber: phone },
           });
 
@@ -103,7 +101,7 @@ export const authOptions = {
             throw new Error("Email and password are required");
           }
 
-          const user = await prisma.user.findFirstOrThrow({
+          const [user] = await prisma.user.findMany({
             where: { email: credentials.email },
           });
 
@@ -137,7 +135,7 @@ export const authOptions = {
             throw new Error("MISSING_FIELDS");
           }
 
-          let user = await prisma.user.findFirstOrThrow({
+          let [user] = await prisma.user.findMany({
             where: { email: credentials.email },
           });
 
