@@ -44,7 +44,7 @@ const SignupModal: React.FC<SignupModalProps> = ({
     onSubmit: async (values) => {},
   });
 
-  const { values, handleSubmit, setFieldValue, touched, errors } = formik;
+  const { values, setFieldValue, touched, errors, resetForm } = formik;
   const { mobile, name, otp } = values;
 
   const handleSignUp = async () => {
@@ -64,17 +64,11 @@ const SignupModal: React.FC<SignupModalProps> = ({
         fullName: name,
         otp: otp,
         mode: "otp",
+        callbackUrl: "/",
       });
+      onClose();
+      resetForm();
     }
-
-    // Simulate OTP verification
-    // if (values.otp === "123456") {
-    //   toast.success("Signup successful!");
-    //   onClose();
-    //   router.push("/");
-    // } else {
-    //   toast.error("Invalid OTP");
-    // }
   };
 
   if (!isOpen) return null;
