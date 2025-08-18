@@ -49,9 +49,10 @@ export const authOptions = {
             throw new Error("PHONE_AND_OTP_REQUIRED");
           }
 
-          const [otpRecord] = await prisma.otpCode.findMany({
+          const otpRecord = await prisma.otpCode.findFirst({
             where: {
-              phoneNumber: phone,
+              phoneNumber: `+91${phone}`,
+              expiresAt: { gte: new Date() },
             },
             orderBy: { createdAt: "desc" },
           });
