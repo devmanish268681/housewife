@@ -30,21 +30,78 @@ export const authOptions = {
       name: "Credentials",
       credentials: {
         email: { label: "Email", type: "text" },
-        fullName: { label: "Email", type: "text" },
+        fullName: { label: "Full Name", type: "text" },
         password: { label: "Password", type: "password" },
+        phoneNumber: { label: "Phone Number", type: "text" },
+        otp: { label: "OTP", type: "text" },
         mode: { label: "Mode", type: "text" },
       },
       async authorize(credentials) {
-        const isSignup = credentials?.mode === "signup" ? false : true;
+        const mode = credentials?.mode;
 
-        console.log("isSignup", isSignup);
-        console.log("credentials?.view", credentials);
-        if (isSignup) {
+        // ----------------- 1. OTP LOGIN -------------------
+        if (mode === "otp") {
+          const phone = credentials?.phoneNumber;
+          const fullName = credentials?.fullName;
+          const otp = credentials?.otp;
+
+          if (!phone || !otp) {
+            throw new Error("PHONE_AND_OTP_REQUIRED");
+          }
+
+          const otpRecord = await prisma.otpCode.findFirst({
+            where: {
+              phoneNumber: phone,
+              otpHash: otp,
+              expiresAt: { gte: new Date() }, // check not expired
+            },
+            orderBy: { createdAt: "desc" },
+          });
+
+          if (!otpRecord) {
+            throw new Error("INVALID_OR_EXPIRED_OTP");
+          }
+
+          // Optional: delete used OTP
+          await prisma.otpCode.delete({ where: { id: otpRecord.id } });
+
+          // Find or create user
+          let user = await prisma.user.findFirstOrThrow({
+            where: { phoneNumber: phone },
+          });
+
+          if (!user) {
+            user = await prisma.user.create({
+              data: {
+                phoneNumber: phone,
+                name: fullName || "",
+                email: null,
+                password: null,
+                profileImage: "",
+                roles: {
+                  connect: {
+                    name: "user", // default role
+                  },
+                },
+              },
+            });
+          }
+
+          return {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            profileImage: user.profileImage,
+          };
+        }
+
+        // ----------------- 2. EMAIL LOGIN -------------------
+        if (mode === "signin") {
           if (!credentials?.email || !credentials?.password) {
             throw new Error("Email and password are required");
           }
 
-          const user = await prisma.user.findUnique({
+          const user = await prisma.user.findFirstOrThrow({
             where: { email: credentials.email },
           });
 
@@ -52,7 +109,6 @@ export const authOptions = {
             throw new Error("USER_NOT_FOUND");
           }
 
-          // Compare password (you should hash passwords with bcrypt)
           const isValid = await bcrypt.compare(
             credentials.password,
             user.password
@@ -67,7 +123,10 @@ export const authOptions = {
             email: user.email,
             profileImage: user.profileImage,
           };
-        } else {
+        }
+
+        // ----------------- 3. SIGNUP -------------------
+        if (mode === "signup") {
           if (
             !credentials?.fullName ||
             !credentials?.email ||
@@ -76,11 +135,11 @@ export const authOptions = {
             throw new Error("MISSING_FIELDS");
           }
 
-          let user = await prisma.user.findUnique({
+          let user = await prisma.user.findFirstOrThrow({
             where: { email: credentials.email },
           });
-          // Attempt to find a default role (e.g., "user") for new users
-          let userRole = await prisma.role.findUnique({
+
+          const userRole = await prisma.role.findUnique({
             where: { name: "user" },
           });
 
@@ -95,23 +154,6 @@ export const authOptions = {
                 roles: { connect: { id: userRole?.id } },
               },
             });
-            // try {
-            //   const res = await fetch(
-            //     `${process.env.NEXTAUTH_URL}/api/send-verification-email`,
-            //     {
-            //       method: "POST",
-            //       headers: { "Content-Type": "application/json" },
-            //       body: JSON.stringify({ userId: user.id }),
-            //     }
-            //   );
-            //   if (res.status !== 200) {
-            //     throw Error(
-            //       `Error sending verification email to ${user.email}`
-            //     );
-            //   }
-            // } catch (error) {
-            //   throw Error(`Error sending verification email to ${user.email}`);
-            // }
           }
 
           return {
@@ -122,6 +164,8 @@ export const authOptions = {
             profileImage: user?.profileImage,
           };
         }
+
+        throw new Error("INVALID_MODE");
       },
     }),
     GoogleProvider({
@@ -153,7 +197,7 @@ export const authOptions = {
     }) {
       // Only on first login
       if (user && user.email) {
-        const dbUser = await prisma.user.findUnique({
+        const dbUser = await prisma.user.findFirstOrThrow({
           where: { email: user.email ?? undefined },
           select: {
             id: true,

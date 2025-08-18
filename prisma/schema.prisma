@@ -51,8 +51,9 @@ model Account {
 model User {
   id            String     @id @default(uuid())
   name          String
-  email         String     @unique
+  email         String?
   password      String?
+  phoneNumber   String?
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
   deleted       Boolean    @default(false)
@@ -64,7 +65,6 @@ model User {
   Account       Account[]
   Order         Order[]
   Address       Address[]
-  OtpCode       OtpCode[]
   CartItem      CartItem[]
 }
 
@@ -123,7 +123,7 @@ model Category {
 
 model ProductVariant {
   id         String      @id @default(uuid())
-  product    Product     @relation(fields: [productId], references: [id],onDelete: Cascade)
+  product    Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId  String
   unit       String // e.g., "ml", "L", "kg"
   unitSize   Int // e.g., 500, 1, 2
@@ -219,18 +219,15 @@ model Address {
 }
 
 model OtpCode {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  deleted   Boolean  @default(false)
-  userId    String
-  otpHash   String
-  expiresAt DateTime
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deleted     Boolean  @default(false)
+  otpHash     String
+  expiresAt   DateTime
+  phoneNumber String
 
   // Optional: relation to User model
-  user User @relation(fields: [userId], references: [id])
-
-  @@index([userId])
   @@index([expiresAt])
 }
 
