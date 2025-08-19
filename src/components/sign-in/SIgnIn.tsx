@@ -139,6 +139,7 @@ const SigninModal: React.FC<SigninModalProps> = ({
           {/* Submit */}
           <button
             onClick={handleSignIn}
+            type="button"
             className="w-full rounded-full bg-red-600 px-4 py-2 text-white font-medium hover:bg-red-700 transition"
           >
             {otpSent ? "Verify OTP" : "Send OTP"}

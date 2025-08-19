@@ -16,6 +16,7 @@ import StoreProvider from "@/lib/store/StoreProvider";
 import AuthProvider from "@/lib/auth/AuthProvider";
 import { icon } from "@fortawesome/fontawesome-svg-core";
 import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
+import Script from "next/script";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -72,6 +73,7 @@ export default function RootLayout({
           }}
         />
         <div id="modalRoot"></div>
+        <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="afterInteractive" />
       </body>
     </html>
   );

@@ -14,7 +14,7 @@ import SigninModal from "../sign-in/SIgnIn";
 import { Button } from "../common/Button";
 
 //context and hooks
-import { useAppDispatch } from "@/lib/hooks";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { useAuth } from "@/lib/context/authContext";
 import { useGeolocation } from "@/lib/hooks/use-geolocation";
 
@@ -34,7 +34,6 @@ const Header = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const params = new URLSearchParams(searchParams.toString());
-  const dispatch = useAppDispatch();
   const isCartOpen = searchParams.get("open");
   const isSignIn = searchParams.get("signIn");
   const [signInModalOpen, setSignInModalOpen] = useState(false);
@@ -43,13 +42,11 @@ const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false); // NEW
   const { isLoggedIn, user } = useAuth();
   const { data: cartItemsData } = useGetAllCartItemsQuery();
+  const userLocation = useAppSelector((state) => state.userLocation);
+  const {address:userAddress} = userLocation;
   const {
-    latitude,
-    longitude,
-    pinCode,
     address,
     isLoading: locationLoading,
-    error: locationError,
     getCurrentLocation,
     clearLocation,
     hasLocation,
@@ -82,19 +79,6 @@ const Header = () => {
   useEffect(() => {
     setSignInModalOpen(Boolean(isSignIn));
   }, [isSignIn]);
-
-  useEffect(() => {
-    if (latitude || address || pinCode || longitude) {
-      dispatch(
-        setLocationData({
-          address: String(address),
-          pincode: String(pinCode),
-          latitude: Number(latitude),
-          longitude: Number(longitude),
-        })
-      );
-    }
-  }, [address, latitude, longitude, pinCode]);
 
   return (
     <>
@@ -139,15 +123,15 @@ const Header = () => {
               <span className="font-medium">
                 {locationLoading
                   ? "Getting location..."
-                  : hasLocation
+                  : hasLocation || userAddress
                     ? "Delivering to"
                     : "Location"}
               </span>
 
               {/* Address Preview */}
-              {hasLocation && address && (
-                <span className="text-xs text-gray-500 truncate max-w-[150px]">
-                  {address}
+              {hasLocation && address || userAddress && (
+                <span className="text-xs text-white truncate max-w-[150px]">
+                  {address || userAddress}
                 </span>
               )}
             </div>

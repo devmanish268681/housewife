@@ -4,6 +4,11 @@ export interface Category {
   image: string;
 }
 
+export interface ProductQueryParams {
+  categoryId?: string;
+  limit?: number;
+}
+
 export interface Product {
   id: string;
   name: string;

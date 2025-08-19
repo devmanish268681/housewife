@@ -26,11 +26,7 @@ export async function POST(request: Request) {
       city,
       country,
       zipCode,
-      state,
-      addrees,
-      landmark,
-      flatno,
-      paymentMethod,
+      state
     } = body;
 
     const validation = await validateRequest(body, productOrderSchema);
