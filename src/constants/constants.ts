@@ -142,7 +142,7 @@ export const product = {
 };
 
 export const categories = ["Vegetables", "Fruits", "Dairy", "Snacks", "Beverages"];
-export const popularSearches = ["Organic Apples", "Local Honey", "Artisan Cheese", "Craft Beer", "Gluten-Free Bread"];
+export const popularSearches = ["Sugar", "Tea", "Almonds", "Cashews", "Notebooks"];
 
 export const categoriesItems = [
     {

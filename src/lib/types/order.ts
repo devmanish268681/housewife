@@ -42,15 +42,27 @@ export interface PlaceOrderResponse {
   };
 }
 
-export type RazorpayPaymentLinkResponse = {
+export interface RazorpayOrderResponse {
   placeOrder: {
     placeOrder: {
       success: boolean;
-      url: string;
-      id: string;
+      order: {
+        id: string;
+        entity: string;
+        amount: number;
+        amount_paid: number;
+        amount_due: number;
+        currency: string;
+        receipt: string | null;
+        offer_id: string | null;
+        status: "created" | "paid" | "attempted";
+        attempts: number;
+        notes: any[]; // Razorpay allows arbitrary key-value here
+        created_at: number; // Unix timestamp
+      };
     };
   };
-};
+}
 
 
 export type Order = {

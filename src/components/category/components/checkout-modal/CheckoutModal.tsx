@@ -3,7 +3,6 @@
 import React from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import toast from "react-hot-toast";
 
 //third-party
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -20,7 +19,7 @@ import { useAppSelector } from "@/lib/hooks";
 //slices
 import { useGetAllCartItemsQuery } from "@/lib/slices/cartApiSlice";
 import { usePlaceOrdersMutation } from "@/lib/slices/orderApiSlice";
-import { loadRazorpayScript } from "@/app/lib/utils/loadRazorpay";
+import { useAuth } from "@/lib/context/authContext";
 
 //types
 export type CartItem = {
@@ -39,6 +38,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
   const { address: userAddress } = useAppSelector(
     (state) => state.userLocation
   );
+  const { user } = useAuth();
 
   const [street, state, country] = userAddress?.split(",") || [];
   const validationSchema = Yup.object({
@@ -87,7 +87,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
   const deliveryFee = 50;
   const total = Number(subtotal) + deliveryFee;
 
-  const handlePlaceOrder = () => {
+  const handlePlaceOrder = async () => {
     const products = cartItemsData?.result.map((item) => ({
       productId: item.productId,
       productVariantId: item.variantId,
@@ -107,9 +107,49 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
       address,
     };
 
-    placeOrders(payload).then((res) =>
-      window.open(res.data?.placeOrder.placeOrder.url, "_self")
-    );
+    try {
+      const res = await placeOrders(payload); // calls /api/order
+      const data = res.data?.placeOrder?.placeOrder.order;
+      console.log(res);
+
+      if (!data?.id) {
+        alert("Failed to create Razorpay order");
+        return;
+      }
+
+      const options = {
+        key: "rzp_test_VVQp3W3XiFXkxD",
+        amount: data.amount,
+        currency: data.currency,
+        name: "My Grocery Store",
+        description: "Order Payment",
+        order_id: data.id,
+        handler: async function (response: any) {
+          await fetch("/api/payment/verify", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              razorpayPaymentId: response.razorpay_payment_id,
+              razorpayOrderId: response.razorpay_order_id,
+              razorpaySignature: response.razorpay_signature,
+              orderId: data.id,
+            }),
+          });
+        },
+        prefill: {
+          name: fullName,
+          email: user?.email,
+          contact: phone,
+        },
+        theme: { color: "#3399cc" },
+      };
+
+      const razorpay = new (window as any).Razorpay(options);
+      razorpay.open();
+    } catch (err) {
+      console.error("Order placement failed:", err);
+      alert("Something went wrong!");
+    }
   };
 
   const paymentMethods = ["COD", "UPI", "Card"];

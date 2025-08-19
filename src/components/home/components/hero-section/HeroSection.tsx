@@ -2,11 +2,34 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import { useGeolocation } from "@/lib/hooks/use-geolocation";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faLocationArrow, faLocationDot } from "@fortawesome/free-solid-svg-icons";
+import { useAppSelector } from "@/lib/hooks";
+import { useRouter } from "next/navigation";
 
 const HeroBanner = () => {
   const [location, setLocation] = useState("your area");
   const [locationVisible, setLocationVisible] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const userLocation = useAppSelector((state) => state.userLocation);
+  const {address:userAddress} = userLocation;
+  const router = useRouter();
+
+  const {
+    address,
+    getCurrentLocation,
+    clearLocation,
+    hasLocation,
+  } = useGeolocation();
+
+  const handleLocationClick = () => {
+    if (hasLocation) {
+      clearLocation();
+    } else {
+      getCurrentLocation();
+    }
+  };
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -56,23 +79,30 @@ const HeroBanner = () => {
           {/* CTA Buttons */}
           <div className="mt-8 flex flex-col sm:flex-row flex-wrap gap-4 sm:gap-6">
             <button
+              onClick={() => router.push(`category/groceries?categoryId=919df570-7a15-4ab3-bf89-8d72d3f8d1c1`)}
               aria-label="Shop Now"
               className="bg-lime-400 text-teal-900 font-bold rounded-full px-8 py-3 shadow-lg transform transition hover:scale-105 hover:shadow-xl"
             >
               🛒 Shop Now
             </button>
-            <button
-              aria-label="Allow Location"
-              className="bg-teal-900/90 text-lime-400 font-bold rounded-full px-8 py-3 shadow-lg border-2 border-lime-400 transform transition hover:scale-105 hover:shadow-xl"
-            >
-              📍 Allow Location
-            </button>
-            <button
-              aria-label="Browse Categories"
-              className="bg-transparent border-2 border-lime-400 text-lime-400 font-bold rounded-full px-8 py-3 shadow-lg transform transition hover:scale-105 hover:bg-lime-400 hover:text-teal-900"
-            >
-              📚 Browse Categories
-            </button>
+            {!hasLocation && !address && !userAddress && (
+              <button
+                onClick={handleLocationClick}
+                aria-label="Allow Location"
+                className="bg-teal-900/90 text-lime-400 font-bold rounded-full px-8 py-3 shadow-lg border-2 border-lime-400 transform transition hover:scale-105 hover:shadow-xl"
+              >
+                📍 Allow Location
+              </button>
+            )}
+            {hasLocation && address || userAddress && (
+              <span className="bg-teal-900/90 text-lime-400 font-bold rounded-full px-8 py-3 shadow-lg border-2 border-lime-400 transform transition hover:scale-105 hover:shadow-xl">
+                <FontAwesomeIcon
+                  icon={faLocationDot}
+                  className={`w-4 h-4 text-red-600`}
+                />
+                {" "}{address || userAddress}
+              </span>
+            )}
           </div>
         </div>
 

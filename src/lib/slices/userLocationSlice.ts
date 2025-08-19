@@ -5,6 +5,7 @@ interface LocationState {
     pincode: string | null;
     latitude: number | null;
     longitude: number | null;
+    hasLocation: boolean;
     loading: boolean;
     error: string | null;
 }
@@ -14,6 +15,7 @@ const initialState: LocationState = {
     pincode: null,
     latitude: null,
     longitude: null,
+    hasLocation: false,
     loading: false,
     error: null,
 };
@@ -29,13 +31,19 @@ const userLocationSlice = createSlice({
                 pincode: string;
                 latitude: number;
                 longitude: number;
+                hasLocation: boolean;
+                error: string;
+                loading: boolean;
             }>
         ) => {
-            const { address, pincode, latitude, longitude } = action.payload;
+            const { address, pincode, latitude, longitude, hasLocation, error, loading } = action.payload;
             state.address = address;
             state.pincode = pincode;
             state.latitude = latitude;
             state.longitude = longitude;
+            state.hasLocation = hasLocation;
+            state.error = error;
+            state.loading = loading;
         },
         setLocationLoading: (state, action: PayloadAction<boolean>) => {
             state.loading = action.payload;

@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { lowStockRespone, Products } from "../types/products";
+import { lowStockRespone, ProductQueryParams, Products } from "../types/products";
 
 const baseQuery = fetchBaseQuery({
     baseUrl: '/api/products',
@@ -12,10 +12,10 @@ export const productsApiSlice = createApi({
     baseQuery,
     tagTypes: ['Product'],
     endpoints: (builder) => ({
-        getProducts: builder.query<Products, void>({
+        getProducts: builder.query<Products,void>({
             query: () => ({
                 url: '/',
-                method: "GET"
+                method: "GET",
             }),
             providesTags: ['Product']
         }),
