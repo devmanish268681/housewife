@@ -100,7 +100,6 @@
 //   }
 // };
 
-
 import { prisma } from "@/lib/prisma";
 import { getUserById } from "../services/userService";
 import { createAddressRecord } from "../services/addressService";
@@ -187,22 +186,18 @@ export const placeOrderController = async (body: any, userId: string) => {
       { timeout: 200000 }
     );
 
-    const placeOrder = await createRazorpayOrder({
-      total: result.total,
-      name: user.name || "Customer",
-      email: user.email || "test@example.com",
-      phone: "8143122425",
-      orderId: result.id,
-    });
-    // const paymentsObj: any = {
-    //   razorpayOrderId: placeOrder.order.id,
-    //   orderId: result.id,
-    //   status: "pending",
-    //   amount: placeOrder.order.amount,
-    // };
+    const placeOrder = await createRazorpayOrder(result);
 
-    // const paymentsRecord = await createPaymentsRecord(paymentsObj);
-    return { placeOrder};
+    const paymentsObj: any = {
+      razorpayOrderId: placeOrder.order.id,
+      orderId: result.id,
+      status: "pending",
+      amount: placeOrder.order.amount,
+    };
+
+    const paymentsRecord = await createPaymentsRecord(paymentsObj);
+
+    return { placeOrder };
   } catch (error) {
     console.log("Error in placeOrderController", error);
     throw error;
