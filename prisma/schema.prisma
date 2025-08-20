@@ -172,6 +172,7 @@ model Order {
   address       Address     @relation(fields: [addressId], references: [id])
   addressId     String
   payments      Payments[]
+  invoice       String      @default("")
 }
 
 model OrderItem {

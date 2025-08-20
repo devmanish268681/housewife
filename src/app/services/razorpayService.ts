@@ -5,21 +5,22 @@ import {
   CreatePaymentInput,
   updatePaymentsRecord,
 } from "../services/paymentsService";
+import { createOrderInvoice } from "./InvoiceService";
 
-export const paymentWebHookController = async (body: any) => {
+export const paymentWebHookController = async (data: any) => {
   try {
     return await prisma.$transaction(
       async (tx: Prisma.TransactionClient) => {
         const paymentsObj: CreatePaymentInput = {
-          orderId: body.orderId,
-          razorpayOrderId: body.razorpayOrderId,
-          amount: body.amount,
-          currency: "INR",
-          status: "paid",
+          orderId: data.orderId,
+          razorpayOrderId: data.razorpayOrderId,
+          amount: data.amount,
+          currency: data.currency,
+          status: data.status,
         };
 
         const updatedPayement = await updatePaymentsRecord(
-          body.razorpayOrderId,
+          data.razorpayOrderId,
           paymentsObj,
           tx
         );
@@ -31,10 +32,31 @@ export const paymentWebHookController = async (body: any) => {
 
         const updatedOrder = await updateOrder(
           orderObj,
-          body.razorpayOrderId,
+          data.razorpayOrderId,
           tx
         );
-        return updatedOrder;
+
+        const invoiceObj: any = {
+          type: "invoice",
+          customer: {
+            name: data.userName,
+            email: data.userEmail,
+            contact: data.contact,
+          },
+          line_items: [
+            {
+              name: data.productName,
+              amount: data.amount, // In paise
+              currency: data.currency,
+              quantity: data.quantity,
+            },
+          ],
+          description: data.productDescription,
+        };
+
+        const orderInvoice = await createOrderInvoice(invoiceObj, tx);
+
+        return { updatedOrder, orderInvoice };
       }
       // { timeout: 200000 }
     );
