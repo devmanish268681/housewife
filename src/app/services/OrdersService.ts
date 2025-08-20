@@ -19,6 +19,7 @@ export interface Order {
   paymentStatus: string; // "pending", "success", "failed"
   status: string;
   addressId: string;
+  invoice?: string;
 }
 
 export const createOrderRecord = async (
@@ -35,14 +36,14 @@ export const createOrderRecord = async (
 };
 
 export const updateOrder = async (
-  paymentsObj: CreateOrderInput,
+  orderObj: CreateOrderInput,
   orderId: string,
   tx: Prisma.TransactionClient = prisma
 ) => {
   try {
     const updatePayementData = await tx.order.updateMany({
       where: { id: orderId },
-      data: paymentsObj,
+      data: orderObj,
     });
     return updatePayementData;
   } catch (error: any) {
@@ -55,11 +56,28 @@ export const getOrderById = async (
   tx: Prisma.TransactionClient = prisma
 ) => {
   try {
-    const payementData = await tx.order.findUnique({
+    const orderData = await tx.order.findUnique({
+      where: { id: orderId },
+      include: { items: { include: { product: true } }, user: true },
+    });
+
+    return orderData;
+  } catch (error: any) {
+    console.error("Internal server error", error);
+    throw error;
+  }
+};
+
+export const getOrderByOrderId = async (
+  orderId: string,
+  tx: Prisma.TransactionClient = prisma
+) => {
+  try {
+    const orderData = await tx.order.findUnique({
       where: { id: orderId },
     });
 
-    return payementData;
+    return orderData;
   } catch (error: any) {
     console.error("Internal server error", error);
     throw error;
