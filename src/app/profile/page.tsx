@@ -1,13 +1,14 @@
 "use client";
 
 import { useAuth } from "@/lib/context/authContext";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { signOut } from "next-auth/react";
 import ProfileCard from "@/components/profile/ProfileCard";
 import QuickActions from "@/components/profile/QuickActions";
 import LoyaltyCard from "@/components/profile/LoyaltyCard";
 import OrderHistory from "@/components/profile/OrderHistory";
 import AddressList from "@/components/profile/AddressList";
+import { useGetUserAddressQuery } from "@/lib/slices/userApiSlice";
 
 const demoAddresses = [
   {
@@ -35,24 +36,13 @@ const ProfilePage = () => {
 
   // Address edit state
   const [addresses, setAddresses] = useState(demoAddresses);
+  const { data: addressData } = useGetUserAddressQuery();
   const [editAddressId, setEditAddressId] = useState<number | null>(null);
   const [addressForm, setAddressForm] = useState({
     label: "",
     address: "",
     phone: "",
   });
-
-  if (loading) {
-    return <div className="p-8">Loading...</div>;
-  }
-
-  if (!isLoggedIn) {
-    return (
-      <div className="p-8 text-red-600">
-        You must be logged in to view your profile.
-      </div>
-    );
-  }
 
   // Profile edit handlers
   const handleProfileEdit = () => {
@@ -91,6 +81,25 @@ const ProfilePage = () => {
     setAddressForm({ label: "", address: "", phone: "" });
   };
 
+  useEffect(() => {
+    if (user) {
+      setProfileEmail(user?.email),
+        setProfileName(user?.name),
+        setProfileUsername(user?.username)
+    }
+  }, [user])
+
+  if (loading) {
+    return <div className="p-8">Loading...</div>;
+  }
+
+  if (!isLoggedIn) {
+    return (
+      <div className="p-8 text-red-600">
+        You must be logged in to view your profile.
+      </div>
+    );
+  }
   return (
     <div className="min-h-screen bg-[#FFFBEA] pb-12">
       <ProfileCard
@@ -112,13 +121,13 @@ const ProfilePage = () => {
       <QuickActions />
 
       {/* Loyalty/Rewards Card */}
-      <LoyaltyCard />
+      {/* <LoyaltyCard /> */}
 
       {/* Sections */}
-      <div className="max-w-2xl mx-auto mt-8 px-4">
+      <div className="max-w-2xl mx-auto mt-8">
         <OrderHistory />
         <AddressList
-          addresses={addresses}
+          addresses={addressData || []}
           editAddressId={editAddressId}
           addressForm={addressForm}
           handleEditAddress={handleEditAddress}

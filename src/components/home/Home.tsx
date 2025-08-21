@@ -22,17 +22,41 @@ const HomePage = () => {
   const beautyCategoryId = categoriesData?.categories.find(
     (category) => category.name === "Cosmetics & Personal Care"
   )?.id;
+  const groceryCategoryId = categoriesData?.categories.find(
+    (category) => category.name === "Groceries"
+  )?.id;
+  const dryFruitsCategoryId = categoriesData?.categories.find(
+    (category) => category.name === "Dry Fruits & Nuts"
+  )?.id;
   const stationaryCategoryId = categoriesData?.categories.find(
     (category) => category.name === "Stationery Items"
   )?.id;
   const beautyCategoryProducts = products?.data
     .filter((product) => product.categoryId === beautyCategoryId)
     .slice(0, 10);
+  const dryFruitsCategoryProducts = products?.data
+    .filter((product) => product.categoryId === dryFruitsCategoryId)
+    .slice(0, 10);
+  const groceryCategoryProducts = products?.data
+    .filter((product) => product.categoryId === groceryCategoryId)
+    .slice(0, 10);
   const stationaryCategoryProducts = products?.data
     .filter((product) => product.categoryId === stationaryCategoryId)
     .slice(0, 10);
+
+  const getMiddleTwo = (arr: any[]) => {
+    if (!arr || arr.length < 2) return arr || [];
+    const mid = Math.floor(arr.length / 2);
+    return arr.slice(mid - 1, mid + 1);
+  };
+
+  const popularItems = [
+    ...getMiddleTwo(beautyCategoryProducts || []),
+    ...getMiddleTwo(dryFruitsCategoryProducts || []),
+    ...getMiddleTwo(groceryCategoryProducts || []),
+    ...getMiddleTwo(stationaryCategoryProducts || []),
+  ];
   const router = useRouter();
-  console.log(beautyCategoryProducts);
 
   return (
     <div className="mt-4">
@@ -52,16 +76,24 @@ const HomePage = () => {
       <Category />
       <FeatureProducts />
       {/* <DealSection /> */}
+      <Recommended items={popularItems || []} />
+      <DeliverySteps />
       <SectionCard
         title="Beauty & Self-Care"
         items={beautyCategoryProducts || []}
       />
       <SectionCard
+        title="Daily Fresh & Pantry"
+        items={dryFruitsCategoryProducts || []}
+      />
+      <SectionCard
+        title="Healthy Snacking"
+        items={groceryCategoryProducts || []}
+      />
+      <SectionCard
         title="Back to School / Work Essentials"
         items={stationaryCategoryProducts || []}
       />
-      <DeliverySteps />
-      <Recommended />
     </div>
   );
 };

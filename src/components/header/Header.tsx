@@ -89,7 +89,9 @@ const Header = () => {
             alt="maxmart_logo"
             width={65}
             height={65}
+            className="cursor-pointer"
             style={{ position: "relative", bottom: "8px" }}
+            onClick={() => router.push('/')}
           />
           {/* Nav links - hidden on mobile */}
           <nav className="hidden lg:flex items-center gap-6 text-sm text-[#181111] font-medium">

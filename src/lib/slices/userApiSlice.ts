@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { brands } from '../types/categories';
-import { User } from '../types/user';
+import { Address, User } from '../types/user';
 
 // Define base query
 const baseQuery = fetchBaseQuery({
@@ -17,10 +17,17 @@ export const userApiSlice = createApi({
         url: '/',
         method: "GET"
       }),
+    }),
+    getUserAddress:builder.query<Address[],void>({
+      query:() => ({
+        url:'/address',
+        method:"GET"
+      })
     })
   }),
 });
 
 export const {
   useGetUsersQuery,
+  useGetUserAddressQuery
 } = userApiSlice;
