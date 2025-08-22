@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import EditProfileModal from "./components/EditProfileModal";
+// import EditProfileModal from "./components/EditProfileModal";
 
 interface ProfileCardProps {
   user: any;
@@ -60,7 +60,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
       >
         Edit Profile
       </button>
-      <EditProfileModal user={user} isOpen={isEditModalOpen} onClose={() => setEditIsModalOpen(false)} />
+      {/* <EditProfileModal user={user} isOpen={isEditModalOpen} onClose={() => setEditIsModalOpen(false)} /> */}
     </div>
   );
 };

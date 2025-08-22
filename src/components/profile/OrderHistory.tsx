@@ -4,17 +4,17 @@ import { useGetRecentOrdersQuery } from "@/lib/slices/orderApiSlice";
 import { formatDate } from "@/lib/utils";
 import Image from "next/image";
 import { useState } from "react";
-import OrderDetailModal from "./components/OrderDetailModal";
+import OrderDetailModal from "./components/order-details-modal/OrderDetailModal";
 
 
 export default function OrderHistory() {
   const { data: recentOrders } = useGetRecentOrdersQuery();
-  const [isOrderDetails,setIsOrderDetails] = useState(false);
+  const [isOrderDetails, setIsOrderDetails] = useState(false);
 
   return (
     <div className="pb-6">
       <h2 className="text-xl font-semibold mb-4">Orders</h2>
-      <div className="space-y-6 border border-gray-300 p-8 rounded-xl bg-white overflow-auto" style={{height: "calc(100vh - 444px)"}}>
+      <div className="space-y-6 border border-gray-300 p-8 rounded-xl bg-white overflow-auto" style={{ height: "calc(100vh - 444px)" }}>
         {recentOrders?.map((order) => {
           const firstItem = order?.items[0];
           const remainingCount = order?.items?.length - 1;
@@ -32,10 +32,10 @@ export default function OrderHistory() {
                 <div className="mt-2 md:mt-0 flex items-center gap-4">
                   <span
                     className={`text-sm font-medium px-3 py-1 rounded-full capitalize ${order?.status === "delivered"
-                        ? "bg-green-100 text-green-700"
-                        : order?.status === "shipped"
-                          ? "bg-yellow-100 text-yellow-700"
-                          : "bg-gray-100 text-gray-700"
+                      ? "bg-green-100 text-green-700"
+                      : order?.status === "shipped"
+                        ? "bg-yellow-100 text-yellow-700"
+                        : "bg-gray-100 text-gray-700"
                       }`}
                   >
                     {order?.status}
@@ -81,7 +81,7 @@ export default function OrderHistory() {
                   View Details
                 </button>
               </div>
-              <OrderDetailModal onClose={() => setIsOrderDetails(false)} isOpen={isOrderDetails} order={{id:order.id,createdAt:order.createdAt,deliveryAddress:"1-6-212/65/107/66, Gangaputra colony, Sanjeevipuram",status:order.status,total:order.total,items:order.items}}  />
+              <OrderDetailModal onClose={() => setIsOrderDetails(false)} isOpen={isOrderDetails} order={{ id: order.id, createdAt: order.createdAt, deliveryAddress: "1-6-212/65/107/66, Gangaputra colony, Sanjeevipuram", status: order.status, total: order.total, items: order.items }} />
             </div>
           );
         })}

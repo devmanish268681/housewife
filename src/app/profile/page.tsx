@@ -95,7 +95,7 @@ const ProfilePage = () => {
   }, [user])
 
   if (loading) {
-    return <div className="p-8">Loading...</div>;
+    return <div className="p-8" style={{ height: "calc(100vh - 168px)", overflow: "auto" }}>Loading...</div>;
   }
 
   if (!isLoggedIn) {
@@ -106,7 +106,7 @@ const ProfilePage = () => {
     );
   }
   return (
-    <div className="min-h-screen bg-[#FFFBEA] pb-12">
+    <div className="bg-[#FFFBEA] pb-12" style={{ height: "calc(100vh - 168px)", overflow: "auto" }}>
       <ProfileCard
         user={userData}
         profileName={profileName}
