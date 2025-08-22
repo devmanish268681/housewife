@@ -11,6 +11,7 @@ const baseQuery = fetchBaseQuery({
 export const userApiSlice = createApi({
   reducerPath: 'userApiSlice',
   baseQuery,
+  tagTypes: ['User'],
   endpoints: (builder) => ({
     getUsers: builder.query<User[], void>({
       query: () => ({
@@ -18,16 +19,35 @@ export const userApiSlice = createApi({
         method: "GET"
       }),
     }),
-    getUserAddress:builder.query<Address[],void>({
-      query:() => ({
-        url:'/address',
-        method:"GET"
+    getUserAddress: builder.query<Address[], void>({
+      query: () => ({
+        url: '/address',
+        method: "GET"
       })
+    }),
+    getUserById: builder.query({
+      query: (params) => ({
+        url: '',
+        params,
+        method: "GET"
+      }),
+      providesTags: ['User']
+    }),
+    updateUser: builder.mutation({
+      query: (body) => ({
+        url: '/',
+        method: "PUT",
+        body
+      }),
+      invalidatesTags: ['User']
     })
   }),
 });
 
 export const {
   useGetUsersQuery,
-  useGetUserAddressQuery
+  useGetUserAddressQuery,
+  useGetUserByIdQuery,
+  useLazyGetUserByIdQuery,
+  useUpdateUserMutation
 } = userApiSlice;

@@ -8,7 +8,7 @@ import QuickActions from "@/components/profile/QuickActions";
 import LoyaltyCard from "@/components/profile/LoyaltyCard";
 import OrderHistory from "@/components/profile/OrderHistory";
 import AddressList from "@/components/profile/AddressList";
-import { useGetUserAddressQuery } from "@/lib/slices/userApiSlice";
+import { useGetUserAddressQuery, useGetUserByIdQuery } from "@/lib/slices/userApiSlice";
 
 const demoAddresses = [
   {
@@ -27,12 +27,13 @@ const demoAddresses = [
 
 const ProfilePage = () => {
   const { user, isLoggedIn, loading } = useAuth();
+  const { data: userData } = useGetUserByIdQuery({ id: user?.id });
 
   // Profile edit state
   const [editProfile, setEditProfile] = useState(false);
-  const [profileName, setProfileName] = useState(user?.name || "");
-  const [profileUsername, setProfileUsername] = useState(user?.username || "");
-  const [profileEmail, setProfileEmail] = useState(user?.email || "");
+  const [profileName, setProfileName] = useState(userData?.name || "");
+  const [profileUsername, setProfileUsername] = useState(userData?.username || "");
+  const [profileEmail, setProfileEmail] = useState(userData?.email || "");
 
   // Address edit state
   const [addresses, setAddresses] = useState(demoAddresses);
@@ -43,6 +44,10 @@ const ProfilePage = () => {
     address: "",
     phone: "",
   });
+
+  //actions
+  const [activeOptions, setActiveOptions] = useState('orders');
+  console.log(activeOptions, "options")
 
   // Profile edit handlers
   const handleProfileEdit = () => {
@@ -103,7 +108,7 @@ const ProfilePage = () => {
   return (
     <div className="min-h-screen bg-[#FFFBEA] pb-12">
       <ProfileCard
-        user={user}
+        user={userData}
         profileName={profileName}
         setProfileName={setProfileName}
         profileUsername={profileUsername}
@@ -118,23 +123,28 @@ const ProfilePage = () => {
       />
 
       {/* Quick Actions */}
-      <QuickActions />
+      <QuickActions setActiveOptions={setActiveOptions} />
 
       {/* Loyalty/Rewards Card */}
       {/* <LoyaltyCard /> */}
 
       {/* Sections */}
       <div className="max-w-2xl mx-auto mt-8">
-        <OrderHistory />
-        <AddressList
-          addresses={addressData || []}
-          editAddressId={editAddressId}
-          addressForm={addressForm}
-          handleEditAddress={handleEditAddress}
-          handleAddressChange={handleAddressChange}
-          handleAddressSave={handleAddressSave}
-          handleAddressCancel={handleAddressCancel}
-        />
+        {activeOptions === 'orders' && (
+          <OrderHistory />
+        )}
+        {activeOptions === 'addresses' && (
+          <AddressList
+            addresses={addressData || []}
+            phone={userData?.phoneNumber}
+            editAddressId={editAddressId}
+            addressForm={addressForm}
+            handleEditAddress={handleEditAddress}
+            handleAddressChange={handleAddressChange}
+            handleAddressSave={handleAddressSave}
+            handleAddressCancel={handleAddressCancel}
+          />
+        )}
       </div>
     </div>
   );

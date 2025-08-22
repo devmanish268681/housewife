@@ -43,7 +43,7 @@ const Header = () => {
   const { isLoggedIn, user } = useAuth();
   const { data: cartItemsData } = useGetAllCartItemsQuery();
   const userLocation = useAppSelector((state) => state.userLocation);
-  const {address:userAddress} = userLocation;
+  const { address: userAddress } = userLocation;
   const {
     address,
     isLoading: locationLoading,
@@ -98,26 +98,24 @@ const Header = () => {
             <a href="#">Offers</a>
             {user?.role === "admin" && <a href="/admin">My Tools</a>}
             <a href="#">Categories</a>
-            <a href="#">Help</a>
+            <a href="/contact-us">Help</a>
           </nav>
         </div>
         {/* Hide login/profile and cart on mobile, show only on lg+ */}
         <div className="hidden lg:flex gap-2 sm:gap-3 md:gap-4 items-center">
           <Button
             onClick={handleLocationClick}
-            className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-200 shadow-sm border ${
-              hasLocation
+            className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-200 shadow-sm border ${hasLocation
                 ? "bg-white text-black border-red-600 hover:bg-red-50"
                 : "bg-red-600 hover:bg-red-700 text-white border-transparent hover:opacity-90"
-            }`}
+              }`}
             disabled={locationLoading}
           >
             {/* Icon changes dynamically */}
             <FontAwesomeIcon
               icon={hasLocation ? faLocationDot : faLocationArrow}
-              className={`w-4 h-4 ${
-                hasLocation ? "text-red-600" : "text-white"
-              }`}
+              className={`w-4 h-4 ${hasLocation ? "text-red-600" : "text-white"
+                }`}
             />
 
             {/* Main Text */}
