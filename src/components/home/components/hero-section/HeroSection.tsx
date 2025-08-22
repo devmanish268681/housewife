@@ -4,24 +4,24 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useGeolocation } from "@/lib/hooks/use-geolocation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLocationArrow, faLocationDot } from "@fortawesome/free-solid-svg-icons";
+import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
 import { useAppSelector } from "@/lib/hooks";
 import { useRouter } from "next/navigation";
+import { Product } from "@/lib/types/products";
+import { useGetProductsQuery } from "@/lib/slices/productsApiSlice";
 
 const HeroBanner = () => {
   const [location, setLocation] = useState("your area");
   const [locationVisible, setLocationVisible] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [suggestions, setSuggestions] = useState<Product[]>([]);
+  const { data: products } = useGetProductsQuery();
   const userLocation = useAppSelector((state) => state.userLocation);
-  const {address:userAddress} = userLocation;
+  const { address: userAddress } = userLocation;
   const router = useRouter();
 
-  const {
-    address,
-    getCurrentLocation,
-    clearLocation,
-    hasLocation,
-  } = useGeolocation();
+  const { address, getCurrentLocation, clearLocation, hasLocation } =
+    useGeolocation();
 
   const handleLocationClick = () => {
     if (hasLocation) {
@@ -29,6 +29,31 @@ const HeroBanner = () => {
     } else {
       getCurrentLocation();
     }
+  };
+
+  useEffect(() => {
+    if (searchTerm.trim() === "") {
+      setSuggestions([]);
+    } else {
+      const filtered = products?.data.filter((p) =>
+        p.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setSuggestions(filtered ? filtered.slice(0, 5) : []);
+    }
+  }, [searchTerm, products]);
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    console.log(e.key);
+    if (e.key === "Enter" && searchTerm.trim() !== "") {
+      router.push(
+        `/products?productName=${encodeURIComponent(searchTerm).replace(/%20/g, "+")}`
+      );
+    }
+  };
+
+  const handleSuggestionClick = (name: string) => {
+    setSearchTerm(name);
+    setSuggestions([]);
   };
 
   useEffect(() => {
@@ -51,9 +76,8 @@ const HeroBanner = () => {
             <span className="relative inline-block">
               to{" "}
               <span
-                className={`font-extrabold transition-opacity ${
-                  locationVisible ? "opacity-100" : "opacity-0"
-                }`}
+                className={`font-extrabold transition-opacity ${locationVisible ? "opacity-100" : "opacity-0"
+                  }`}
               >
                 {location}
               </span>
@@ -70,16 +94,30 @@ const HeroBanner = () => {
             <input
               type="text"
               placeholder="Search for products..."
-              className="w-full px-5 py-3 pl-12 text-teal-900 rounded-full bg-white placeholder:text-gray-500 shadow-lg focus:outline-none focus:ring-2 focus:ring-lime-400"
+              className="w-full px-5 py-3 text-teal-900 rounded-full bg-white placeholder:text-gray-500 shadow-lg focus:outline-none focus:ring-2 focus:ring-lime-400"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyDown={handleKeyPress}
             />
+            {suggestions.length > 0 && (
+              <ul className="absolute left-0 right-0 mt-1 bg-white shadow-lg rounded-md z-50 max-h-40 overflow-auto">
+                {suggestions.map((product) => (
+                  <li
+                    key={product.id}
+                    className="text-black px-4 py-2 hover:bg-lime-100 cursor-pointer"
+                    onClick={() => handleSuggestionClick(product.name)}
+                  >
+                    {product.name}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
 
           {/* CTA Buttons */}
           <div className="mt-8 flex flex-col sm:flex-row flex-wrap gap-4 sm:gap-6">
             <button
-              onClick={() => router.push(`category/groceries?categoryId=919df570-7a15-4ab3-bf89-8d72d3f8d1c1`)}
+              onClick={() => router.push("/products")}
               aria-label="Shop Now"
               className="bg-lime-400 text-teal-900 font-bold rounded-full px-8 py-3 shadow-lg transform transition hover:scale-105 hover:shadow-xl"
             >
@@ -94,15 +132,16 @@ const HeroBanner = () => {
                 📍 Allow Location
               </button>
             )}
-            {hasLocation && address || userAddress && (
-              <span className="bg-teal-900/90 text-lime-400 font-bold rounded-full px-8 py-3 shadow-lg border-2 border-lime-400 transform transition hover:scale-105 hover:shadow-xl">
-                <FontAwesomeIcon
-                  icon={faLocationDot}
-                  className={`w-4 h-4 text-red-600`}
-                />
-                {" "}{address || userAddress}
-              </span>
-            )}
+            {(hasLocation && address) ||
+              (userAddress && (
+                <span className="bg-teal-900/90 text-lime-400 font-bold rounded-full px-8 py-3 shadow-lg border-2 border-lime-400 transform transition hover:scale-105 hover:shadow-xl">
+                  <FontAwesomeIcon
+                    icon={faLocationDot}
+                    className={`w-4 h-4 text-red-600`}
+                  />{" "}
+                  {address || userAddress}
+                </span>
+              ))}
           </div>
         </div>
 

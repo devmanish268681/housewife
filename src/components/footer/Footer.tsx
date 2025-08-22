@@ -16,36 +16,26 @@ const Footer = () => {
     <footer className="bg-white">
       <div className="border-b border-gray-300"></div>
 
-      <div className="flex justify-center gap-20 py-6 flex-wrap text-center text-sm text-gray-700">
-        {footerLinks.map((section, index) => (
-          <div key={index} className="space-y-1">
-            {section.links.map((link, idx) => (
-              <p key={idx} className="hover:underline cursor-pointer">
-                {link}
-              </p>
-            ))}
-          </div>
-        ))}
-      </div>
+      <div className="flex flex-row-reverse justify-between items-center px-6 py-6">
+        <div className="flex justify-center gap-4">
+          <FontAwesomeIcon
+            icon={faSquareTwitter}
+            className="w-5 h-5 text-gray-700 hover:text-blue-500"
+          />
+          <FontAwesomeIcon
+            icon={faSquareInstagram}
+            className="w-5 h-5 text-gray-700 hover:text-pink-500"
+          />
+          <FontAwesomeIcon
+            icon={faSquareFacebook}
+            className="w-5 h-5 text-gray-700 hover:text-blue-700"
+          />
+        </div>
 
-      <div className="flex justify-center gap-4 pb-6">
-        <FontAwesomeIcon
-          icon={faSquareTwitter}
-          className="w-5 h-5 text-gray-700 hover:text-blue-500"
-        />
-        <FontAwesomeIcon
-          icon={faSquareInstagram}
-          className="w-5 h-5 text-gray-700 hover:text-pink-500"
-        />
-        <FontAwesomeIcon
-          icon={faSquareFacebook}
-          className="w-5 h-5 text-gray-700 hover:text-blue-700"
-        />
+        <p className="text-center text-xs text-gray-500">
+          © 2024 HouseWife Inc. All rights reserved.
+        </p>
       </div>
-
-      <p className="text-center text-xs text-gray-500 pb-6">
-        © 2024 HouseWife Inc. All rights reserved.
-      </p>
     </footer>
   );
 };

@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { Orders,RazorpayOrderResponse} from "../types/order";
+import { Orders,RazorpayOrderResponse, recentOrders} from "../types/order";
 
 const baseQuery = fetchBaseQuery({
     baseUrl: "/api/order",
@@ -22,8 +22,14 @@ export const orderApiSlice = createApi({
                 url:'/',
                 method:"GET"
             })
+        }),
+        getRecentOrders:builder.query<recentOrders[],void>({
+            query:() => ({
+                url:'/recent',
+                method:"GET"
+            })
         })
     })
 })
 
-export const { usePlaceOrdersMutation, useGetAllOrdersQuery} = orderApiSlice
+export const { usePlaceOrdersMutation, useGetAllOrdersQuery,useGetRecentOrdersQuery} = orderApiSlice

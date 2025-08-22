@@ -10,14 +10,18 @@ import {
   popularItems,
   recommended,
 } from "@/constants/constants";
+import { Product } from "@/lib/types/products";
 
-const Recommended = () => {
+interface RecommendedProps {
+  items:Product[];
+}
+const Recommended = ({items}:RecommendedProps) => {
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
     <div className="py-6 flex flex-col gap-4">
-      <Carousel
+      {/* <Carousel
         title="Recommended for you"
         items={recommended}
         onClick={(item) => router.push(`/category/${item.title.toLowerCase()}`)}
@@ -26,10 +30,10 @@ const Recommended = () => {
         title="Frequently Bought"
         items={frequentlyBought}
         onClick={() => setIsModalOpen(true)}
-      />
+      /> */}
       <Carousel
         title="Popular Items"
-        items={popularItems}
+        items={items}
         onClick={() => setIsModalOpen(true)}
       />
       {/* 

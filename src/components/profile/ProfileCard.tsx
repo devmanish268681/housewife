@@ -29,6 +29,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
   handleProfileSave,
   signOut,
 }) => {
+  console.log(profileName,profileEmail,user?.name,user?.email)
   return (
     <div className="bg-gradient-to-r from-[#FFEB3B] to-[#FFF176] rounded-b-3xl shadow-md px-6 pt-10 pb-6 flex flex-col items-center relative">
       <div className="max-w-2xl mx-auto flex justify-end mt-2 px-4 absolute top-4 right-6">
