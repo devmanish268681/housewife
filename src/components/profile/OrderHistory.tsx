@@ -16,8 +16,8 @@ export default function OrderHistory() {
   const [isOrderDetails, setIsOrderDetails] = useState(false);
   const dispatch = useAppDispatch();
 
-  const handleReorderClick = async (id:string) => {
-    await reorderOrder({orderId:id}).then(() => {
+  const handleReorderClick = async (id: string) => {
+    await reorderOrder({ orderId: id }).then(() => {
       toast.success("Order added to cart successfully");
       dispatch(cartApiSlice.util.invalidateTags(["Cart"]));
     }).catch(() => {

@@ -3,7 +3,6 @@ import { useFormik } from "formik";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
-
 interface ProfileEditModalProps {
   isOpen: boolean;
   onClose: () => void;

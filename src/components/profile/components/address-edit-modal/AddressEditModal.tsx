@@ -1,33 +1,86 @@
-import { useState } from "react";
+import { useAddUserAddressMutation, useEditUserAddressMutation } from "@/lib/slices/userApiSlice";
+import { useFormik } from "formik";
+import { useEffect } from "react";
+import toast from "react-hot-toast";
 
+interface Address {
+  id: string;
+  street: string;
+  state: string;
+  city: string;
+  country: string;
+  zipCode: string;
+} 
 interface AddressEditModalProps {
   isOpen: boolean;
   onClose: () => void;
-  user?: any
+  setIsAdd:(value:boolean) => void;
+  address?:Address;
+  isAdd:boolean;
 }
-const AddressEditModal = ({ isOpen, onClose }:AddressEditModalProps) => {
-  const [addressForm, setAddressForm] = useState({
-    label: "",
-    address: "",
-    phone: "",
+const AddressEditModal = ({ isOpen, onClose, address,isAdd,setIsAdd }: AddressEditModalProps) => {
+  const [editUserAddress] = useEditUserAddressMutation();
+  const [addUserAddress] = useAddUserAddressMutation();
+
+  const { values, setFieldValue, resetForm } = useFormik({
+    initialValues: {
+      street: '',
+      city: '',
+      state: '',
+      country: '',
+      zip: ''
+    },
+    onSubmit: () => {
+      console.log("submitted");
+    },
   });
 
-  const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setAddressForm((prev) => ({ ...prev, [name]: value }));
-  };
+  const { street, city, state, country, zip } = values;
 
-  const handleAddressSave = () => {
-    console.log("Save", addressForm);
-    onClose();
+  const handleAddressSave = async () => {
+    const payload = {
+      street,
+      city,
+      state,
+      country,
+      zipCode: zip
+    }
+    if (!isAdd) {
+      await editUserAddress({ id: address?.id, body: payload }).then(() => {
+        toast.success("Address updated successfully");
+        resetForm();
+        onClose();
+      }).catch(() => {
+        toast.error("Something went wrong")
+      })
+    } else {
+      await addUserAddress(payload).then(() => {
+        toast.success("Address updated successfully");
+        resetForm();
+        setIsAdd(false);
+        onClose();
+      }).catch(() => {
+        toast.error("Something went wrong")
+      })
+    }
   };
 
   const handleAddressCancel = () => {
-    setAddressForm({ label: "", address: "", phone: "" });
+    resetForm();
     onClose();
   };
 
-  if (!isOpen) return null; // modal closed
+  useEffect(() => {
+    if (address && !isAdd) {
+      setFieldValue("street", address.street);
+      setFieldValue("city", address.city);
+      setFieldValue("state", address.state);
+      setFieldValue("country", address.country);
+      setFieldValue("zip", address.zipCode)
+    }
+  }, [address])
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
@@ -37,37 +90,32 @@ const AddressEditModal = ({ isOpen, onClose }:AddressEditModalProps) => {
         <div className="flex flex-col gap-3 w-full">
           <input
             className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-yellow-400 focus:outline-none"
-            name="label"
-            value={addressForm.label}
-            onChange={handleAddressChange}
+            value={street}
+            onChange={(e) => setFieldValue("street", e.target.value)}
             placeholder="Street"
           />
           <input
             className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-yellow-400 focus:outline-none"
-            name="address"
-            value={addressForm.address}
-            onChange={handleAddressChange}
+            value={city}
+            onChange={(e) => setFieldValue("city", e.target.value)}
             placeholder="City"
           />
           <input
             className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-yellow-400 focus:outline-none"
-            name="phone"
-            value={addressForm.phone}
-            onChange={handleAddressChange}
+            value={state}
+            onChange={(e) => setFieldValue("state", e.target.value)}
             placeholder="State"
           />
           <input
             className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-yellow-400 focus:outline-none"
-            name="phone"
-            value={addressForm.phone}
-            onChange={handleAddressChange}
+            value={country}
+            onChange={(e) => setFieldValue("country", e.target.value)}
             placeholder="Country"
           />
           <input
             className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-yellow-400 focus:outline-none"
-            name="phone"
-            value={addressForm.phone}
-            onChange={handleAddressChange}
+            value={zip}
+            onChange={(e) => setFieldValue("zip", e.target.value)}
             placeholder="Zip Code"
           />
         </div>

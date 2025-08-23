@@ -13,7 +13,6 @@ export async function POST(request: Request) {
 
   const { orderId, clearCart } = await request.json();
 
-  // Optional: Clear existing cart
   if (clearCart) {
     await prisma.cartItem.deleteMany({ where: { userId } });
   }
@@ -28,10 +27,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: "No items in order" }, { status: 404 });
   }
 
-  // ✅ Reuse add-to-cart logic
   for (const item of orderItems) {
     await addToCart(userId, item.productId, item.productVariantId, item.quantity);
   }
 
-  return NextResponse.json({ message: "Reorder added to cart" });
+  return NextResponse.json({ message: "Order added to cart" });
 }
