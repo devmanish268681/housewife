@@ -179,7 +179,7 @@ model Order {
   addressId     String
   payments      Payments[]
   invoice       String      @default("")
-  invoiceId       String?
+  invoiceId     String?
   isIGST        Boolean     @default(false)
 }
 
