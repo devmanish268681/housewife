@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 import { validateRequest } from "../../lib/validateRequest";
 import { addToCartSchema } from "./addToCartSchema ";
+import { getUserById } from "@/app/services/userService";
 
 export async function POST(request: Request) {
   try {
@@ -15,6 +16,11 @@ export async function POST(request: Request) {
         { message: "userId is missing" },
         { status: 400 }
       );
+    }
+    const userData = await getUserById(userId);
+
+    if (!userData) {
+      return NextResponse.json({ message: "user not found" }, { status: 404 });
     }
 
     const body = await request.json();

@@ -17,7 +17,6 @@ export const createOrderInvoice = async (
   try {
     console.log("invoiceObj", invoiceObj);
     const invoice = await razorpay.invoices.create(invoiceObj);
-    console.log("invoice", invoice);
 
     return invoice;
   } catch (error) {

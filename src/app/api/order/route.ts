@@ -20,14 +20,7 @@ export async function POST(request: Request) {
 
     const body = await request.json();
 
-    const {
-      products,
-      street,
-      city,
-      country,
-      zipCode,
-      state
-    } = body;
+    const { products, street, city, country, zipCode, state } = body;
 
     const validation = await validateRequest(body, productOrderSchema);
 
@@ -82,17 +75,17 @@ export async function GET(request: Request) {
     }
     const orders = await prisma.order.findMany({
       orderBy: {
-        createdAt: "asc"
+        createdAt: "asc",
       },
-    })
+    });
     const ordersCount = await prisma.order.count();
-    return NextResponse.json({ orders: orders, totalCount: ordersCount })
+    return NextResponse.json({ orders: orders, totalCount: ordersCount });
   } catch (error: any) {
     return NextResponse.json(
       {
         message: error.message || "Internal Server Error",
       },
       { status: 500 }
-    )
+    );
   }
 }

@@ -42,7 +42,27 @@ export async function createRazorpayOrder(orderObj: any) {
       amount: orderObj.total * 100, // Razorpay expects amount in paise
       currency: "INR",
       receipt: orderObj.id,
+      notes: {
+        billing_state: orderObj.address.state,
+        tax_breakup: JSON.stringify({
+          gstTotal: orderObj.gstTotal,
+          isIGST: orderObj.isIGST,
+        }),
+      },
     });
+
+    return {
+      success: true,
+      order: razorpayOrder,
+    };
+  } catch (error) {
+    console.error("Error creating Razorpay payment link:", error);
+    throw error;
+  }
+}
+export async function getRazorpayOrder(razorpayOrderId: any) {
+  try {
+    const razorpayOrder = await razorpay.orders.fetchPayments(razorpayOrderId);
 
     return {
       success: true,

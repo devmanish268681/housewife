@@ -101,14 +101,22 @@
 // };
 
 import { prisma } from "@/lib/prisma";
-import { getUserById } from "../services/userService";
-import { createAddressRecord } from "../services/addressService";
+import { getRoleByName, getUserById } from "../services/userService";
+import {
+  createAddressRecord,
+  getAddressByUserId,
+} from "../services/addressService";
 import { Prisma } from "@prisma/client";
-import { createOrderRecord } from "../services/OrdersService";
+import {
+  calculateGSTBreakup,
+  createOrderRecord,
+  ProductWithTaxRates,
+} from "../services/OrdersService";
 import { createOrderItemsRecord } from "../services/OrderItemsService";
 import { updatedProductVariant } from "../services/ProductsService";
 import { createRazorpayOrder } from "../lib/createRazorpayOrder";
 import { createPaymentsRecord } from "../services/paymentsService";
+import { createOrderInvoice } from "../services/InvoiceService";
 
 export const placeOrderController = async (body: any, userId: string) => {
   try {
@@ -128,8 +136,24 @@ export const placeOrderController = async (body: any, userId: string) => {
         const userAdress = await createAddressRecord(tx, adressObj);
         let total = 0;
         const orderItemsData = [];
+        let gstBreakup: any;
+
+        if (!body.products || body.products.length === 0) {
+          throw new Error("No products found in order.");
+        }
 
         for (const item of body.products) {
+          const admin = await getRoleByName("admin");
+          const adminUserId = admin.userData?.users[0].id as string;
+
+          // console.log("admin", admin.userData?.users[0]);
+          const adminAddress = await getAddressByUserId(adminUserId);
+          console.log("adminAddress", adminAddress);
+
+          if (!admin.success) {
+            throw new Error(admin.message);
+          }
+
           const variant = await prisma.productVariant.findUnique({
             where: { id: item.productVariantId },
           });
@@ -144,7 +168,30 @@ export const placeOrderController = async (body: any, userId: string) => {
             throw new Error(`Insufficient stock`);
           }
 
+          const product = await prisma.product.findUnique({
+            where: { id: item.productId },
+          });
+
+          if (!product) {
+            throw new Error(`invalid product ID: ${item.productVariantId}`);
+          }
+
           total += variant.price * item.quantity;
+
+          const productWithTaxRates: ProductWithTaxRates = {
+            basePrice: variant.price,
+            quantity: item.quantity,
+            cgstRate: product.cgst,
+            igstRate: product.igst,
+            sgstRate: product.sgst,
+          };
+
+          gstBreakup = await calculateGSTBreakup({
+            productWithTaxRates,
+            buyerState: adminAddress.state,
+            sellerState: body.state,
+          });
+          console.log("gstBreakup", gstBreakup);
 
           orderItemsData.push({
             productId: item.productId,
@@ -157,8 +204,11 @@ export const placeOrderController = async (body: any, userId: string) => {
         const orderObj = {
           userId,
           addressId: userAdress.id,
-          total,
+          total: gstBreakup?.subTotal + gstBreakup?.gstAmount,
           status: "pending",
+          isIGST: gstBreakup?.isIGST,
+          subTotal: gstBreakup?.subTotal,
+          gstTotal: gstBreakup?.gstAmount,
         };
 
         const order = await createOrderRecord(tx, orderObj);
@@ -194,6 +244,47 @@ export const placeOrderController = async (body: any, userId: string) => {
       status: "pending",
       amount: placeOrder.order.amount,
     };
+
+    // const order = await getOrderById(result.id);
+
+    // let data;
+    // if (order?.items && Array.isArray(order.items) && order.items.length > 0) {
+    //   [data] = order.items.map((item) => ({
+    //     userName: order.user.name,
+    //     userEmail: order.user.email,
+    //     contact: order.user.phoneNumber,
+    //     productName: item.product.name,
+    //     productDescription: item.product.description,
+    //     amount: order.total * 100, // In paise
+    //     currency: "INR",
+    //     quantity: item.quantity,
+    //     orderId: order.id,
+    //     status: "paid",
+    //   }));
+    // } else {
+    //   throw new Error("Order items not found or empty");
+    // }
+
+    // const invoiceObj: any = {
+    //   type: "invoice",
+    //   customer: {
+    //     name: data.userName,
+    //     email: data.userEmail,
+    //     contact: data.contact,
+    //   },
+    //   line_items: [
+    //     {
+    //       name: data.productName,
+    //       amount: data.amount, // In paise
+    //       currency: data.currency,
+    //       quantity: data.quantity,
+    //     },
+    //   ],
+    //   description: data.productDescription,
+    // };
+
+    // const orderInvoice = await createOrderInvoice(invoiceObj);
+    // console.log("orderInvoice", orderInvoice);
 
     const paymentsRecord = await createPaymentsRecord(paymentsObj);
 

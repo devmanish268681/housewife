@@ -38,6 +38,10 @@ type ProductSeedItem = {
   brandName: string;
   productName: string;
   description: string;
+  hsnCode: string;
+  cgst: number;
+  sgst: number;
+  igst: number;
 };
 
 type ProductVariantSpec = {
@@ -150,6 +154,10 @@ async function seedProducts(
         ],
         categoryId: categoryData.id,
         subCategoryId: subCategoryData.id,
+        hsnCode: item.hsnCode,
+        igst: item.igst,
+        cgst: item.cgst,
+        sgst: item.sgst,
         brandId: brand!.id,
       },
     });
@@ -275,18 +283,30 @@ async function main() {
   ];
 
   // 3. Convert roleName to roleId and create users
-  await Promise.all(
-    usersToCreate.map((user) =>
-      prisma.user.create({
+  for (const user of usersToCreate) {
+    const createdUser = await prisma.user.create({
+      data: {
+        name: user.name,
+        email: user.email,
+        profileImage: user.profileImage,
+        roleId: roleMap[user.roleName],
+      },
+    });
+
+    // 👉 Create address only for Admin
+    if (user.roleName === "admin") {
+      await prisma.address.create({
         data: {
-          name: user.name,
-          email: user.email,
-          profileImage: user.profileImage,
-          roleId: roleMap[user.roleName], // ✅ resolve roleId
+          userId: createdUser.id,
+          street: "123 Admin St",
+          city: "Pune",
+          state: "Maharashtra",
+          country: "India",
+          zipCode: "411001",
         },
-      })
-    )
-  );
+      });
+    }
+  }
 
   // 4. Verify
   const allUsers = await prisma.user.findMany({
