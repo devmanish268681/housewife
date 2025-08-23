@@ -1,5 +1,6 @@
 import { Address } from "@/lib/types/user";
-import React from "react";
+import React, { useState } from "react";
+import AddressEditModal from "./components/address-edit-modal/AddressEditModal";
 
 interface AddressListProps {
   addresses: Address[];
@@ -15,14 +16,11 @@ interface AddressListProps {
 const AddressList: React.FC<AddressListProps> = ({
   addresses,
   phone,
-  editAddressId,
-  addressForm,
-  handleEditAddress,
-  handleAddressChange,
-  handleAddressSave,
-  handleAddressCancel,
 }) => {
-  console.log(phone,"phone");
+  const [isEditModalOpen,setIsEditModalOpen] = useState(false);
+  const handleEditAddress = () => {
+    setIsEditModalOpen(true);
+  }
   return (
     <div className="bg-white rounded-2xl shadow p-6">
       <h3 className="text-lg font-semibold mb-2 text-[#181111]">Saved Addresses</h3>
@@ -32,45 +30,6 @@ const AddressList: React.FC<AddressListProps> = ({
             key={addr.id}
             className="border rounded-xl p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-2 bg-[#FFFDE7]"
           >
-            {/* {editAddressId === addr.id ? (
-            <div className="flex flex-col md:flex-row md:items-center gap-2 w-full">
-              <input
-                className="px-2 py-1 rounded border w-full md:w-32"
-                name="label"
-                value={addressForm.label}
-                onChange={handleAddressChange}
-                placeholder="Label"
-              />
-              <input
-                className="px-2 py-1 rounded border w-full md:w-64"
-                name="address"
-                value={addressForm.address}
-                onChange={handleAddressChange}
-                placeholder="Address"
-              />
-              <input
-                className="px-2 py-1 rounded border w-full md:w-40"
-                name="phone"
-                value={addressForm.phone}
-                onChange={handleAddressChange}
-                placeholder="Phone"
-              />
-              <button
-                className="bg-[#FFD600] text-[#181111] px-3 py-1 rounded font-semibold shadow"
-                onClick={handleAddressSave}
-              >
-                Save
-              </button>
-              <button
-                className="bg-gray-200 text-gray-700 px-3 py-1 rounded font-semibold shadow"
-                onClick={handleAddressCancel}
-              >
-                Cancel
-              </button>
-            </div>
-          ) : (
-            
-          )} */}
             <div className="flex flex-col md:flex-row md:items-center gap-2 w-full justify-between">
               <div>
                 <div className="font-semibold text-[#b59f00]">Home</div>
@@ -79,13 +38,14 @@ const AddressList: React.FC<AddressListProps> = ({
               </div>
               <button
                 className="text-xs text-[#b59f00] underline hover:text-[#181111] mt-2 md:mt-0"
-              // onClick={() => handleEditAddress(addr?.id)}
+              onClick={() => handleEditAddress()}
               >
                 Edit
               </button>
             </div>
           </div>
         ))}
+        <AddressEditModal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} />
       </div>
     </div>
   )
