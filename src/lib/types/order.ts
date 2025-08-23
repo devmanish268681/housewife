@@ -82,3 +82,30 @@ export type Orders = {
   orders:Orders[],
   totalCount:number
 }
+
+export type Product = {
+  id: string;
+  name: string;
+  description: string;
+  images: string[];
+};
+
+export type OrderItem = {
+  id: string;
+  quantity: number;
+  price: number;
+  product: Product;
+};
+
+export type recentOrders = {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  deleted: boolean;
+  userId: string;
+  total: number;
+  paymentStatus:string;
+  status: string;
+  addressId: string;
+  items: OrderItem[];
+};
