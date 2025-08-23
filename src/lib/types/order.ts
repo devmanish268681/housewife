@@ -79,8 +79,8 @@ export type Order = {
 
 
 export type Orders = {
-  orders:Orders[],
-  totalCount:number
+  orders: Orders[],
+  totalCount: number
 }
 
 export type Product = {
@@ -104,7 +104,7 @@ export type recentOrders = {
   deleted: boolean;
   userId: string;
   total: number;
-  paymentStatus:string;
+  paymentStatus: string;
   status: string;
   addressId: string;
   items: OrderItem[];

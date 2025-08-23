@@ -28,8 +28,15 @@ export const orderApiSlice = createApi({
                 url:'/recent',
                 method:"GET"
             })
+        }),
+        reorderOrder:builder.mutation({
+            query:(body) => ({
+                url:'/reorder',
+                method:"POST",
+                body
+            })
         })
     })
 })
 
-export const { usePlaceOrdersMutation, useGetAllOrdersQuery,useGetRecentOrdersQuery} = orderApiSlice
+export const { usePlaceOrdersMutation, useGetAllOrdersQuery,useGetRecentOrdersQuery,useReorderOrderMutation} = orderApiSlice

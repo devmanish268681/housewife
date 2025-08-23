@@ -1,20 +1,34 @@
 "use client";
 
-import { useGetRecentOrdersQuery } from "@/lib/slices/orderApiSlice";
+import { useGetRecentOrdersQuery, useReorderOrderMutation } from "@/lib/slices/orderApiSlice";
 import { formatDate } from "@/lib/utils";
 import Image from "next/image";
 import { useState } from "react";
 import OrderDetailModal from "./components/order-details-modal/OrderDetailModal";
+import toast from "react-hot-toast";
+import { useAppDispatch } from "@/lib/hooks";
+import { cartApiSlice } from "@/lib/slices/cartApiSlice";
 
 
 export default function OrderHistory() {
   const { data: recentOrders } = useGetRecentOrdersQuery();
+  const [reorderOrder] = useReorderOrderMutation();
   const [isOrderDetails, setIsOrderDetails] = useState(false);
+  const dispatch = useAppDispatch();
+
+  const handleReorderClick = async (id: string) => {
+    await reorderOrder({ orderId: id }).then(() => {
+      toast.success("Order added to cart successfully");
+      dispatch(cartApiSlice.util.invalidateTags(["Cart"]));
+    }).catch(() => {
+      toast.error("SOmething went wrong")
+    })
+  }
 
   return (
     <div className="pb-6">
       <h2 className="text-xl font-semibold mb-4">Orders</h2>
-      <div className="space-y-6 border border-gray-300 p-8 rounded-xl bg-white overflow-auto" style={{ height: "calc(100vh - 444px)" }}>
+      <div className="space-y-6 bg-white rounded-2xl shadow p-6 overflow-auto" style={{ height: "calc(100vh - 444px)" }}>
         {recentOrders?.map((order) => {
           const firstItem = order?.items[0];
           const remainingCount = order?.items?.length - 1;
@@ -74,7 +88,7 @@ export default function OrderHistory() {
               </div>
 
               <div className="flex justify-end gap-3 mt-4">
-                <button className="px-4 py-2 bg-lime-500 text-white rounded-lg hover:bg-lime-600">
+                <button className="px-4 py-2 bg-lime-500 text-white rounded-lg hover:bg-lime-600" onClick={() => handleReorderClick(order.id)}>
                   Reorder
                 </button>
                 <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100" onClick={() => setIsOrderDetails(true)}>

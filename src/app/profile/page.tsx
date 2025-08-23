@@ -106,7 +106,7 @@ const ProfilePage = () => {
     );
   }
   return (
-    <div className="bg-[#FFFBEA] pb-12" style={{ height: "calc(100vh - 168px)", overflow: "auto" }}>
+    <div className="pb-12" style={{ height: "calc(100vh - 168px)", overflow: "auto" }}>
       <ProfileCard
         user={userData}
         profileName={profileName}

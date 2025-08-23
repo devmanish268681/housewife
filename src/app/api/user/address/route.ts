@@ -16,8 +16,8 @@ export async function GET(request: Request) {
         }
 
         const address = await prisma.address.findMany({
-            where:{
-                userId:userId
+            where: {
+                userId: userId
             }
         })
 
@@ -26,6 +26,82 @@ export async function GET(request: Request) {
         console.error("Catalog API error:", error);
         return NextResponse.json(
             { message: error.message || "Internal Server Error" },
+            { status: 500 }
+        );
+    }
+}
+
+export async function PUT(request: Request) {
+    try {
+        const session = await getServerSession(authOptions);
+        const userId = session?.user?.id as string;
+
+        if (!userId) {
+            return NextResponse.json(
+                { message: "Unauthorized" },
+                { status: 401 }
+            );
+        }
+
+        const { searchParams } = new URL(request.url);
+        const id = searchParams.get('id');
+
+        const body = await request.json();
+
+        await prisma.address.update({
+            where: {
+                id: String(id),
+                userId: userId
+            },
+            data: {
+                ...body
+            }
+        })
+
+        return NextResponse.json({
+            message: "Address updated successfully"
+        })
+    } catch (error: any) {
+        return NextResponse.json(
+            {
+                message: error.message || "Internal Server Error",
+            },
+            { status: 500 }
+        );
+    }
+}
+
+export async function POST(request: Request) {
+    try {
+        const session = await getServerSession(authOptions);
+        const userId = session?.user?.id as string;
+
+        if (!userId) {
+            return NextResponse.json(
+                { message: "Unauthorized" },
+                { status: 401 }
+            );
+        }
+
+        const body = await request.json();
+
+        await prisma.address.create({
+            data: {
+                ...body,
+                user: {
+                    connect: { id: userId },
+                },
+            },
+        })
+
+        return NextResponse.json({
+            message: "Address added successfully"
+        })
+    } catch (error: any) {
+        return NextResponse.json(
+            {
+                message: error.message || "Internal Server Error",
+            },
             { status: 500 }
         );
     }
