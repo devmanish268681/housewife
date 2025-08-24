@@ -170,9 +170,10 @@ model Order {
   deleted       Boolean     @default(false)
   userId        String
   items         OrderItem[]
-  total         Float // final total = subtotal + gstTotal
+  total         Float // final total = subtotal + gstTotal + deliveryFee
   subTotal      Float // sum of base prices
   gstTotal      Float // cgst + sgst + igst
+  deliveryFee   Int
   paymentStatus String      @default("pending")
   status        String
   address       Address     @relation(fields: [addressId], references: [id])

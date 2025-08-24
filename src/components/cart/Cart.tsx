@@ -179,7 +179,7 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
                   </div>
                   <button
                     onClick={() => {
-                      handleDelete(item.productId);
+                      handleDelete(item.id);
                     }}
                     className="ml-2 text-red-500 hover:text-red-700"
                   >

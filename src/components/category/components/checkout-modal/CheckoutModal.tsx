@@ -105,6 +105,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
       zipCode: pincode,
       paymentMethod: paymentMethod.toLowerCase(),
       address,
+      deliveryFee,
     };
 
     try {

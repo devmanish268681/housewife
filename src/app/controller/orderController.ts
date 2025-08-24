@@ -177,9 +177,10 @@ export const placeOrderController = async (body: any, userId: string) => {
           }
 
           total += variant.price * item.quantity;
-
+          let deliveryFee = body.deliveryFee;
           const productWithTaxRates: ProductWithTaxRates = {
             basePrice: variant.price,
+            deliveryFee: deliveryFee,
             quantity: item.quantity,
             cgstRate: product.cgst,
             igstRate: product.igst,
@@ -188,8 +189,8 @@ export const placeOrderController = async (body: any, userId: string) => {
 
           gstBreakup = await calculateGSTBreakup({
             productWithTaxRates,
-            buyerState: adminAddress.state,
-            sellerState: body.state,
+            buyerState: body.state,
+            sellerState: adminAddress.state,
           });
           console.log("gstBreakup", gstBreakup);
 
@@ -204,14 +205,17 @@ export const placeOrderController = async (body: any, userId: string) => {
         const orderObj = {
           userId,
           addressId: userAdress.id,
-          total: gstBreakup?.subTotal + gstBreakup?.gstAmount,
+          total:
+            gstBreakup?.subTotal + gstBreakup?.gstAmount + body.deliveryFee,
           status: "pending",
           isIGST: gstBreakup?.isIGST,
           subTotal: gstBreakup?.subTotal,
           gstTotal: gstBreakup?.gstAmount,
+          deliveryFee: body.deliveryFee,
         };
 
         const order = await createOrderRecord(tx, orderObj);
+        console.log("order", order);
 
         const orderItemPromises = orderItemsData.map(async (item) => {
           const orderItemObj = {
@@ -237,6 +241,7 @@ export const placeOrderController = async (body: any, userId: string) => {
     );
 
     const placeOrder = await createRazorpayOrder(result);
+    console.log("placeOrder", placeOrder);
 
     const paymentsObj: any = {
       razorpayOrderId: placeOrder.order.id,

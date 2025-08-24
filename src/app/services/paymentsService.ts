@@ -4,8 +4,6 @@ import { Prisma } from "@prisma/client";
 export type CreatePaymentInput = Omit<
   Payment,
   | "id"
-  | "razorpayPaymentId"
-  | "signature"
   | "captured"
   | "createdAt"
   | "updatedAt"

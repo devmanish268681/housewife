@@ -11,6 +11,7 @@ export type CreateOrderInput = Omit<
 
 export type ProductWithTaxRates = {
   basePrice: number; // base price per unit
+  deliveryFee: number;
   quantity: number;
   cgstRate?: number; // per product
   sgstRate?: number;
@@ -134,7 +135,11 @@ export const calculateGSTBreakup = async ({
   }
 
   const gstAmount = +(cgst + sgst + igst).toFixed(2);
-  const totalPrice = +(baseAmount + gstAmount).toFixed(2);
+  const totalPrice = +(
+    baseAmount +
+    gstAmount +
+    productWithTaxRates.deliveryFee
+  ).toFixed(2);
 
   return {
     subTotal: +baseAmount.toFixed(2),
