@@ -63,7 +63,7 @@ const SigninModal: React.FC<SigninModalProps> = ({
         phoneNumber: mobile,
         fullName: "",
         otp: otp,
-        mode: "otp",
+        mode: "signIn",
         callbackUrl: "/",
       });
       onClose();
