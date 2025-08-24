@@ -196,25 +196,30 @@ export const authOptions = {
       token: import("next-auth/jwt").JWT;
       user?: import("next-auth").User;
     }) {
-      // Only on first login
-      if (user && user.email) {
-        const dbUser = await prisma.user.findFirstOrThrow({
-          where: { email: user.email ?? undefined },
+      if (user) {
+        const dbUser = await prisma.user.findUnique({
+          where: { id: user.id }, // Use ID directly
           select: {
             id: true,
             roles: { select: { name: true } },
             profileImage: true,
+            email: true,
+            name: true,
           },
         });
-        if (dbUser?.id) {
+
+        if (dbUser) {
           token.id = dbUser.id;
           token.role = dbUser.roles?.name || null;
           token.profileImage = dbUser.profileImage || null;
+          token.email = dbUser.email || null;
+          token.name = dbUser.name || null;
         }
       }
 
       return token;
     },
+
     async signIn({
       user,
       account,

@@ -105,6 +105,10 @@ model Product {
   subCategoryId String
   brand         Brand            @relation(fields: [brandId], references: [id])
   brandId       String
+  hsnCode       String // HSN code for GST
+  cgst          Float
+  sgst          Float
+  igst          Float
   variants      ProductVariant[]
   CartItem      CartItem[]
 }
@@ -166,12 +170,17 @@ model Order {
   deleted       Boolean     @default(false)
   userId        String
   items         OrderItem[]
-  total         Float
-  paymentStatus String      @default("pending") // "pending", "success", "failed", etc.
+  total         Float // final total = subtotal + gstTotal
+  subTotal      Float // sum of base prices
+  gstTotal      Float // cgst + sgst + igst
+  paymentStatus String      @default("pending")
   status        String
   address       Address     @relation(fields: [addressId], references: [id])
   addressId     String
   payments      Payments[]
+  invoice       String      @default("")
+  invoiceId     String?
+  isIGST        Boolean     @default(false)
 }
 
 model OrderItem {
@@ -184,7 +193,7 @@ model OrderItem {
   product          Product        @relation(fields: [productId], references: [id])
   productId        String
   quantity         Int
-  price            Float // price at time of order
+  price            Float // basePrice (price at time of order)
   ProductVariant   ProductVariant @relation(fields: [productVariantId], references: [id])
   productVariantId String
 }

@@ -13,3 +13,19 @@ export const createAddressRecord = async (
     throw error;
   }
 };
+export const getAddressByUserId = async (userId: string) => {
+  try {
+    const existingUser = await prisma.address.findFirst({
+      where: { userId: userId },
+    });
+
+    if (!existingUser) {
+      throw new Error("user not found");
+    }
+
+    return existingUser;
+  } catch (error: any) {
+    console.error("Internal server error", error);
+    throw error;
+  }
+};
