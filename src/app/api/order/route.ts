@@ -5,6 +5,7 @@ import { validateRequest } from "../../lib/validateRequest";
 import { productOrderSchema } from "../products/productOrderSchema";
 import { placeOrderController } from "@/app/controller/orderController";
 import { prisma } from "@/lib/prisma";
+import { validateAccess } from "@/lib/roles/validateAccess";
 
 export async function POST(request: Request) {
   try {
@@ -26,6 +27,22 @@ export async function POST(request: Request) {
 
     if (!validation.success) {
       return NextResponse.json({ errors: validation.error }, { status: 400 });
+    }
+
+    const hasAccess = await validateAccess({
+      resource: "order",
+      action: "create",
+      userId: userId,
+    });
+
+    if (!hasAccess) {
+      return NextResponse.json(
+        {
+          message:
+            "Access denied. You do not have permission to access this route.",
+        },
+        { status: 403 }
+      );
     }
 
     if (!products || products.length === 0) {

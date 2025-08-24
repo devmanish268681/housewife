@@ -5,6 +5,7 @@ import { NextResponse } from "next/server";
 import { validateRequest } from "../../lib/validateRequest";
 import { addToCartSchema } from "./addToCartSchema ";
 import { getUserById } from "@/app/services/userService";
+import { validateAccess } from "@/lib/roles/validateAccess";
 
 export async function POST(request: Request) {
   try {
@@ -14,7 +15,7 @@ export async function POST(request: Request) {
     if (!userId) {
       return NextResponse.json(
         { message: "userId is missing" },
-        { status: 400 }
+        { status: 404 }
       );
     }
     const userData = await getUserById(userId);
@@ -30,6 +31,22 @@ export async function POST(request: Request) {
 
     if (!validation.success) {
       return NextResponse.json({ errors: validation.error }, { status: 400 });
+    }
+
+    const hasAccess = await validateAccess({
+      resource: "cart",
+      action: "create",
+      userId: userId,
+    });
+
+    if (!hasAccess) {
+      return NextResponse.json(
+        {
+          message:
+            "Access denied. You do not have permission to access this route.",
+        },
+        { status: 403 }
+      );
     }
 
     // If no variant passed, use the first one
