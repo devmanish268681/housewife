@@ -1,12 +1,34 @@
+import { validateRequest } from "@/app/lib/validateRequest";
+import { createProduct } from "@/app/services/ProductsService";
 import { authOptions } from "@/lib/authOptions";
 import { prisma } from "@/lib/prisma";
+import { validateAccess } from "@/lib/roles/validateAccess";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
+import { createProductSchema } from "./productSchema";
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const categoryId = searchParams.get("categoryId");
+    const session = await getServerSession(authOptions);
+    const userId = session?.user?.id as string;
+
+    const hasAccess = await validateAccess({
+      resource: "products",
+      action: "view",
+      userId: userId,
+    });
+
+    if (!hasAccess) {
+      return NextResponse.json(
+        {
+          message:
+            "Access denied. You do not have permission to access this route.",
+        },
+        { status: 403 }
+      );
+    }
 
     const whereClause: any = {};
 
@@ -53,7 +75,10 @@ export async function GET(request: Request) {
       },
     }));
 
-    return NextResponse.json({ data: formattedData, totalCount: totalCount }, { status: 201 });
+    return NextResponse.json(
+      { data: formattedData, totalCount: totalCount },
+      { status: 201 }
+    );
   } catch (error: any) {
     console.log("Internal server error", error);
     return NextResponse.json(
@@ -71,41 +96,75 @@ export async function POST(request: Request) {
     const userId = session?.user?.id as string;
 
     if (!userId) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
+    const hasAccess = await validateAccess({
+      resource: "products",
+      action: "create",
+      userId: userId,
+    });
+
+    if (!hasAccess) {
       return NextResponse.json(
-        { message: "Unauthorized" },
-        { status: 401 }
+        {
+          message:
+            "Access denied. You do not have permission to access this route.",
+        },
+        { status: 403 }
       );
     }
 
     const body = await request.json();
-    const { name, description, categoryId, images, brandId, subCategoryId, price, stock, unit, unitSize } = body;
+    const {
+      name,
+      description,
+      categoryId,
+      images,
+      brandId,
+      subCategoryId,
+      price,
+      stock,
+      unit,
+      unitSize,
+      cgst,
+      hsnCode,
+      igst,
+      sgst,
+    } = body;
 
-    await prisma.product.create({
-      data: {
-        name,
-        description,
-        categoryId,
-        images,
-        brandId,
-        subCategoryId,
-        variants: {
-          create: {
-            price,
-            stock,
-            unit,
-            unitSize
-          },
-        },
+    const validation = await validateRequest(body, createProductSchema);
+
+    if (!validation.success) {
+      return NextResponse.json({ errors: validation.error }, { status: 400 });
+    }
+
+    const createProductObj = {
+      name,
+      description,
+      categoryId,
+      images,
+      brandId,
+      subCategoryId,
+      price,
+      stock,
+      unit,
+      unitSize,
+      cgst,
+      hsnCode,
+      igst,
+      sgst,
+    };
+
+    const product = await createProduct(createProductObj);
+
+    return NextResponse.json(
+      {
+        message: "Product added successfully",
+        product,
       },
-      include: {
-        variants: true,
-      }
-    })
-
-    return NextResponse.json({
-      message: "Product added successfully",
-    }, { status: 201 })
-
+      { status: 201 }
+    );
   } catch (error: any) {
     return NextResponse.json(
       {
@@ -122,9 +181,22 @@ export async function PUT(request: Request) {
     const userId = session?.user?.id as string;
 
     if (!userId) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
+    const hasAccess = await validateAccess({
+      resource: "products",
+      action: "update",
+      userId: userId,
+    });
+
+    if (!hasAccess) {
       return NextResponse.json(
-        { message: "Unauthorized" },
-        { status: 401 }
+        {
+          message:
+            "Access denied. You do not have permission to access this route.",
+        },
+        { status: 403 }
       );
     }
 
@@ -132,23 +204,34 @@ export async function PUT(request: Request) {
     const productId = searchParams.get("productId");
     const variantId = searchParams.get("variantId");
     const body = await request.json();
-    const { name, description, categoryId, images, brandId, subCategoryId, price, stock, unit, unitSize } = body;
+    const {
+      name,
+      description,
+      categoryId,
+      images,
+      brandId,
+      subCategoryId,
+      price,
+      stock,
+      unit,
+      unitSize,
+    } = body;
 
     await prisma.product.update({
       where: {
-        id: String(productId)
+        id: String(productId),
       },
       data: {
         name: name,
         description: description,
         ...(categoryId && {
-          category: { connect: { id: categoryId } }
+          category: { connect: { id: categoryId } },
         }),
         ...(brandId && {
-          brand: { connect: { id: brandId } }
+          brand: { connect: { id: brandId } },
         }),
         ...(subCategoryId && {
-          subCategory: { connect: { id: subCategoryId } }
+          subCategory: { connect: { id: subCategoryId } },
         }),
         images: images,
         variants: {
@@ -158,17 +241,17 @@ export async function PUT(request: Request) {
               price,
               stock,
               unit,
-              unitSize
-            }
-          }
-        }
-      }
-    })
+              unitSize,
+            },
+          },
+        },
+      },
+    });
 
     return NextResponse.json(
       { message: "Product updated successfully" },
       { status: 201 }
-    )
+    );
   } catch (error: any) {
     return NextResponse.json(
       {
@@ -184,15 +267,34 @@ export async function DELETE(request: Request) {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id") as string;
 
+    const session = await getServerSession(authOptions);
+    const userId = session?.user?.id as string;
+
+    const hasAccess = await validateAccess({
+      resource: "products",
+      action: "delete",
+      userId: userId,
+    });
+
+    if (!hasAccess) {
+      return NextResponse.json(
+        {
+          message:
+            "Access denied. You do not have permission to access this route.",
+        },
+        { status: 403 }
+      );
+    }
+
     await prisma.product.delete({
       where: {
-        id: id
-      }
-    })
+        id: id,
+      },
+    });
 
     return NextResponse.json({
-      message: "Product deleted successfully"
-    })
+      message: "Product deleted successfully",
+    });
   } catch (error: any) {
     console.log("Internal server error", error);
     return NextResponse.json(

@@ -7,14 +7,26 @@ export const user = {
   },
   order: {
     view: true,
+    create: true,
+    update: true,
+    delete: true,
+  },
+  stock: {
+    view: false,
     create: false,
     update: false,
     delete: false,
   },
-  category:{
-    view:true,
-    create:false,
-    update:false,
-    delete:false
-  }
+  cart: {
+    view: true,
+    create: true,
+    update: true,
+    delete: true,
+  },
+  category: {
+    view: true,
+    create: false,
+    update: false,
+    delete: false,
+  },
 };

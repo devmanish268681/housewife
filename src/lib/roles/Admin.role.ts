@@ -11,10 +11,22 @@ export const admin = {
     update: true,
     delete: true,
   },
-  category:{
-    view:true,
-    create:false,
-    update:false,
-    delete:false
-  }
+  stock: {
+    view: true,
+    create: true,
+    update: true,
+    delete: true,
+  },
+  cart: {
+    view: true,
+    create: true,
+    update: true,
+    delete: true,
+  },
+  category: {
+    view: true,
+    create: false,
+    update: false,
+    delete: false,
+  },
 };
