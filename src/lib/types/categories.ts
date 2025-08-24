@@ -97,3 +97,7 @@ export interface SubCategory {
   updatedAt: string;
   deleted: boolean;
 }
+
+export interface CategoriesSectionProps {
+  data?: { categories: Categories[] }
+}

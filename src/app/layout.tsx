@@ -14,21 +14,32 @@ import StoreProvider from "@/lib/store/StoreProvider";
 
 //utils
 import AuthProvider from "@/lib/auth/AuthProvider";
-import { icon } from "@fortawesome/fontawesome-svg-core";
 import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 import Script from "next/script";
+import { Metadata } from "next";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
-export const metadata = {
-  title: {
-    default: "Maxymart – Freshness at Your Doorstep",
-    template: "%s | My App",
+export const metadata: Metadata = {
+  title: "MaxyMart | Grocery Delivery & Fresh Products at Your Doorstep",
+  description:
+    "Shop online at MaxyMart for fresh groceries, fruits, vegetables, and essentials with same-day delivery at the best prices.",
+  keywords: "MaxyMart, grocery, online grocery, fruits, vegetables, delivery",
+  openGraph: {
+    title: "MaxyMart | Grocery Delivery & Fresh Products",
+    description:
+      "Order fresh groceries from MaxyMart online now with same-day delivery. Get fruits, vegetables, and essentials delivered to your home.",
+    // url: "https://yourdomain.com",
+    type: "website",
+    images: [
+      {
+        url: "assets/maxymart_logo.svg",
+        width: 1200,
+        height: 630,
+        alt: "MaxyMart Grocery Delivery Banner",
+      },
+    ],
   },
-  icons: {
-    icon: "assets/maxymart_logo.svg",
-  },
-  description: "Maxymart - Your one-stop grocery stor",
 };
 
 export default function RootLayout({

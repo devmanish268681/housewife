@@ -1,48 +1,31 @@
 import React, { useState } from "react";
-
-//components
 import Carousel from "../carousel/Carousel";
-import { useRouter } from "next/navigation";
+import { RecommendedProps } from "@/lib/types/recommended";
 
-//constants
-import {
-  frequentlyBought,
-  popularItems,
-  recommended,
-} from "@/constants/constants";
-import { Product } from "@/lib/types/products";
-
-interface RecommendedProps {
-  items:Product[];
-}
-const Recommended = ({items}:RecommendedProps) => {
-  const router = useRouter();
+const Recommended = ({ items }: RecommendedProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
-    <div className="py-6 flex flex-col gap-4">
-      {/* <Carousel
-        title="Recommended for you"
-        items={recommended}
-        onClick={(item) => router.push(`/category/${item.title.toLowerCase()}`)}
-      />
-      <Carousel
-        title="Frequently Bought"
-        items={frequentlyBought}
-        onClick={() => setIsModalOpen(true)}
-      /> */}
+    <section className="py-6 flex flex-col gap-4" aria-labelledby="recommended-section">
       <Carousel
         title="Popular Items"
         items={items}
         onClick={() => setIsModalOpen(true)}
       />
-      {/* 
-      <ProductModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        product={product}
-      /> */}
-    </div>
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-lg shadow-lg">
+            <p>Modal Content Here</p>
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="mt-4 px-4 py-2 bg-blue-500 text-white rounded"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+    </section>
   );
 };
 
