@@ -36,11 +36,13 @@ export async function GET(request: Request) {
     const userCartItems = await prisma.cartItem.findMany({
       where: {
         userId: userId,
+        deleted: false,
       },
       include: { productVariant: true, product: true },
     });
 
     const formattedRes = userCartItems.map((cart) => ({
+      id: cart.id,
       productName: cart.product.name,
       price: cart.productVariant?.price,
       unit: cart.productVariant?.unit,
