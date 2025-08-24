@@ -11,24 +11,6 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const categoryId = searchParams.get("categoryId");
-    const session = await getServerSession(authOptions);
-    const userId = session?.user?.id as string;
-
-    const hasAccess = await validateAccess({
-      resource: "products",
-      action: "view",
-      userId: userId,
-    });
-
-    if (!hasAccess) {
-      return NextResponse.json(
-        {
-          message:
-            "Access denied. You do not have permission to access this route.",
-        },
-        { status: 403 }
-      );
-    }
 
     const whereClause: any = {};
 
@@ -77,7 +59,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json(
       { data: formattedData, totalCount: totalCount },
-      { status: 201 }
+      { status: 200 }
     );
   } catch (error: any) {
     console.log("Internal server error", error);

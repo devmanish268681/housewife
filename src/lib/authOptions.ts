@@ -38,9 +38,32 @@ export const authOptions = {
       },
       async authorize(credentials) {
         const mode = credentials?.mode;
+        console.log("mode", mode);
 
-        // ----------------- 1. OTP LOGIN -------------------
-        if (mode === "otp") {
+        // ----------------- 2. signIn LOGIN -------------------
+        if (mode === "signIn") {
+          if (!credentials?.phoneNumber) {
+            throw new Error("phoneNumber is required");
+          }
+
+          const user = await prisma.user.findUnique({
+            where: { email: credentials.phoneNumber },
+          });
+
+          if (!user) {
+            throw new Error("USER_DOES_NOT_EXIST");
+          }
+
+          return {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            profileImage: user.profileImage,
+          };
+        }
+
+        // ----------------- 3. SIGNUP -------------------
+        if (mode === "signUp") {
           const phone = credentials?.phoneNumber;
           const fullName = credentials?.fullName;
           const otp = credentials?.otp;
@@ -67,8 +90,12 @@ export const authOptions = {
           await prisma.otpCode.delete({ where: { id: otpRecord.id } });
 
           // Find or create user
-          let [user] = await prisma.user.findMany({
+          let user = await prisma.user.findUnique({
             where: { phoneNumber: phone },
+          });
+
+          const userRole = await prisma.role.findUnique({
+            where: { name: "user" },
           });
 
           if (!user) {
@@ -79,90 +106,34 @@ export const authOptions = {
                 email: null,
                 password: null,
                 profileImage: "",
-                roles: {
-                  connect: {
-                    name: "user", // default role
-                  },
-                },
-              },
-            });
-          }
-
-          return {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            profileImage: user.profileImage,
-          };
-        }
-
-        // ----------------- 2. EMAIL LOGIN -------------------
-        if (mode === "signin") {
-          if (!credentials?.email || !credentials?.password) {
-            throw new Error("Email and password are required");
-          }
-
-          const [user] = await prisma.user.findMany({
-            where: { email: credentials.email },
-          });
-
-          if (!user || !user.password) {
-            throw new Error("USER_NOT_FOUND");
-          }
-
-          const isValid = await bcrypt.compare(
-            credentials.password,
-            user.password
-          );
-          if (!isValid) {
-            throw new Error("INVALID_CREDENTIALS");
-          }
-
-          return {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            profileImage: user.profileImage,
-          };
-        }
-
-        // ----------------- 3. SIGNUP -------------------
-        if (mode === "signup") {
-          if (
-            !credentials?.fullName ||
-            !credentials?.email ||
-            !credentials?.password
-          ) {
-            throw new Error("MISSING_FIELDS");
-          }
-
-          let [user] = await prisma.user.findMany({
-            where: { email: credentials.email },
-          });
-
-          const userRole = await prisma.role.findUnique({
-            where: { name: "user" },
-          });
-
-          if (!user) {
-            const hashedPassword = await bcrypt.hash(credentials.password, 10);
-            user = await prisma.user.create({
-              data: {
-                email: credentials.email,
-                name: credentials.fullName,
-                password: hashedPassword,
-                profileImage: "",
                 roles: { connect: { id: userRole?.id } },
               },
             });
           }
 
+          // 🔁 GET fresh user with role
+          const dbUser = await prisma.user.findUnique({
+            where: { id: user.id },
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              profileImage: true,
+              roles: { select: { name: true } },
+            },
+          });
+          console.log("dbUser", dbUser);
+
+          if (!dbUser) {
+            throw new Error("USER_NOT_FOUND");
+          }
+
           return {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            role: userRole?.name,
-            profileImage: user?.profileImage,
+            id: dbUser.id,
+            name: dbUser.name,
+            email: dbUser.email,
+            profileImage: dbUser.profileImage,
+            role: dbUser.roles?.name,
           };
         }
 

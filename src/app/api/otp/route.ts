@@ -21,8 +21,9 @@ export async function POST(request: Request) {
     const otp = randomInt(100000, 999999).toString();
     const otpHash = crypto.createHash("sha256").update(otp).digest("hex");
     const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
+    console.log("otp", otp);
 
-     await prisma.otpCode.create({
+    await prisma.otpCode.create({
       data: {
         phoneNumber: `+91${phoneNumber}`,
         otpHash: otpHash,
@@ -31,16 +32,16 @@ export async function POST(request: Request) {
     });
 
     // send via Twilio
-    const client = twilio(
-      process.env.TWILIO_ACCOUNT_SID!,
-      process.env.TWILIO_AUTH_TOKEN!
-    );
+    // const client = twilio(
+    //   process.env.TWILIO_ACCOUNT_SID!,
+    //   process.env.TWILIO_AUTH_TOKEN!
+    // );
 
-    await client.messages.create({
-      body: `Your login OTP is ${otp}`,
-      to: `+91${phoneNumber}`,
-      from: process.env.TWILIO_PHONE_NUMBER!,
-    });
+    // await client.messages.create({
+    //   body: `Your login OTP is ${otp}`,
+    //   to: `+91${phoneNumber}`,
+    //   from: process.env.TWILIO_PHONE_NUMBER!,
+    // });
 
     return new Response(JSON.stringify({ message: "OTP sent" }), {
       status: 200,
