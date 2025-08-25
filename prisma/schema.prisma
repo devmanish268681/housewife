@@ -58,6 +58,8 @@ model User {
   updatedAt     DateTime   @updatedAt
   deleted       Boolean    @default(false)
   profileImage  String
+  latitude      String?
+  longitude     String?
   emailVerified String?
   roles         Role       @relation(fields: [roleId], references: [id])
   roleId        String
@@ -243,6 +245,9 @@ model OtpCode {
 
 model Payments {
   id                String   @id @default(uuid())
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  deleted           Boolean  @default(false)
   orderId           String // Foreign key to your local Order model
   razorpayOrderId   String   @unique // e.g., "order_DslnoIgkIDL8Zt"
   razorpayPaymentId String? // e.g., "pay_DslnoIgkIDL8Zt"
@@ -254,8 +259,17 @@ model Payments {
   captured          Boolean  @default(false)
   email             String?
   contact           String?
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
 
   order Order @relation(fields: [orderId], references: [id])
+}
+
+model DeliveryZone {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deleted   Boolean  @default(false)
+  name      String
+  latitude  String
+  longitude String
+  radiusKm  Float
 }
