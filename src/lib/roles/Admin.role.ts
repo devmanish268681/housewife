@@ -17,6 +17,12 @@ export const admin = {
     update: true,
     delete: true,
   },
+  deliveryZone: {
+    view: true,
+    create: true,
+    update: true,
+    delete: true,
+  },
   cart: {
     view: true,
     create: true,

@@ -17,6 +17,12 @@ export const user = {
     update: false,
     delete: false,
   },
+  deliveryZone: {
+    view: false,
+    create: false,
+    update: false,
+    delete: false,
+  },
   cart: {
     view: true,
     create: true,

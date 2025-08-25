@@ -12,7 +12,7 @@ export async function GET(request: Request) {
     const userId = session?.user?.id as string;
 
     if (!userId) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ message: "user id missing" }, { status: 404 });
     }
 
     const { searchParams } = new URL(request.url);
@@ -64,7 +64,7 @@ export async function PUT(request: Request) {
     const userId = session?.user?.id as string;
 
     if (!userId) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ message: "user id missing" }, { status: 404 });
     }
 
     const body = await request.json();
