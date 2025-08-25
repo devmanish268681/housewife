@@ -293,6 +293,15 @@ async function main() {
       },
     });
 
+    const createdDeliveryZone = await prisma.deliverZone.create({
+      data: {
+        name: "Mumbai Central",
+        latitude: "19.076",
+        longitude: "72.8777",
+        radiusKm: 3,
+      },
+    });
+
     // 👉 Create address only for Admin
     if (user.roleName === "admin") {
       await prisma.address.create({

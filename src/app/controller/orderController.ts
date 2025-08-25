@@ -117,6 +117,7 @@ import { updatedProductVariant } from "../services/ProductsService";
 import { createRazorpayOrder } from "../lib/createRazorpayOrder";
 import { createPaymentsRecord } from "../services/paymentsService";
 import { createOrderInvoice } from "../services/InvoiceService";
+import { isUserWithinRadius } from "../services/locationService";
 
 export const placeOrderController = async (body: any, userId: string) => {
   try {
@@ -124,6 +125,19 @@ export const placeOrderController = async (body: any, userId: string) => {
 
     const result = await prisma.$transaction(
       async (tx: Prisma.TransactionClient) => {
+        if (!user.latitude && !user.longitude) {
+          throw new Error("user location not found");
+        }
+
+        const zone = await isUserWithinRadius(
+          user.latitude as string,
+          user.longitude as string
+        );
+
+        if (!zone.isWithinRadius) {
+          throw new Error("Sorry, we do not deliver to your location yet.");
+        }
+
         const adressObj = {
           userId: user.id,
           street: body.street,
