@@ -28,10 +28,19 @@ import {
   faLocationArrow,
   faLocationDot,
 } from "@fortawesome/free-solid-svg-icons";
+import NotificationBell from "../NotificationBell";
+import { useSession } from "next-auth/react";
 
 const Header = () => {
   //hooks
   const router = useRouter();
+
+  const session = useSession();
+  const userId = session?.data?.user?.id || "";
+  const isAdmin = session?.data?.user?.role === "admin";
+  console.log("userId", userId);
+  console.log("isAdmin", isAdmin);
+
   const searchParams = useSearchParams();
   const params = new URLSearchParams(searchParams.toString());
   const isCartOpen = searchParams.get("open");
@@ -82,6 +91,7 @@ const Header = () => {
 
   return (
     <>
+      <NotificationBell userId={userId} isAdmin={isAdmin} />
       <header className="flex items-center justify-between border-b border-[#f4f0f0] px-4 sm:px-6 md:px-8 lg:px-10 py-2 sm:py-2">
         <div className="flex items-center gap-4 sm:gap-6 md:gap-8">
           <Image
@@ -91,7 +101,7 @@ const Header = () => {
             height={65}
             className="cursor-pointer"
             style={{ position: "relative", bottom: "8px" }}
-            onClick={() => router.push('/')}
+            onClick={() => router.push("/")}
           />
           {/* Nav links - hidden on mobile */}
           <nav className="hidden lg:flex items-center gap-6 text-sm text-[#181111] font-medium">
@@ -105,17 +115,19 @@ const Header = () => {
         <div className="hidden lg:flex gap-2 sm:gap-3 md:gap-4 items-center">
           <Button
             onClick={handleLocationClick}
-            className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-200 shadow-sm border ${hasLocation
+            className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-200 shadow-sm border ${
+              hasLocation
                 ? "bg-white text-black border-red-600 hover:bg-red-50"
                 : "bg-red-600 hover:bg-red-700 text-white border-transparent hover:opacity-90"
-              }`}
+            }`}
             disabled={locationLoading}
           >
             {/* Icon changes dynamically */}
             <FontAwesomeIcon
               icon={hasLocation ? faLocationDot : faLocationArrow}
-              className={`w-4 h-4 ${hasLocation ? "text-red-600" : "text-white"
-                }`}
+              className={`w-4 h-4 ${
+                hasLocation ? "text-red-600" : "text-white"
+              }`}
             />
 
             {/* Main Text */}
@@ -129,11 +141,12 @@ const Header = () => {
               </span>
 
               {/* Address Preview */}
-              {hasLocation && address || userAddress && (
-                <span className="text-xs text-white truncate max-w-[150px]">
-                  {address || userAddress}
-                </span>
-              )}
+              {(hasLocation && address) ||
+                (userAddress && (
+                  <span className="text-xs text-white truncate max-w-[150px]">
+                    {address || userAddress}
+                  </span>
+                ))}
             </div>
           </Button>
 

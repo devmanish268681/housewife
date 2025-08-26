@@ -119,6 +119,16 @@ import { createPaymentsRecord } from "../services/paymentsService";
 import { createOrderInvoice } from "../services/InvoiceService";
 import { isUserWithinRadius } from "../services/locationService";
 
+const isServerLive = async () => {
+  try {
+    const res = await fetch("http://localhost:3001/ping");
+    return res.ok;
+  } catch (error) {
+    console.error("🚫 Socket server not reachable:", error);
+    return false;
+  }
+};
+
 export const placeOrderController = async (body: any, userId: string) => {
   try {
     const user = await getUserById(userId);
@@ -249,6 +259,24 @@ export const placeOrderController = async (body: any, userId: string) => {
           );
         });
         await Promise.all(orderItemPromises);
+
+        // Notify both user and admin
+        if (await isServerLive()) {
+          await fetch("http://localhost:3001/sendNotification", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              orderId: order.id,
+              userId: userId,
+              userName: user.name || "user",
+            }),
+          });
+        } else {
+          console.warn("⚠️ Notification server is down, skipping send.");
+        }
+
         return order;
       },
       { timeout: 200000 }
