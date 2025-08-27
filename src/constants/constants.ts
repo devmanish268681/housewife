@@ -1,5 +1,3 @@
-import { CartItem } from "@/components/category/components/checkout-modal/CheckoutModal";
-
 export const recommended = [
     {
         title: "Fresh Fruits",
@@ -230,7 +228,7 @@ export const footerLinks = [
   },
 ];
 
-export const cartItemsMock: CartItem[] = [
+export const cartItemsMock: any = [
   { id: 1, name: "Fresh Apples", price: 120, quantity: 2 },
   { id: 2, name: "Organic Bananas", price: 80, quantity: 1 },
 ];
