@@ -35,13 +35,13 @@ const Header = () => {
   //hooks
   const router = useRouter();
 
+  const searchParams = useSearchParams();
   const session = useSession();
   const userId = session?.data?.user?.id || "";
   const isAdmin = session?.data?.user?.role === "admin";
   console.log("userId", userId);
   console.log("isAdmin", isAdmin);
 
-  const searchParams = useSearchParams();
   const params = new URLSearchParams(searchParams.toString());
   const isCartOpen = searchParams.get("open");
   const isSignIn = searchParams.get("signIn");

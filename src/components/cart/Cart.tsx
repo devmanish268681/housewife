@@ -35,9 +35,9 @@ type CartProps = {
 
 const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
   //hooks
-  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const searchParams = useSearchParams();
   const params = new URLSearchParams(searchParams.toString());
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const { isLoggedIn, user } = useAuth();
   const router = useRouter();
 

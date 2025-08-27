@@ -19,6 +19,9 @@ const nextConfig = {
       }
     ],
   },
+  experimental: {
+    missingSuspenseWithCSRBailout: false,
+  },
   trailingSlash: false,
 };
 
