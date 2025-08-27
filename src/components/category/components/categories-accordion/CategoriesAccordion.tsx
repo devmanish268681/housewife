@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import Image from "next/image";
 
 // third-party
@@ -52,6 +52,7 @@ const CategoryAccordion: React.FC<CategoryAccordionProps> = ({
   },[checkedItems])
 
   return (
+    <Suspense>
     <div>
       {/* Accordion Header */}
       <div
@@ -100,6 +101,7 @@ const CategoryAccordion: React.FC<CategoryAccordionProps> = ({
         </div>
       )}
     </div>
+    </Suspense>
   );
 };
 

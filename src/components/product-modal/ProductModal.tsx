@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import Image from "next/image";
 
@@ -177,6 +177,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
   if (!isOpen) return null;
 
   return (
+    <Suspense>
     <div
       aria-modal="true"
       role="dialog"
@@ -347,6 +348,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
         )}
       </div>
     </div>
+    </Suspense>
   );
 };
 

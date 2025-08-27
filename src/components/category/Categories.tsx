@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import dynamic from "next/dynamic";
 
@@ -44,6 +44,7 @@ const Categories = () => {
   const isLoading = isCategoryLoading || isProductsLoading;
 
   return (
+    <Suspense>
     <main className="mx-auto max-w-[1920px] px-4 md:px-6 lg:px-8 2xl:px-10" style={{ height: "100vh" }}>
       <h1 className="text-3xl font-bold text-center p-6 capitalize">{decodeURIComponent(category)}</h1>
       <div className="flex gap-[2rem] pb-16 lg:pb-20" aria-label="Product Categories">
@@ -63,6 +64,7 @@ const Categories = () => {
         )}
       </div>
     </main>
+    </Suspense>
   );
 };
 

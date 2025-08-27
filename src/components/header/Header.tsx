@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -91,7 +91,7 @@ const Header = () => {
   }, [isSignIn]);
 
   return (
-    <>
+    <Suspense>
       <NotificationBell userId={userId} isAdmin={isAdmin} />
       <header className="flex items-center justify-between border-b border-[#f4f0f0] px-4 sm:px-6 md:px-8 lg:px-10 py-2 sm:py-2">
         <div className="flex items-center gap-4 sm:gap-6 md:gap-8">
@@ -369,7 +369,7 @@ const Header = () => {
           setSignInModalOpen(false);
         }}
       />
-    </>
+    </Suspense>
   );
 };
 

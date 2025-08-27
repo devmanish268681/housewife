@@ -1,3 +1,5 @@
+"use client"
+
 import { useUpdateUserMutation } from "@/lib/slices/userApiSlice";
 import { useFormik } from "formik";
 import { useEffect, useState } from "react";
