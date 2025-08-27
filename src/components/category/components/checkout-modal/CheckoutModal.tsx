@@ -132,7 +132,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
     currency?: string;
   }) => {
     const options = {
-      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY || "rzp_test_VVQp3W3XiFXkxD",
+      key: process.env.RAZORPAY_KEY_ID,
       amount: orderData.amount,
       currency: orderData.currency || "INR",
       name: "My Grocery Store",
