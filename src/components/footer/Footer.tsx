@@ -8,12 +8,9 @@ import {
 } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-//constants
-import { footerLinks } from "@/constants/constants";
-
 const Footer = () => {
   return (
-    <footer className="bg-white">
+    <footer className="bg-white fixed bottom-0 w-full">
       <div className="border-b border-gray-300"></div>
 
       <div className="flex flex-row-reverse justify-between items-center px-6 py-6">

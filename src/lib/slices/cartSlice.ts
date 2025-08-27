@@ -1,11 +1,12 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-type CartItem = {
+export type CartItem = {
   id: string;
   name: string;
   image: string;
   quantity: number;
   price: number;
+  productVariantId?:string;
 };
 
 interface CartState {
@@ -38,11 +39,14 @@ export const cartSlice = createSlice({
         }
       }
     },
+    setCart: (state, action: PayloadAction<CartItem[]>) => {
+      state.items = action.payload;
+    },
     removeItem: (state, action: PayloadAction<{ id: string }>) => {
       state.items = state.items.filter((i) => i.id !== action.payload.id);
     },
   },
 });
 
-export const { incrementQuantity, decrementQuantity, removeItem } = cartSlice.actions;
+export const { incrementQuantity, decrementQuantity, removeItem, setCart } = cartSlice.actions;
 export default cartSlice.reducer;

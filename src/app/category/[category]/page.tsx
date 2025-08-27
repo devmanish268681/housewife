@@ -1,12 +1,22 @@
 import React from "react";
+
+//components
 import Categories from "@/components/category/Categories";
 
-const page = () => {
+export const metadata = {
+  title: "Categories | My Shop",
+  description: "Browse product categories on My Shop.",
+};
+
+const Page = () => {
   return (
-    <div>
-      <Categories />
-    </div>
+    <main>
+      <section aria-label="Product Categories">
+        <Categories />
+      </section>
+    </main>
   );
 };
 
-export default page;
+export default Page;
+

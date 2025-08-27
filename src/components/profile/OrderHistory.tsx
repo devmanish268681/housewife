@@ -1,7 +1,7 @@
 "use client";
 
 import { useGetRecentOrdersQuery, useReorderOrderMutation } from "@/lib/slices/orderApiSlice";
-import { formatDate } from "@/lib/utils";
+import { formatDate } from "@/lib/utils/utils";
 import Image from "next/image";
 import { useState } from "react";
 import OrderDetailModal from "./components/order-details-modal/OrderDetailModal";

@@ -6,13 +6,12 @@ import Image from "next/image";
 
 //hooks
 import { useRouter, useSearchParams } from "next/navigation";
-import { useAppDispatch } from "@/lib/hooks";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 
 //slices
-import { decrementQuantity, incrementQuantity } from "@/lib/slices/cartSlice";
+import { decrementQuantity, incrementQuantity, removeItem } from "@/lib/slices/cartSlice";
 import {
   useAddToCartMutation,
-  useDeleteFromCartMutation,
   useGetAllCartItemsQuery,
 } from "@/lib/slices/cartApiSlice";
 
@@ -44,8 +43,10 @@ const ProductModal: React.FC<ProductModalProps> = ({
   const isProductInCart = cartItemsData?.result?.filter(
     (item) => item.productId === product.id
   );
-  const productQuantityCount = cartItemsData?.result.filter(
-    (item) => item.productId === product.id
+  const cartItem = useAppSelector(state => state.cart.items);
+  const cartItemQuantity = cartItem?.find((item) => item?.id === product?.id);
+  const productQuantityCount = cartItemsData?.result?.filter(
+    (item) => item?.productId === product?.id
   );
 
   useEffect(() => {
@@ -68,11 +69,22 @@ const ProductModal: React.FC<ProductModalProps> = ({
     if (productQuantityCount && productQuantityCount?.length > 0) {
       setQuantity(productQuantityCount?.[0]?.quantity);
     }
-  }, [productQuantityCount]);
+
+  }, [productQuantityCount, cartItemQuantity]);
 
   useEffect(() => {
-    if (isProductInCart && isProductInCart.length > 0) {
-      setQuantity(isProductInCart[0].quantity);
+  if (isOpen) {
+    if (cartItemQuantity) {
+      setQuantity(cartItemQuantity.quantity);
+    } else {
+      setQuantity(0);
+    }
+  }
+}, [isOpen, cartItemQuantity]);
+
+  useEffect(() => {
+    if (isProductInCart && isProductInCart?.length > 0) {
+      setQuantity(isProductInCart[0]?.quantity);
     }
   }, []);
 
@@ -97,6 +109,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
             name: product.title,
             image: product.image,
             price: product.price,
+            productVariantId: product.variantId,
             quantity: newQuantity,
           })
         );
@@ -135,10 +148,15 @@ const ProductModal: React.FC<ProductModalProps> = ({
             name: product.title,
             image: product.image,
             price: product.price,
+            productVariantId: product.variantId,
             quantity: newQuantity,
           })
         );
       } else {
+        if (newQuantity === 0) {
+          console.log("qunajsjjss")
+          dispatch(removeItem({ id: product?.id }))
+        }
         dispatch(
           decrementQuantity({
             id: product.id,
@@ -152,7 +170,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
   const handleIncrementQuantity = async (action: "increment" | "decrement") => {
     const newQuantity =
       action === "increment" ? quantity + 1 : quantity !== 1 ? quantity - 1 : 0;
-    if (newQuantity < 1) return;
+    if (newQuantity < 0) return;
     await updateCart(newQuantity);
   };
 
@@ -248,7 +266,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
                 handleIncrementQuantity("decrement");
               }}
               className="px-3 py-1 border rounded-l bg-gray-100 hover:bg-gray-200"
-              disabled={quantity === 1 || product.stock === 0}
+              disabled={product.stock === 0}
               aria-label="Decrease quantity"
             >
               -
@@ -273,11 +291,10 @@ const ProductModal: React.FC<ProductModalProps> = ({
         {/* Add to Cart button */}
         <button
           onClick={() => handleCartClick()}
-          className={`w-full py-2 rounded text-white transition ${
-            product.stock === 0
+          className={`w-full py-2 rounded text-white transition ${product.stock === 0
               ? "bg-gray-400 cursor-not-allowed"
               : "bg-red-600 hover:bg-red-700"
-          }`}
+            }`}
           disabled={product.stock === 0}
           aria-disabled={product.stock === 0}
         >

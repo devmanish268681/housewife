@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
@@ -46,62 +46,64 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
   const [deleteFromCart] = useDeleteFromCartMutation();
   const { data: cartItemsData } = useGetAllCartItemsQuery();
 
-  const handleLogin = () => {
+  const handleLogin = useCallback(() => {
     params.set("signIn", "true");
-    console.log(params.toString());
     router.push(`?${params.toString()}`);
-  };
+  }, [params, router]);
 
-  const updateCart = async (
-    newQuantity: number,
-    id: string,
-    variantId: string
-  ) => {
-    const payload = {
-      productId: id,
-      productVariantId: variantId,
-      quantity: newQuantity,
-    };
-
-    if (user) {
+  const updateCart = useCallback(
+    async (newQuantity: number, productId: string, variantId: string) => {
+      if (!user) return;
       try {
-        await addToCart(payload);
-      } catch (error) {
+        await addToCart({ productId, productVariantId: variantId, quantity: newQuantity });
+      } catch {
         toast.error("Failed to update cart");
       }
-    }
-  };
+    },
+    [addToCart, user]
+  );
 
-  const handleIncrementQuantity = async (
-    action: "increment" | "decrement",
-    quantity: number,
-    id: string,
-    variantId: string
-  ) => {
-    const newQuantity =
-      action === "increment" ? quantity + 1 : quantity !== 1 ? quantity - 1 : 0;
-    if (newQuantity < 1) return;
-    await updateCart(newQuantity, id, variantId);
-  };
+  const handleIncrementQuantity = useCallback(
+    async (
+      action: "increment" | "decrement",
+      quantity: number,
+      productId: string,
+      variantId: string
+    ) => {
+      const newQuantity =
+        action === "increment" ? quantity + 1 : Math.max(quantity - 1, 1);
+      await updateCart(newQuantity, productId, variantId);
+    },
+    [updateCart]
+  );
 
-  const handleDelete = (id: string) => {
-    deleteFromCart(id).then(() =>
-      toast.success("Item removed from cart successfully")
-    );
-  };
+  const handleDelete = useCallback(
+    async (id: string) => {
+      try {
+        await deleteFromCart(id);
+        toast.success("Item removed from cart successfully");
+      } catch {
+        toast.error("Failed to remove item");
+      }
+    },
+    [deleteFromCart]
+  );
 
   const handleCheckout = () => {
     setIsCheckoutOpen(true);
   };
 
-  const getSubtotal = () =>
-    cartItemsData?.result?.reduce(
-      (acc, item) => acc + item.price * item.quantity,
-      0
-    );
+  const getSubtotal = useMemo(
+    () =>
+      cartItemsData?.result?.reduce(
+        (acc, item) => acc + item.price * item.quantity,
+        0
+      ) || 0,
+    [cartItemsData]
+  );
 
   const deliveryFee = 50;
-  const total = Number(getSubtotal()) + deliveryFee;
+  const total = Number(getSubtotal) + deliveryFee;
 
   if (!isOpen) return null;
 
@@ -151,12 +153,16 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleIncrementQuantity(
-                          "decrement",
-                          item.quantity,
-                          item.productId,
-                          item.variantId
-                        );
+                        if(item?.quantity === 1){
+                          handleDelete(item?.id)
+                        }else{
+                          handleIncrementQuantity(
+                            "decrement",
+                            item.quantity,
+                            item.productId,
+                            item.variantId
+                          );
+                        }
                       }}
                       className="p-1 border rounded hover:bg-gray-100"
                     >
@@ -195,7 +201,7 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
             <div className="p-4 border-t space-y-2">
               <div className="flex justify-between">
                 <span>Subtotal</span>
-                <span>₹{getSubtotal()}</span>
+                <span>₹{getSubtotal}</span>
               </div>
               <div className="flex justify-between">
                 <span>Delivery Fee</span>

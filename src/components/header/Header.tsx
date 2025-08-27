@@ -60,11 +60,12 @@ const Header = () => {
     clearLocation,
     hasLocation,
   } = useGeolocation();
+  const cartItems = useAppSelector((state) => state.cart.items);
 
   const cartCount = cartItemsData?.result?.reduce(
     (acc, value) => acc + value.quantity,
     0
-  );
+  ) || cartItems?.reduce((acc, value) => acc + value.quantity, 0);
 
   const handleCartClose = () => {
     setCartOpen(false);
@@ -115,11 +116,10 @@ const Header = () => {
         <div className="hidden lg:flex gap-2 sm:gap-3 md:gap-4 items-center">
           <Button
             onClick={handleLocationClick}
-            className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-200 shadow-sm border ${
-              hasLocation
-                ? "bg-white text-black border-red-600 hover:bg-red-50"
-                : "bg-red-600 hover:bg-red-700 text-white border-transparent hover:opacity-90"
-            }`}
+            className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-200 shadow-sm border ${hasLocation
+              ? "bg-white text-black border-red-600 hover:bg-red-50"
+              : "bg-red-600 hover:bg-red-700 text-white border-transparent hover:opacity-90"
+              }`}
             disabled={locationLoading}
           >
             {/* Icon changes dynamically */}
@@ -184,14 +184,11 @@ const Header = () => {
             onClick={() => setCartOpen(true)}
           >
             🛒
-            {cartItemsData &&
-              cartItemsData?.result?.length > 0 &&
-              cartCount &&
-              cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full">
-                  {cartCount}
-                </span>
-              )}
+            {cartCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full">
+                {cartCount}
+              </span>
+            )}
           </button>
         </div>
         <button

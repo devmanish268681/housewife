@@ -2,7 +2,7 @@
 
 import { ButtonHTMLAttributes, forwardRef } from "react";
 import { cva, VariantProps } from "class-variance-authority";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 
 // Define button variants using class-variance-authority
 const buttonVariants = cva(
