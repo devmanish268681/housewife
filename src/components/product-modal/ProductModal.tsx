@@ -177,7 +177,6 @@ const ProductModal: React.FC<ProductModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <Suspense>
     <div
       aria-modal="true"
       role="dialog"
@@ -348,7 +347,6 @@ const ProductModal: React.FC<ProductModalProps> = ({
         )}
       </div>
     </div>
-    </Suspense>
   );
 };
 

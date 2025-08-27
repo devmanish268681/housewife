@@ -52,7 +52,6 @@ const CategoryAccordion: React.FC<CategoryAccordionProps> = ({
   },[checkedItems])
 
   return (
-    <Suspense>
     <div>
       {/* Accordion Header */}
       <div
@@ -101,7 +100,6 @@ const CategoryAccordion: React.FC<CategoryAccordionProps> = ({
         </div>
       )}
     </div>
-    </Suspense>
   );
 };
 

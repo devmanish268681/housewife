@@ -108,7 +108,6 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <Suspense>
     <div
       className="fixed top-0 right-0 h-full w-full lg:w-[400px] bg-white shadow-lg z-50"
       style={{ transition: "transform 0.3s ease-in-out" }}
@@ -242,7 +241,6 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
         </div>
       )}
     </div>
-    </Suspense>
   );
 };
 

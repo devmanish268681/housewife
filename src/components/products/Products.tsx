@@ -14,7 +14,6 @@ const Products = () => {
   const {data:products,isFetching:isProductsFetching} = useGetProductsQuery();
   const filteredProducts = productName ? products?.data.filter((product) => product.name === productName) :  products?.data;
   return (
-    <Suspense>
     <div className="w-full lg:ltr:-ml-4 lg:rtl:-mr-2 xl:ltr:-ml-8 xl:rtl:-mr-8 lg:-mt-1 p-12" style={{height:"calc(100vh - 162px)",overflow:"auto"}}>
       {isProductsFetching ? (
         <Loading size={60} thickness={5} color="#dc2626" />
@@ -38,7 +37,6 @@ const Products = () => {
         </div>
       )}
     </div>
-    </Suspense>
   )
 }
 

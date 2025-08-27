@@ -18,6 +18,7 @@ import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 import Script from "next/script";
 import { Metadata } from "next";
 import CartLoader from "@/components/cart-loader/CartLoader";
+import { Suspense } from "react";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -53,10 +54,12 @@ export default function RootLayout({
       <body>
         <StoreProvider>
           <AuthProvider>
+            <Suspense>
             <Header />
             <CartLoader />
-            {children}
+              {children}
             <Footer />
+            </Suspense>
           </AuthProvider>
         </StoreProvider>
         <Toaster
