@@ -15,6 +15,7 @@ export default function OrderModal({
   open: boolean;
   onClose: () => void;
 }) {
+  type Status = keyof typeof statusColors;
   if (!open || !order) return null;
   return (
     <div className="fixed inset-0 z-30 flex items-center justify-center bg-black bg-opacity-40">
@@ -40,7 +41,7 @@ export default function OrderModal({
         <div className="mb-2 ">
           <span className="font-semibold">Status:</span>{" "}
           <span
-            className={`px-2 py-1 rounded-full text-xs font-semibold ${statusColors[order.status]}`}
+            className={`px-2 py-1 rounded-full text-xs font-semibold ${statusColors[order.status as Status]}`}
           >
             {order.status}
           </span>
