@@ -54,7 +54,7 @@ export async function GET(request: Request) {
           subCategoryMap[subCatId] = {
             id: subCatId,
             name: subCat.name,
-            image: subCat.image,
+            image: subCat.image || "",
             subCategoryProductStock: 0,
             brands: [],
           };
