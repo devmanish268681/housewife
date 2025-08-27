@@ -32,7 +32,15 @@ export async function POST(request: Request) {
 
     const htmlTemplate = getVerificationEmailHtml(code);
 
-    await sendMail(user[0].email, "Your Verification Code", htmlTemplate);
+    const email = user[0]?.email;
+    if (!email) {
+      return NextResponse.json(
+        { message: "User email not found" },
+        { status: 400 }
+      );
+    }
+
+    await sendMail(email, "Your Verification Code", htmlTemplate);
     return NextResponse.json({ user: user });
   } catch (error: any) {
     console.log("Internal server error", error);
