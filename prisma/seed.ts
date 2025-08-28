@@ -293,7 +293,7 @@ async function main() {
       },
     });
 
-    const createdDeliveryZone = await prisma.deliverZone.create({
+    const createdDeliveryZone = await prisma.deliveryZone.create({
       data: {
         name: "Mumbai Central",
         latitude: "19.076",
