@@ -32,16 +32,16 @@ export async function POST(request: Request) {
     });
 
     // send via Twilio
-    // const client = twilio(
-    //   process.env.TWILIO_ACCOUNT_SID!,
-    //   process.env.TWILIO_AUTH_TOKEN!
-    // );
+    const client = twilio(
+      process.env.TWILIO_ACCOUNT_SID!,
+      process.env.TWILIO_AUTH_TOKEN!
+    );
 
-    // await client.messages.create({
-    //   body: `Your login OTP is ${otp}`,
-    //   to: `+91${phoneNumber}`,
-    //   from: process.env.TWILIO_PHONE_NUMBER!,
-    // });
+    await client.messages.create({
+      body: `Your login OTP is ${otp}`,
+      to: `+91${phoneNumber}`,
+      from: process.env.TWILIO_PHONE_NUMBER!,
+    });
 
     return new Response(JSON.stringify({ message: "OTP sent" }), {
       status: 200,
