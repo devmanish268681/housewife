@@ -121,7 +121,7 @@ import { isUserWithinRadius } from "../services/locationService";
 
 const isServerLive = async () => {
   try {
-    const res = await fetch("http://localhost:3001/ping");
+    const res = await fetch(`${process.env.NEXT_WEBSOCKET_URL}/api/ping`);
     return res.ok;
   } catch (error) {
     console.error("🚫 Socket server not reachable:", error);
@@ -262,7 +262,7 @@ export const placeOrderController = async (body: any, userId: string) => {
 
         // Notify both user and admin
         if (await isServerLive()) {
-          await fetch("http://localhost:3001/sendNotification", {
+          await fetch(`${process.env.NEXT_WEBSOCKET_URL}/sendNotification`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
