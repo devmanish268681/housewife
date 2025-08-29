@@ -262,7 +262,7 @@ export const placeOrderController = async (body: any, userId: string) => {
 
         // Notify both user and admin
         if (await isServerLive()) {
-          await fetch("http://localhost:3001/sendNotification", {
+          await fetch(`${process.env.NEXT_WEBSOCKET_URL}/sendNotification`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
