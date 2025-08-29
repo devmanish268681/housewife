@@ -121,7 +121,7 @@ import { isUserWithinRadius } from "../services/locationService";
 
 const isServerLive = async () => {
   try {
-    const res = await fetch("http://localhost:3001/ping");
+    const res = await fetch(`${process.env.NEXT_WEBSOCKET_URL}/api/ping`);
     return res.ok;
   } catch (error) {
     console.error("🚫 Socket server not reachable:", error);
