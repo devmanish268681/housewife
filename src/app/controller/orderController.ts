@@ -118,6 +118,7 @@ import { createRazorpayOrder } from "../lib/createRazorpayOrder";
 import { createPaymentsRecord } from "../services/paymentsService";
 import { createOrderInvoice } from "../services/InvoiceService";
 import { isUserWithinRadius } from "../services/locationService";
+import { lockRowForUpdate } from "../lib/lockRow";
 
 const isServerLive = async () => {
   try {
@@ -251,6 +252,8 @@ export const placeOrderController = async (body: any, userId: string) => {
           };
 
           const orderItems = await createOrderItemsRecord(tx, orderItemObj);
+
+          await lockRowForUpdate(tx, item.productVariantId, "productVariant");
 
           const updatedProduct = await updatedProductVariant(
             tx,
