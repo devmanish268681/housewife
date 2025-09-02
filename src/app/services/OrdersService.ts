@@ -1,4 +1,5 @@
 import { Prisma } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
 
 export type UpdateOrderInput = Partial<
   Omit<Order, "id" | "createdAt" | "updatedAt" | "deleted">
@@ -8,6 +9,12 @@ export type CreateOrderInput = Omit<
   Order,
   "id" | "createdAt" | "updatedAt" | "deleted"
 >;
+
+type ApplyOfferInput = {
+  userId: string;
+  orderAmount: number; // in INR
+  couponCode?: string; // optional
+};
 
 export type ProductWithTaxRates = {
   basePrice: number; // base price per unit
@@ -107,6 +114,70 @@ export const getOrderByOrderId = async (
     throw error;
   }
 };
+
+export const applyOffer = async ({
+  userId,
+  orderAmount,
+  couponCode,
+}: ApplyOfferInput) => {
+  try {
+    const now = new Date();
+    let offer = null;
+    if (couponCode) {
+      offer = await prisma.offers.findFirst({
+        where: {
+          couponCode,
+          isActive: true,
+          startDate: { lte: now },
+          endDate: { gte: now },
+        },
+      });
+
+      if (!offer) {
+        throw new Error("Invalid or expired coupon");
+      }
+      if (offer.minOrderValue && orderAmount < offer.minOrderValue) {
+        throw new Error(`Minimum order value must be ₹${offer.minOrderValue}`);
+      }
+
+      if (offer.usageLimit) {
+        const totalUsed = await prisma.redemption.count({
+          where: { offerId: offer.id },
+        });
+        if (totalUsed >= offer.usageLimit) {
+          throw new Error("This offer has reached its usage limit");
+        }
+      }
+      if (offer.usagePerUser) {
+        const userUsed = await prisma.redemption.count({
+          where: { offerId: offer.id, userId },
+        });
+        if (userUsed >= offer.usagePerUser) {
+          throw new Error("You have already used this offer");
+        }
+      }
+    }
+
+    // 💰 Calculate discount
+    let discount = 0;
+    if (offer) {
+      if (offer.type === "PERCENTAGE") {
+        discount = (offer.discountValue / 100) * orderAmount;
+        if (offer.maxDiscount && discount > offer.maxDiscount) {
+          discount = offer.maxDiscount;
+        }
+      } else if (offer.type === "FLAT") {
+        discount = offer.discountValue;
+      }
+    }
+    const finalAmount = Math.max(orderAmount - discount, 0);
+  
+  } catch (error: any) {
+    console.error("Internal server error", error);
+    throw error;
+  }
+};
+
 export const calculateGSTBreakup = async ({
   productWithTaxRates,
   buyerState,

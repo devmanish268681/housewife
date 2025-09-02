@@ -253,7 +253,7 @@ export const placeOrderController = async (body: any, userId: string) => {
 
           const orderItems = await createOrderItemsRecord(tx, orderItemObj);
 
-          await lockRowForUpdate(tx, item.productVariantId, "productVariant");
+          await lockRowForUpdate(item.productVariantId, "productVariant", tx);
 
           const updatedProduct = await updatedProductVariant(
             tx,

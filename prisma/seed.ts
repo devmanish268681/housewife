@@ -1,3 +1,5 @@
+import { offers } from "./data";
+
 const {
   pistachioProducts,
   figProducts,
@@ -252,6 +254,10 @@ async function main() {
         create: { name },
       })
     )
+  );
+
+  await Promise.all(
+    offers.map((offer) => prisma.offers.create({ data: offer }))
   );
 
   // 1. Get all roles first
