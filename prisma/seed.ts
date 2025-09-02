@@ -1,5 +1,3 @@
-import { offers } from "./data";
-
 const {
   pistachioProducts,
   figProducts,
@@ -22,6 +20,7 @@ const {
   eyeMakeupProducts,
   hairAndSkinProducts,
   imagePublicLinks,
+  offers,
 } = require("./data");
 
 const { PrismaClient } = require("@prisma/client");
@@ -257,7 +256,7 @@ async function main() {
   );
 
   await Promise.all(
-    offers.map((offer) => prisma.offers.create({ data: offer }))
+    offers.map((offer: any) => prisma.offers.create({ data: offer }))
   );
 
   // 1. Get all roles first
