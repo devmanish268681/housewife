@@ -18,3 +18,8 @@ export type Address = {
   country: string;
   zipCode: string;
 };
+
+export type LocationResponse = {
+  success: boolean;
+  message: string;
+};

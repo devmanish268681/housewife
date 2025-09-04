@@ -14,13 +14,12 @@ import SigninModal from "../sign-in/SIgnIn";
 import { Button } from "../common/Button";
 
 //context and hooks
-import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { useAppSelector } from "@/lib/hooks";
 import { useAuth } from "@/lib/context/authContext";
 import { useGeolocation } from "@/lib/hooks/use-geolocation";
 
 //slices
 import { useGetAllCartItemsQuery } from "@/lib/slices/cartApiSlice";
-import { setLocationData } from "@/lib/slices/userLocationSlice";
 
 //third-party
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -28,8 +27,9 @@ import {
   faLocationArrow,
   faLocationDot,
 } from "@fortawesome/free-solid-svg-icons";
-import NotificationBell from "../NotificationBell";
 import { useSession } from "next-auth/react";
+import Notification from "../notification/Notification";
+import { useAddUserLocationMutation, useLazyGetUserLocationQuery } from "@/lib/slices/userLocationApiSlice";
 
 const Header = () => {
   //hooks
@@ -39,8 +39,8 @@ const Header = () => {
   const session = useSession();
   const userId = session?.data?.user?.id || "";
   const isAdmin = session?.data?.user?.role === "admin";
-  console.log("userId", userId);
-  console.log("isAdmin", isAdmin);
+  const [addUserLocation] = useAddUserLocationMutation();
+  const [getUserLocation] = useLazyGetUserLocationQuery();
 
   const params = new URLSearchParams(searchParams.toString());
   const isCartOpen = searchParams.get("open");
@@ -52,7 +52,7 @@ const Header = () => {
   const { isLoggedIn, user } = useAuth();
   const { data: cartItemsData } = useGetAllCartItemsQuery();
   const userLocation = useAppSelector((state) => state.userLocation);
-  const { address: userAddress } = userLocation;
+  const { address: userAddress, latitude, longitude } = userLocation;
   const {
     address,
     isLoading: locationLoading,
@@ -74,11 +74,34 @@ const Header = () => {
     router.push(`?${params.toString()}`);
   };
 
+  const checkLocation = async () => {
+    if (!latitude || !longitude) return;
+
+    try {
+      await addUserLocation({
+        latitude: String(latitude),
+        longitude: String(longitude),
+      }).unwrap();
+
+      await getUserLocation({
+        latitude,
+        longitude,
+      }).unwrap();
+    } catch (error: any) {
+      if (error?.status === 400) {
+        router.push("/not-deliverable");
+      } else {
+        console.error("Location error:", error);
+      }
+    }
+  };
+
   const handleLocationClick = () => {
     if (hasLocation) {
       clearLocation();
     } else {
       getCurrentLocation();
+      checkLocation();
     }
   };
 
@@ -87,12 +110,15 @@ const Header = () => {
   }, [isCartOpen]);
 
   useEffect(() => {
+    checkLocation();
+  }, [latitude, longitude, addUserLocation, getUserLocation, router]);
+
+  useEffect(() => {
     setSignInModalOpen(Boolean(isSignIn));
   }, [isSignIn]);
 
   return (
     <>
-      <NotificationBell userId={userId} isAdmin={isAdmin} />
       <header className="flex items-center justify-between border-b border-[#f4f0f0] px-4 sm:px-6 md:px-8 lg:px-10 py-2 sm:py-2">
         <div className="flex items-center gap-4 sm:gap-6 md:gap-8">
           <Image
@@ -116,7 +142,7 @@ const Header = () => {
         <div className="hidden lg:flex gap-2 sm:gap-3 md:gap-4 items-center">
           <Button
             onClick={handleLocationClick}
-            className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-200 shadow-sm border ${hasLocation
+            className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-200 shadow-sm border ${hasLocation || userAddress
               ? "bg-white text-black border-red-600 hover:bg-red-50"
               : "bg-red-600 hover:bg-red-700 text-white border-transparent hover:opacity-90"
               }`}
@@ -124,10 +150,9 @@ const Header = () => {
           >
             {/* Icon changes dynamically */}
             <FontAwesomeIcon
-              icon={hasLocation ? faLocationDot : faLocationArrow}
-              className={`w-4 h-4 ${
-                hasLocation ? "text-red-600" : "text-white"
-              }`}
+              icon={hasLocation || userAddress ? faLocationDot : faLocationArrow}
+              className={`w-4 h-4 ${hasLocation || userAddress ? "text-red-600" : "text-white"
+                }`}
             />
 
             {/* Main Text */}
@@ -143,7 +168,7 @@ const Header = () => {
               {/* Address Preview */}
               {(hasLocation && address) ||
                 (userAddress && (
-                  <span className="text-xs text-white truncate max-w-[150px]">
+                  <span className="text-xs truncate">
                     {address || userAddress}
                   </span>
                 ))}
@@ -178,6 +203,9 @@ const Header = () => {
             >
               Log In
             </button>
+          )}
+          {isLoggedIn && (
+            <Notification userId={userId} isAdmin={isAdmin} />
           )}
           <button
             className="relative h-10 px-4 bg-[#f4f0f0] text-[#181111] rounded-full"

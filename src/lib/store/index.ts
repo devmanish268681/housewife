@@ -9,6 +9,7 @@ import { orderApiSlice } from '../slices/orderApiSlice';
 import { productsApiSlice } from '../slices/productsApiSlice';
 import { subCategoryApiSlice } from '../slices/subCategoryApiSlice';
 import { userApiSlice } from '../slices/userApiSlice';
+import { userLocationApiSlice } from '../slices/userLocationApiSlice';
 
 export const makeStore = () => {
     return configureStore({
@@ -22,11 +23,12 @@ export const makeStore = () => {
             [subCategoryApiSlice.reducerPath]: subCategoryApiSlice.reducer,
             [recommendedProductsApiSlice.reducerPath]: recommendedProductsApiSlice.reducer,
             [userApiSlice.reducerPath]: userApiSlice.reducer,
+            [userLocationApiSlice.reducerPath]: userLocationApiSlice.reducer,
             //slices
             cart: cartReducer,
             userLocation: userLocationReducer,
         },
-        middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(categoriesApiSlice.middleware).concat(brandsApiSlice.middleware).concat(cartApiSlice.middleware).concat(recommendedProductsApiSlice.middleware).concat(orderApiSlice.middleware).concat(productsApiSlice.middleware).concat(subCategoryApiSlice.middleware).concat(userApiSlice.middleware)
+        middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(categoriesApiSlice.middleware).concat(brandsApiSlice.middleware).concat(cartApiSlice.middleware).concat(recommendedProductsApiSlice.middleware).concat(orderApiSlice.middleware).concat(productsApiSlice.middleware).concat(subCategoryApiSlice.middleware).concat(userApiSlice.middleware).concat(userLocationApiSlice.middleware)
     })
 }
 
