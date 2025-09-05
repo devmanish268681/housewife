@@ -108,6 +108,7 @@ import {
 } from "../services/addressService";
 import { Prisma } from "@prisma/client";
 import {
+  applyOffer,
   calculateGSTBreakup,
   createOrderRecord,
   ProductWithTaxRates,
@@ -118,10 +119,13 @@ import { createRazorpayOrder } from "../lib/createRazorpayOrder";
 import { createPaymentsRecord } from "../services/paymentsService";
 import { createOrderInvoice } from "../services/InvoiceService";
 import { isUserWithinRadius } from "../services/locationService";
+import { lockRowForUpdate } from "../lib/lockRow";
 
 const isServerLive = async () => {
   try {
     const res = await fetch(`${process.env.NEXT_WEBSOCKET_URL}/api/ping`);
+    console.log("Waking up socket server from deep sleep");
+
     return res.ok;
   } catch (error) {
     console.error("🚫 Socket server not reachable:", error);
@@ -170,9 +174,7 @@ export const placeOrderController = async (body: any, userId: string) => {
           const admin = await getRoleByName("admin");
           const adminUserId = admin.userData?.users[0].id as string;
 
-          // console.log("admin", admin.userData?.users[0]);
           const adminAddress = await getAddressByUserId(adminUserId);
-          console.log("adminAddress", adminAddress);
 
           if (!admin.success) {
             throw new Error(admin.message);
@@ -226,16 +228,27 @@ export const placeOrderController = async (body: any, userId: string) => {
           });
         }
 
+        let OfferApplied;
+        if (body.offerId) {
+          OfferApplied = await applyOffer({
+            offerId: body.offerId,
+            totalOrderAmount: gstBreakup?.totalPrice,
+            userId: userId,
+          });
+          gstBreakup.totalPrice = OfferApplied.finalAmount;
+        }
+        console.log({ OfferApplied });
+
         const orderObj = {
           userId,
           addressId: userAdress.id,
-          total:
-            gstBreakup?.subTotal + gstBreakup?.gstAmount + body.deliveryFee,
+          total: gstBreakup?.totalPrice,
           status: "pending",
           isIGST: gstBreakup?.isIGST,
           subTotal: gstBreakup?.subTotal,
           gstTotal: gstBreakup?.gstAmount,
           deliveryFee: body.deliveryFee,
+          offerId: body.offerId ? body.offerId : undefined,
         };
 
         const order = await createOrderRecord(tx, orderObj);
@@ -251,6 +264,8 @@ export const placeOrderController = async (body: any, userId: string) => {
           };
 
           const orderItems = await createOrderItemsRecord(tx, orderItemObj);
+
+          await lockRowForUpdate(item.productVariantId, "ProductVariant", tx);
 
           const updatedProduct = await updatedProductVariant(
             tx,
@@ -273,69 +288,29 @@ export const placeOrderController = async (body: any, userId: string) => {
               userName: user.name || "user",
             }),
           });
+          console.log(`server is live ${new Date()}`);
         } else {
           console.warn("⚠️ Notification server is down, skipping send.");
         }
 
-        return order;
+        const placeOrder = await createRazorpayOrder(order);
+        console.log("placeOrder", placeOrder);
+
+        const paymentsObj: any = {
+          razorpayOrderId: placeOrder.order.id,
+          orderId: order.id,
+          status: "pending",
+          amount: placeOrder.order.amount,
+          method: body.paymentMethod,
+        };
+        console.log("paymentsObj", paymentsObj);
+        const paymentsRecord = await createPaymentsRecord(paymentsObj, tx);
+        return { placeOrder };
       },
       { timeout: 200000 }
     );
 
-    const placeOrder = await createRazorpayOrder(result);
-    console.log("placeOrder", placeOrder);
-
-    const paymentsObj: any = {
-      razorpayOrderId: placeOrder.order.id,
-      orderId: result.id,
-      status: "pending",
-      amount: placeOrder.order.amount,
-    };
-
-    // const order = await getOrderById(result.id);
-
-    // let data;
-    // if (order?.items && Array.isArray(order.items) && order.items.length > 0) {
-    //   [data] = order.items.map((item) => ({
-    //     userName: order.user.name,
-    //     userEmail: order.user.email,
-    //     contact: order.user.phoneNumber,
-    //     productName: item.product.name,
-    //     productDescription: item.product.description,
-    //     amount: order.total * 100, // In paise
-    //     currency: "INR",
-    //     quantity: item.quantity,
-    //     orderId: order.id,
-    //     status: "paid",
-    //   }));
-    // } else {
-    //   throw new Error("Order items not found or empty");
-    // }
-
-    // const invoiceObj: any = {
-    //   type: "invoice",
-    //   customer: {
-    //     name: data.userName,
-    //     email: data.userEmail,
-    //     contact: data.contact,
-    //   },
-    //   line_items: [
-    //     {
-    //       name: data.productName,
-    //       amount: data.amount, // In paise
-    //       currency: data.currency,
-    //       quantity: data.quantity,
-    //     },
-    //   ],
-    //   description: data.productDescription,
-    // };
-
-    // const orderInvoice = await createOrderInvoice(invoiceObj);
-    // console.log("orderInvoice", orderInvoice);
-
-    const paymentsRecord = await createPaymentsRecord(paymentsObj);
-
-    return { placeOrder };
+    return { placeOrder: result.placeOrder };
   } catch (error) {
     console.log("Error in placeOrderController", error);
     throw error;

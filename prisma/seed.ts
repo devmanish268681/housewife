@@ -20,6 +20,7 @@ const {
   eyeMakeupProducts,
   hairAndSkinProducts,
   imagePublicLinks,
+  offers,
 } = require("./data");
 
 const { PrismaClient } = require("@prisma/client");
@@ -252,6 +253,10 @@ async function main() {
         create: { name },
       })
     )
+  );
+
+  await Promise.all(
+    offers.map((offer: any) => prisma.offers.create({ data: offer }))
   );
 
   // 1. Get all roles first

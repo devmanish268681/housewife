@@ -180,7 +180,9 @@ model Order {
   paymentStatus String      @default("pending")
   status        String
   address       Address     @relation(fields: [addressId], references: [id])
+  offers        Offers?     @relation(fields: [offerId], references: [id])
   addressId     String
+  offerId       String?
   payments      Payments[]
   invoice       String      @default("")
   invoiceId     String?
@@ -273,4 +275,40 @@ model DeliveryZone {
   latitude  String
   longitude String
   radiusKm  Float
+}
+
+enum OfferType {
+  PERCENTAGE
+  FLAT
+}
+
+model Offers {
+  id            String    @id @default(uuid())
+  title         String
+  description   String?
+  type          OfferType // 'PERCENTAGE' or 'FLAT'
+  discountValue Float // e.g., 10 for 10% or 100 for ₹100
+  maxDiscount   Float? // only for percentage type
+  minOrderValue Float? // optional condition
+  couponCode    String?   @unique // optional, only if applied via code
+  usageLimit    Int? // max total redemptions
+  usagePerUser  Int? // max redemptions per user
+  startDate     DateTime
+  endDate       DateTime
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deleted       Boolean   @default(false)
+
+  redemptions Redemption[]
+  Order       Order[]
+}
+
+model Redemption {
+  id      String   @id @default(cuid())
+  offerId String
+  userId  String
+  usedAt  DateTime @default(now())
+
+  offer Offers @relation(fields: [offerId], references: [id])
 }
