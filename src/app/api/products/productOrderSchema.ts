@@ -14,6 +14,7 @@ export const productOrderSchema = z.object({
   paymentMethod: z.enum(validMethods),
   deliveryFee: z.number().nonnegative(),
   street: z.string().min(1),
+  offerId: z.string().optional(),
   city: z.string().min(1),
   state: z.string().min(1),
   country: z.string().min(1),

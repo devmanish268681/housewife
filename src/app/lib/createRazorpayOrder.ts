@@ -38,8 +38,10 @@ const razorpay = new Razorpay({
 
 export async function createRazorpayOrder(orderObj: any) {
   try {
+    console.log("orderObj", { orderObj });
+
     const razorpayOrder = await razorpay.orders.create({
-      amount: orderObj.total * 100, // Razorpay expects amount in paise
+      amount: Math.round(orderObj.total * 100), // Razorpay expects amount in paise
       currency: "INR",
       receipt: orderObj.id,
       notes: {
@@ -56,7 +58,7 @@ export async function createRazorpayOrder(orderObj: any) {
       order: razorpayOrder,
     };
   } catch (error) {
-    console.error("Error creating Razorpay payment link:", error);
+    console.error("Error creating Razorpay order:", error);
     throw error;
   }
 }
@@ -69,7 +71,7 @@ export async function getRazorpayOrder(razorpayOrderId: any) {
       order: razorpayOrder,
     };
   } catch (error) {
-    console.error("Error creating Razorpay payment link:", error);
+    console.error("Error fetching Razorpay order:", error);
     throw error;
   }
 }

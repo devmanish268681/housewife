@@ -12,8 +12,8 @@ export type CreateOrderInput = Omit<
 
 type ApplyOfferInput = {
   userId: string;
-  orderAmount: number; // in INR
-  couponCode?: string; // optional
+  totalOrderAmount: number; // in INR
+  offerId: string; // optional
 };
 
 export type ProductWithTaxRates = {
@@ -117,16 +117,16 @@ export const getOrderByOrderId = async (
 
 export const applyOffer = async ({
   userId,
-  orderAmount,
-  couponCode,
+  totalOrderAmount,
+  offerId,
 }: ApplyOfferInput) => {
   try {
     const now = new Date();
     let offer = null;
-    if (couponCode) {
+    if (offerId) {
       offer = await prisma.offers.findFirst({
         where: {
-          couponCode,
+          id: offerId,
           isActive: true,
           startDate: { lte: now },
           endDate: { gte: now },
@@ -134,9 +134,10 @@ export const applyOffer = async ({
       });
 
       if (!offer) {
-        throw new Error("Invalid or expired coupon");
+        throw new Error("expired coupon");
       }
-      if (offer.minOrderValue && orderAmount < offer.minOrderValue) {
+
+      if (offer.minOrderValue && totalOrderAmount < offer.minOrderValue) {
         throw new Error(`Minimum order value must be ₹${offer.minOrderValue}`);
       }
 
@@ -162,7 +163,7 @@ export const applyOffer = async ({
     let discount = 0;
     if (offer) {
       if (offer.type === "PERCENTAGE") {
-        discount = (offer.discountValue / 100) * orderAmount;
+        discount = (offer.discountValue / 100) * totalOrderAmount;
         if (offer.maxDiscount && discount > offer.maxDiscount) {
           discount = offer.maxDiscount;
         }
@@ -170,8 +171,16 @@ export const applyOffer = async ({
         discount = offer.discountValue;
       }
     }
-    const finalAmount = Math.max(orderAmount - discount, 0);
-  
+    const finalAmount = Math.max(totalOrderAmount - discount, 0);
+    console.log("discoutn------", discount);
+    console.log("finalAmount------", finalAmount);
+
+    return {
+      discountAmount: discount,
+      finalAmount,
+      discountValue: offer?.discountValue,
+      type: offer?.type,
+    };
   } catch (error: any) {
     console.error("Internal server error", error);
     throw error;

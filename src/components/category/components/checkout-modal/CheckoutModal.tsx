@@ -132,7 +132,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
     currency?: string;
   }) => {
     const options = {
-      key: process.env.RAZORPAY_KEY_ID,
+      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
       amount: orderData.amount,
       currency: orderData.currency || "INR",
       name: "My Grocery Store",
@@ -158,7 +158,9 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
           alert("Payment successful! Your order is placed.");
         } catch (err) {
           console.error("Payment verification failed:", err);
-          alert("Payment successful but verification failed. Please contact support.");
+          alert(
+            "Payment successful but verification failed. Please contact support."
+          );
         }
       },
       prefill: {

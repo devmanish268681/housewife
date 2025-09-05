@@ -3,11 +3,7 @@ import { Prisma } from "@prisma/client";
 
 export type CreatePaymentInput = Omit<
   Payment,
-  | "id"
-  | "captured"
-  | "createdAt"
-  | "updatedAt"
-  | "order"
+  "id" | "captured" | "createdAt" | "updatedAt" | "order"
 >;
 
 export interface Payment {

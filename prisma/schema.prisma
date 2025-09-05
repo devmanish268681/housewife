@@ -180,7 +180,9 @@ model Order {
   paymentStatus String      @default("pending")
   status        String
   address       Address     @relation(fields: [addressId], references: [id])
+  offers        Offers?     @relation(fields: [offerId], references: [id])
   addressId     String
+  offerId       String?
   payments      Payments[]
   invoice       String      @default("")
   invoiceId     String?
@@ -299,6 +301,7 @@ model Offers {
   deleted       Boolean   @default(false)
 
   redemptions Redemption[]
+  Order       Order[]
 }
 
 model Redemption {

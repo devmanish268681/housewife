@@ -21,8 +21,17 @@ export async function POST(request: Request) {
 
     const body = await request.json();
 
-    const { products, street, city, country, zipCode, state, deliveryFee } =
-      body;
+    const {
+      products,
+      street,
+      city,
+      country,
+      zipCode,
+      state,
+      deliveryFee,
+      offerId,
+      paymentMethod,
+    } = body;
 
     const validation = await validateRequest(body, productOrderSchema);
 
@@ -61,6 +70,8 @@ export async function POST(request: Request) {
       zipCode,
       state,
       deliveryFee,
+      offerId,
+      paymentMethod,
     };
     console.log("bodyData", bodyData);
 
