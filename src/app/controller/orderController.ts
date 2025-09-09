@@ -120,6 +120,7 @@ import { createPaymentsRecord } from "../services/paymentsService";
 import { createOrderInvoice } from "../services/InvoiceService";
 import { isUserWithinRadius } from "../services/locationService";
 import { lockRowForUpdate } from "../lib/lockRow";
+import { paymentMethod } from "../enums";
 
 const isServerLive = async () => {
   try {
@@ -275,6 +276,34 @@ export const placeOrderController = async (body: any, userId: string) => {
         });
         await Promise.all(orderItemPromises);
 
+        let placeOrder;
+        let paymentsObj;
+        console.log("body.paymentMethod", body.paymentMethod);
+        if (body.paymentMethod === paymentMethod.cod) {
+          paymentsObj = {
+            // razorpayOrderId: null,
+            orderId: order.id,
+            status: "pending",
+            amount: order.total,
+            method: body.paymentMethod,
+          };
+          console.log({ paymentsObj });
+          const paymentsRecord = await createPaymentsRecord(paymentsObj, tx);
+        } else {
+          placeOrder = await createRazorpayOrder(order);
+          console.log("placeOrder", placeOrder);
+
+          paymentsObj = {
+            razorpayOrderId: placeOrder.order.id,
+            orderId: order.id,
+            status: "pending",
+            amount: placeOrder.order.amount,
+            method: body.paymentMethod,
+          };
+
+          console.log("paymentsObj", paymentsObj);
+          const paymentsRecord = await createPaymentsRecord(paymentsObj, tx);
+        }
         // Notify both user and admin
         if (await isServerLive()) {
           await fetch(`${process.env.NEXT_WEBSOCKET_URL}/sendNotification`, {
@@ -293,18 +322,6 @@ export const placeOrderController = async (body: any, userId: string) => {
           console.warn("⚠️ Notification server is down, skipping send.");
         }
 
-        const placeOrder = await createRazorpayOrder(order);
-        console.log("placeOrder", placeOrder);
-
-        const paymentsObj: any = {
-          razorpayOrderId: placeOrder.order.id,
-          orderId: order.id,
-          status: "pending",
-          amount: placeOrder.order.amount,
-          method: body.paymentMethod,
-        };
-        console.log("paymentsObj", paymentsObj);
-        const paymentsRecord = await createPaymentsRecord(paymentsObj, tx);
         return { placeOrder };
       },
       { timeout: 200000 }

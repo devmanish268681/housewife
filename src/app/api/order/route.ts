@@ -81,6 +81,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       placeOrder,
+      message: `order place successfully using paymentMethod ${paymentMethod}`,
     });
   } catch (error: any) {
     console.error("Internal server error", error);

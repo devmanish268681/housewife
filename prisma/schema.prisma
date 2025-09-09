@@ -252,7 +252,7 @@ model Payments {
   updatedAt         DateTime @updatedAt
   deleted           Boolean  @default(false)
   orderId           String // Foreign key to your local Order model
-  razorpayOrderId   String   @unique // e.g., "order_DslnoIgkIDL8Zt"
+  razorpayOrderId   String?  @unique // e.g., "order_DslnoIgkIDL8Zt"
   razorpayPaymentId String? // e.g., "pay_DslnoIgkIDL8Zt"
   signature         String? // Razorpay signature
   amount            Float // stored in rupees
