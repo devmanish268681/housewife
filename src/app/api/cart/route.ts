@@ -6,6 +6,7 @@ import { validateRequest } from "../../lib/validateRequest";
 import { addToCartSchema } from "./addToCartSchema ";
 import { getUserById } from "@/app/services/userService";
 import { validateAccess } from "@/lib/roles/validateAccess";
+import { deleteCartItemsById } from "@/app/services/cartItemsService";
 
 export async function POST(request: Request) {
   try {
@@ -70,17 +71,14 @@ export async function POST(request: Request) {
         userId,
         productId,
         productVariantId: baseProductVariantId,
+        deleted: false,
       },
     });
 
     // If exists → update quantity
     if (existingCartItem) {
       if (Number(quantity) <= 0 && !isNaN(Number(quantity))) {
-        await prisma.cartItem.delete({
-          where: {
-            id: existingCartItem.id,
-          },
-        });
+        await deleteCartItemsById(existingCartItem.id);
 
         return NextResponse.json({
           message: "Cart item removed successfully",
