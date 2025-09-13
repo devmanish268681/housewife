@@ -18,7 +18,8 @@ export async function POST(request: Request) {
       usagePerUser,
       startDate,
       endDate,
-      isActive = true,
+      isActive,
+      scope,
     } = body;
 
     // Basic validation
@@ -40,6 +41,7 @@ export async function POST(request: Request) {
     // Create the offer
     const newOffer = await prisma.offers.create({
       data: {
+        scope: scope,
         title,
         description,
         type,

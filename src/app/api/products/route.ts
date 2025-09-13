@@ -46,6 +46,7 @@ export async function GET(request: Request) {
       subCategoryId: product.subCategoryId,
       brandId: product.brandId,
       price: product.variants[0].price,
+      discountedPrice: product.variants[0].discountedPrice,
       variantId: product.variants[0].id,
       unit: product.variants[0].unit,
       unitSize: product.variants[0].unitSize,

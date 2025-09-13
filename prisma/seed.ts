@@ -169,6 +169,8 @@ async function seedProducts(
         unit: spec.unit,
         unitSize: spec.unitSize,
         price: spec.price + (spec.priceMultiplier ?? 0) * priceCounter,
+        discountedPrice:
+          spec.price + (spec.priceMultiplier ?? 0) * priceCounter,
         stock: spec.stock + (spec.stockMultiplier ?? 0) * stockCounter,
       })),
     });

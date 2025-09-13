@@ -114,6 +114,9 @@ model Product {
   igst          Float
   variants      ProductVariant[]
   CartItem      CartItem[]
+  // offers        Offers?          @relation(fields: [offersId], references: [id])
+  // offersId      String?
+  offers        Offers[]         @relation("OfferProducts")
 }
 
 model Category {
@@ -126,21 +129,31 @@ model Category {
   image       String?
   products    Product[]
   subCategory SubCategory[]
+  // Offers          Offers?       @relation(fields: [offersId], references: [id])
+  // offersId        String?
+  // offers      Offers[]      @relation("OfferCategories")
+
+  Offers Offers[] @relation("OfferCategories")
 }
 
 model ProductVariant {
-  id         String      @id @default(uuid())
-  product    Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
-  productId  String
-  unit       String // e.g., "ml", "L", "kg"
-  unitSize   Int // e.g., 500, 1, 2
-  price      Float // price for this variant
-  stock      Int
-  orderItems OrderItem[]
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
-  deleted    Boolean     @default(false)
-  CartItem   CartItem[]
+  id              String      @id @default(uuid())
+  product         Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId       String
+  unit            String // e.g., "ml", "L", "kg"
+  unitSize        Int // e.g., 500, 1, 2
+  price           Float // price for this variant //original price
+  discountedPrice Float // Shown as current price (can be same as price if no discount)
+  stock           Int
+  orderItems      OrderItem[]
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  deleted         Boolean     @default(false)
+  CartItem        CartItem[]
+  // Offers        Offers?     @relation(fields: [offersId], references: [id])
+  // offersId      String?
+  offers          Offers[]    @relation("OfferVariants")
+  // Offers     Offers[]
 }
 
 model SubCategory {
@@ -153,6 +166,9 @@ model SubCategory {
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
   deleted    Boolean   @default(false)
+  // Offers             Offers?   @relation(fields: [offersId], references: [id])
+  // offersId           String?
+  offers     Offers[]  @relation("OfferSubCategories")
 }
 
 model Brand {
@@ -163,6 +179,9 @@ model Brand {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deleted   Boolean   @default(false)
+  // Offers      Offers?   @relation(fields: [offersId], references: [id])
+  // offersId    String?
+  offers    Offers[]  @relation("OfferBrands")
 }
 
 model Order {
@@ -252,7 +271,7 @@ model Payments {
   updatedAt         DateTime @updatedAt
   deleted           Boolean  @default(false)
   orderId           String // Foreign key to your local Order model
-  razorpayOrderId   String   @unique // e.g., "order_DslnoIgkIDL8Zt"
+  razorpayOrderId   String?  @unique // e.g., "order_DslnoIgkIDL8Zt"
   razorpayPaymentId String? // e.g., "pay_DslnoIgkIDL8Zt"
   signature         String? // Razorpay signature
   amount            Float // stored in rupees
@@ -282,8 +301,18 @@ enum OfferType {
   FLAT
 }
 
+// enum OfferScope {
+//   PRODUCT
+//   CATEGORY
+//   ORDER
+//   BRAND
+// }
+
 model Offers {
   id            String    @id @default(uuid())
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deleted       Boolean   @default(false)
   title         String
   description   String?
   type          OfferType // 'PERCENTAGE' or 'FLAT'
@@ -295,13 +324,27 @@ model Offers {
   usagePerUser  Int? // max redemptions per user
   startDate     DateTime
   endDate       DateTime
-  isActive      Boolean   @default(true)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  deleted       Boolean   @default(false)
+  isActive      Boolean   @default(false)
+  scope         String
+  // Relations to define offer eligibility
+  categories    Category? @relation("OfferCategories", fields: [categoryId], references: [id])
+  categoryId    String?
 
-  redemptions Redemption[]
-  Order       Order[]
+  brands  Brand?  @relation("OfferBrands", fields: [brandId], references: [id])
+  brandId String?
+
+  products  Product? @relation("OfferProducts", fields: [productId], references: [id])
+  productId String?
+
+  ProductVariant ProductVariant? @relation("OfferVariants", fields: [productVariantId], references: [id])
+
+  productVariantId String?
+
+  SubCategory   SubCategory? @relation("OfferSubCategories", fields: [subCategoryId], references: [id])
+  subCategoryId String?
+
+  Order      Order[]
+  Redemption Redemption[]
 }
 
 model Redemption {
