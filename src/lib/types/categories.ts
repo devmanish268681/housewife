@@ -27,9 +27,9 @@ export type Categories = {
     id: string,
     name: string,
     image: any,
-    createdAt:string;
-    description:string;
-    updatedAt:string;
+    createdAt: string;
+    description: string;
+    updatedAt: string;
     subCategories: {
         id: string,
         name: string,
@@ -47,8 +47,8 @@ export type brands = {
     id: string,
     name: string,
     image: any,
-    createdAt:string,
-    updatedAt:string
+    createdAt: string,
+    updatedAt: string
 }
 
 
@@ -79,25 +79,30 @@ export type Product = {
 };
 
 export type CategoryProduct = {
-    products: Product[]
+    products: Product[];
+    page: number;
+    total: number;
+    hasMore: boolean
 }
 
 export type GetProductsParams = {
     categoryId?: string | null;
     subCategoryId?: string;
     brandId?: string;
+    page?: number;
+    limit?: number
 };
 
 export interface SubCategory {
-  id: string;
-  name: string;
-  categoryId: string;
-  image:any;
-  createdAt: string;
-  updatedAt: string;
-  deleted: boolean;
+    id: string;
+    name: string;
+    categoryId: string;
+    image: any;
+    createdAt: string;
+    updatedAt: string;
+    deleted: boolean;
 }
 
 export interface CategoriesSectionProps {
-  data?: { categories: Categories[] }
+    data?: { categories: Categories[] }
 }

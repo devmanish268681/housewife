@@ -1,6 +1,3 @@
-// app/not-deliverable/page.tsx
-"use client";
-
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMapMarkerAlt } from "@fortawesome/free-solid-svg-icons";

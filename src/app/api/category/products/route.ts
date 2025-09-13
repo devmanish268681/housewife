@@ -5,8 +5,10 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const categoryId = searchParams.get("categoryId") as string;
-    const subCategoryId = searchParams.get("subCategoryId") as string | null;
-    const brandId = searchParams.get("brandId") as string | null;
+    const subCategoryId = searchParams.get("subCategoryId");
+    const brandId = searchParams.get("brandId");
+    const page = parseInt(searchParams.get("page") || "1", 10);
+    const limit = parseInt(searchParams.get("limit") || "15", 10);
 
     if (!categoryId) {
       return NextResponse.json(
@@ -15,13 +17,14 @@ export async function GET(request: Request) {
       );
     }
 
-    // Get all valid subCategoryIds and brandIds for this category
+    const skip = (page - 1) * limit;
+
     const [subCategories, productBrands] = await Promise.all([
-      await prisma.subCategory.findMany({
+      prisma.subCategory.findMany({
         where: { categoryId },
         select: { id: true },
       }),
-      await prisma.product.findMany({
+      prisma.product.findMany({
         where: { categoryId },
         select: { brandId: true },
         distinct: ["brandId"],
@@ -31,20 +34,30 @@ export async function GET(request: Request) {
     const allSubCategoryIds = subCategories.map((s) => s.id);
     const brandIds = productBrands.map((p) => p.brandId);
 
-    // Build filters
     const productWhere: any = {
+      categoryId,
       subCategoryId: subCategoryId ? subCategoryId : { in: allSubCategoryIds },
       brandId: brandId ? brandId : { in: brandIds },
     };
 
+
     const products = await prisma.product.findMany({
       where: productWhere,
+      skip,
+      take: limit,
       include: {
         variants: true,
       },
     });
 
-    return NextResponse.json({ products });
+    const total = await prisma.product.count({ where: productWhere });
+
+    return NextResponse.json({
+      products,
+      page,
+      total,
+      hasMore: skip + limit < total,
+    });
   } catch (error: any) {
     console.error("Catalog API error:", error);
     return NextResponse.json(

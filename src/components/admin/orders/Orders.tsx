@@ -1,51 +1,49 @@
 "use client";
 
+import React from "react";
+
+//third-party
 import { AllCommunityModule, ColDef, ModuleRegistry } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
-import React, { useState } from "react";
+
+//slices
 import { useGetAllOrdersQuery } from "@/lib/slices/orderApiSlice";
+
+//constants
 import { statusColors } from "./constants";
-import OrderDetailsModal from "./order-deatil-modal/OrderDetailModal";
+
+//components
+import ActionsCell from "./action-cell/ActionCell";
 
 // Register all community features
 ModuleRegistry.registerModules([AllCommunityModule]);
 
 const Orders = () => {
-  const [selectedOrder, setSelectedOrder] = useState<any>(null);
   type Status = keyof typeof statusColors;
-
-  const rowData = [
-    {
-      id: "1001",
-      customerName: "Ravi Kumar",
-      customerEmail: "ravi@example.com",
-      address: "Delhi, India",
-      status: "Pending",
-      paymentMethod: "COD",
-      date: "2025-08-18",
-      total: 350,
-      products: [
-        { name: "Apples", quantity: 2, price: 100 },
-        { name: "Milk", quantity: 1, price: 50 },
-        { name: "Bread", quantity: 2, price: 50 },
-      ],
-    },
-  ];
-
   const { data: ordersData } = useGetAllOrdersQuery();
 
   const columnDefs = [
     { field: "id", sortable: true },
     { field: "createdAt", sortable: true },
-    { field: "userId", sortable: true },
+    { field: "user.name", sortable: true },
+    { field: "gstTotal", sortable: true },
+    { headerName: "Sub Total (₹)", field: "subTotal", sortable: true },
+    { headerName: "Delivery Fee (₹)", field: "deliveryFee", sortable: true },
     { headerName: "Total (₹)", field: "total", sortable: true },
     { field: "paymentStatus", sortable: true },
+    {
+      headerName: "Payement Method",
+      field: "payments",
+      sortable: true,
+      valueGetter: (params: any) =>
+        params.data.payments?.map((p: any) => p.method).join(", ") || "-",
+    },
     {
       headerName: "Status",
       field: "status",
       cellRenderer: (params: any) => (
         <span
-          className={`px-2 py-1 rounded-full text-xs font-semibold ${statusColors[params.value as Status] || "bg-gray-100 text-gray-800"
+          className={`px-2 py-1 rounded-full text-xs font-semibold capitalize ${statusColors[params.value as Status] || "bg-gray-100 text-gray-800"
             }`}
         >
           {params.value}
@@ -55,7 +53,7 @@ const Orders = () => {
     {
       field: "actions",
       headerName: "Actions",
-      // cellRenderer: ActionsCell,
+      cellRenderer: ActionsCell,
       sortable: false,
     },
   ];
@@ -76,12 +74,6 @@ const Orders = () => {
           autoSizeStrategy={{ type: "fitGridWidth" }}
         />
       </div>
-      {selectedOrder && (
-        <OrderDetailsModal
-          order={selectedOrder}
-          onClose={() => setSelectedOrder(null)}
-        />
-      )}
     </div>
   );
 };

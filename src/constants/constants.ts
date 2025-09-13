@@ -1,358 +1,74 @@
-export const recommended = [
-    {
-        title: "Fresh Fruits",
-        image:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuDO7S7Jv8jRcgvw6Jer_oGOSWY6eCEYDcJcHc3yDpGUhfxVdDl8LhZ1UBu3EExL9OIybfx8qg-CFUF4g8DSvKfuWz73TbmTW5aZb_SwTc8XZkunjD98EtzDWQZkRjTHX7KqTT6J4_HvanYMOYKGAUg6dqOjwWpYp7rVMChnuAmUhL0sqerBu08omTDSwjm0RTKK4K0OBYbHUejq1LyYF42UdfymFnjIEie8fXmqILEb5-vFRuP-9JXkZBE6tHUNkvFK-J9ZTE3M2yxQ",
-    },
-    {
-        title: "Organic Vegetables",
-        image:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuDO7S7Jv8jRcgvw6Jer_oGOSWY6eCEYDcJcHc3yDpGUhfxVdDl8LhZ1UBu3EExL9OIybfx8qg-CFUF4g8DSvKfuWz73TbmTW5aZb_SwTc8XZkunjD98EtzDWQZkRjTHX7KqTT6J4_HvanYMOYKGAUg6dqOjwWpYp7rVMChnuAmUhL0sqerBu08omTDSwjm0RTKK4K0OBYbHUejq1LyYF42UdfymFnjIEie8fXmqILEb5-vFRuP-9JXkZBE6tHUNkvFK-J9ZTE3M2yxQ",
-    },
-    {
-        title: "Dairy & Eggs",
-        image:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuDO7S7Jv8jRcgvw6Jer_oGOSWY6eCEYDcJcHc3yDpGUhfxVdDl8LhZ1UBu3EExL9OIybfx8qg-CFUF4g8DSvKfuWz73TbmTW5aZb_SwTc8XZkunjD98EtzDWQZkRjTHX7KqTT6J4_HvanYMOYKGAUg6dqOjwWpYp7rVMChnuAmUhL0sqerBu08omTDSwjm0RTKK4K0OBYbHUejq1LyYF42UdfymFnjIEie8fXmqILEb5-vFRuP-9JXkZBE6tHUNkvFK-J9ZTE3M2yxQ",
-    },
-    {
-        title: "Bakery",
-        image:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuDO7S7Jv8jRcgvw6Jer_oGOSWY6eCEYDcJcHc3yDpGUhfxVdDl8LhZ1UBu3EExL9OIybfx8qg-CFUF4g8DSvKfuWz73TbmTW5aZb_SwTc8XZkunjD98EtzDWQZkRjTHX7KqTT6J4_HvanYMOYKGAUg6dqOjwWpYp7rVMChnuAmUhL0sqerBu08omTDSwjm0RTKK4K0OBYbHUejq1LyYF42UdfymFnjIEie8fXmqILEb5-vFRuP-9JXkZBE6tHUNkvFK-J9ZTE3M2yxQ",
-    },
-    {
-        title: "Frozen Foods",
-        image:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuDO7S7Jv8jRcgvw6Jer_oGOSWY6eCEYDcJcHc3yDpGUhfxVdDl8LhZ1UBu3EExL9OIybfx8qg-CFUF4g8DSvKfuWz73TbmTW5aZb_SwTc8XZkunjD98EtzDWQZkRjTHX7KqTT6J4_HvanYMOYKGAUg6dqOjwWpYp7rVMChnuAmUhL0sqerBu08omTDSwjm0RTKK4K0OBYbHUejq1LyYF42UdfymFnjIEie8fXmqILEb5-vFRuP-9JXkZBE6tHUNkvFK-J9ZTE3M2yxQ",
-    },
-    {
-        title: "Pantery Stapper",
-        image:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuDO7S7Jv8jRcgvw6Jer_oGOSWY6eCEYDcJcHc3yDpGUhfxVdDl8LhZ1UBu3EExL9OIybfx8qg-CFUF4g8DSvKfuWz73TbmTW5aZb_SwTc8XZkunjD98EtzDWQZkRjTHX7KqTT6J4_HvanYMOYKGAUg6dqOjwWpYp7rVMChnuAmUhL0sqerBu08omTDSwjm0RTKK4K0OBYbHUejq1LyYF42UdfymFnjIEie8fXmqILEb5-vFRuP-9JXkZBE6tHUNkvFK-J9ZTE3M2yxQ",
-    },
-    {
-        title: "Chocaltes",
-        image:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuDO7S7Jv8jRcgvw6Jer_oGOSWY6eCEYDcJcHc3yDpGUhfxVdDl8LhZ1UBu3EExL9OIybfx8qg-CFUF4g8DSvKfuWz73TbmTW5aZb_SwTc8XZkunjD98EtzDWQZkRjTHX7KqTT6J4_HvanYMOYKGAUg6dqOjwWpYp7rVMChnuAmUhL0sqerBu08omTDSwjm0RTKK4K0OBYbHUejq1LyYF42UdfymFnjIEie8fXmqILEb5-vFRuP-9JXkZBE6tHUNkvFK-J9ZTE3M2yxQ",
-    },
-    {
-        title: "Fresh Fruits",
-        image:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuDO7S7Jv8jRcgvw6Jer_oGOSWY6eCEYDcJcHc3yDpGUhfxVdDl8LhZ1UBu3EExL9OIybfx8qg-CFUF4g8DSvKfuWz73TbmTW5aZb_SwTc8XZkunjD98EtzDWQZkRjTHX7KqTT6J4_HvanYMOYKGAUg6dqOjwWpYp7rVMChnuAmUhL0sqerBu08omTDSwjm0RTKK4K0OBYbHUejq1LyYF42UdfymFnjIEie8fXmqILEb5-vFRuP-9JXkZBE6tHUNkvFK-J9ZTE3M2yxQ",
-    },
-];
-
-export const frequentlyBought = [
-    {
-        title: "Milk",
-        image:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuDO7S7Jv8jRcgvw6Jer_oGOSWY6eCEYDcJcHc3yDpGUhfxVdDl8LhZ1UBu3EExL9OIybfx8qg-CFUF4g8DSvKfuWz73TbmTW5aZb_SwTc8XZkunjD98EtzDWQZkRjTHX7KqTT6J4_HvanYMOYKGAUg6dqOjwWpYp7rVMChnuAmUhL0sqerBu08omTDSwjm0RTKK4K0OBYbHUejq1LyYF42UdfymFnjIEie8fXmqILEb5-vFRuP-9JXkZBE6tHUNkvFK-J9ZTE3M2yxQ",
-    },
-    {
-        title: "Bread",
-        image:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuDO7S7Jv8jRcgvw6Jer_oGOSWY6eCEYDcJcHc3yDpGUhfxVdDl8LhZ1UBu3EExL9OIybfx8qg-CFUF4g8DSvKfuWz73TbmTW5aZb_SwTc8XZkunjD98EtzDWQZkRjTHX7KqTT6J4_HvanYMOYKGAUg6dqOjwWpYp7rVMChnuAmUhL0sqerBu08omTDSwjm0RTKK4K0OBYbHUejq1LyYF42UdfymFnjIEie8fXmqILEb5-vFRuP-9JXkZBE6tHUNkvFK-J9ZTE3M2yxQ",
-    },
-    {
-        title: "Eggs",
-        image:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuDO7S7Jv8jRcgvw6Jer_oGOSWY6eCEYDcJcHc3yDpGUhfxVdDl8LhZ1UBu3EExL9OIybfx8qg-CFUF4g8DSvKfuWz73TbmTW5aZb_SwTc8XZkunjD98EtzDWQZkRjTHX7KqTT6J4_HvanYMOYKGAUg6dqOjwWpYp7rVMChnuAmUhL0sqerBu08omTDSwjm0RTKK4K0OBYbHUejq1LyYF42UdfymFnjIEie8fXmqILEb5-vFRuP-9JXkZBE6tHUNkvFK-J9ZTE3M2yxQ",
-    },
-    {
-        title: "Bananas",
-        image:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuDO7S7Jv8jRcgvw6Jer_oGOSWY6eCEYDcJcHc3yDpGUhfxVdDl8LhZ1UBu3EExL9OIybfx8qg-CFUF4g8DSvKfuWz73TbmTW5aZb_SwTc8XZkunjD98EtzDWQZkRjTHX7KqTT6J4_HvanYMOYKGAUg6dqOjwWpYp7rVMChnuAmUhL0sqerBu08omTDSwjm0RTKK4K0OBYbHUejq1LyYF42UdfymFnjIEie8fXmqILEb5-vFRuP-9JXkZBE6tHUNkvFK-J9ZTE3M2yxQ",
-    },
-    {
-        title: "Dairy Milk",
-        image:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuDO7S7Jv8jRcgvw6Jer_oGOSWY6eCEYDcJcHc3yDpGUhfxVdDl8LhZ1UBu3EExL9OIybfx8qg-CFUF4g8DSvKfuWz73TbmTW5aZb_SwTc8XZkunjD98EtzDWQZkRjTHX7KqTT6J4_HvanYMOYKGAUg6dqOjwWpYp7rVMChnuAmUhL0sqerBu08omTDSwjm0RTKK4K0OBYbHUejq1LyYF42UdfymFnjIEie8fXmqILEb5-vFRuP-9JXkZBE6tHUNkvFK-J9ZTE3M2yxQ",
-    },
-    {
-        title: "Oranges",
-        image:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuDO7S7Jv8jRcgvw6Jer_oGOSWY6eCEYDcJcHc3yDpGUhfxVdDl8LhZ1UBu3EExL9OIybfx8qg-CFUF4g8DSvKfuWz73TbmTW5aZb_SwTc8XZkunjD98EtzDWQZkRjTHX7KqTT6J4_HvanYMOYKGAUg6dqOjwWpYp7rVMChnuAmUhL0sqerBu08omTDSwjm0RTKK4K0OBYbHUejq1LyYF42UdfymFnjIEie8fXmqILEb5-vFRuP-9JXkZBE6tHUNkvFK-J9ZTE3M2yxQ",
-    },
-    {
-        title: "Grapes",
-        image:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuDO7S7Jv8jRcgvw6Jer_oGOSWY6eCEYDcJcHc3yDpGUhfxVdDl8LhZ1UBu3EExL9OIybfx8qg-CFUF4g8DSvKfuWz73TbmTW5aZb_SwTc8XZkunjD98EtzDWQZkRjTHX7KqTT6J4_HvanYMOYKGAUg6dqOjwWpYp7rVMChnuAmUhL0sqerBu08omTDSwjm0RTKK4K0OBYbHUejq1LyYF42UdfymFnjIEie8fXmqILEb5-vFRuP-9JXkZBE6tHUNkvFK-J9ZTE3M2yxQ",
-    },
-    {
-        title: "Guavwa",
-        image:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuDO7S7Jv8jRcgvw6Jer_oGOSWY6eCEYDcJcHc3yDpGUhfxVdDl8LhZ1UBu3EExL9OIybfx8qg-CFUF4g8DSvKfuWz73TbmTW5aZb_SwTc8XZkunjD98EtzDWQZkRjTHX7KqTT6J4_HvanYMOYKGAUg6dqOjwWpYp7rVMChnuAmUhL0sqerBu08omTDSwjm0RTKK4K0OBYbHUejq1LyYF42UdfymFnjIEie8fXmqILEb5-vFRuP-9JXkZBE6tHUNkvFK-J9ZTE3M2yxQ",
-    },
-];
-
-export const popularItems = [
-    {
-        title: "Fresh Fruits",
-        image:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuDO7S7Jv8jRcgvw6Jer_oGOSWY6eCEYDcJcHc3yDpGUhfxVdDl8LhZ1UBu3EExL9OIybfx8qg-CFUF4g8DSvKfuWz73TbmTW5aZb_SwTc8XZkunjD98EtzDWQZkRjTHX7KqTT6J4_HvanYMOYKGAUg6dqOjwWpYp7rVMChnuAmUhL0sqerBu08omTDSwjm0RTKK4K0OBYbHUejq1LyYF42UdfymFnjIEie8fXmqILEb5-vFRuP-9JXkZBE6tHUNkvFK-J9ZTE3M2yxQ",
-    },
-    {
-        title: "Fresh Fruits",
-        image:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuDO7S7Jv8jRcgvw6Jer_oGOSWY6eCEYDcJcHc3yDpGUhfxVdDl8LhZ1UBu3EExL9OIybfx8qg-CFUF4g8DSvKfuWz73TbmTW5aZb_SwTc8XZkunjD98EtzDWQZkRjTHX7KqTT6J4_HvanYMOYKGAUg6dqOjwWpYp7rVMChnuAmUhL0sqerBu08omTDSwjm0RTKK4K0OBYbHUejq1LyYF42UdfymFnjIEie8fXmqILEb5-vFRuP-9JXkZBE6tHUNkvFK-J9ZTE3M2yxQ",
-    },
-    {
-        title: "Fresh Fruits",
-        image:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuDO7S7Jv8jRcgvw6Jer_oGOSWY6eCEYDcJcHc3yDpGUhfxVdDl8LhZ1UBu3EExL9OIybfx8qg-CFUF4g8DSvKfuWz73TbmTW5aZb_SwTc8XZkunjD98EtzDWQZkRjTHX7KqTT6J4_HvanYMOYKGAUg6dqOjwWpYp7rVMChnuAmUhL0sqerBu08omTDSwjm0RTKK4K0OBYbHUejq1LyYF42UdfymFnjIEie8fXmqILEb5-vFRuP-9JXkZBE6tHUNkvFK-J9ZTE3M2yxQ",
-    },
-    {
-        title: "Fresh Fruits",
-        image:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuDO7S7Jv8jRcgvw6Jer_oGOSWY6eCEYDcJcHc3yDpGUhfxVdDl8LhZ1UBu3EExL9OIybfx8qg-CFUF4g8DSvKfuWz73TbmTW5aZb_SwTc8XZkunjD98EtzDWQZkRjTHX7KqTT6J4_HvanYMOYKGAUg6dqOjwWpYp7rVMChnuAmUhL0sqerBu08omTDSwjm0RTKK4K0OBYbHUejq1LyYF42UdfymFnjIEie8fXmqILEb5-vFRuP-9JXkZBE6tHUNkvFK-J9ZTE3M2yxQ",
-    },
-    {
-        title: "Fresh Fruits",
-        image:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuDO7S7Jv8jRcgvw6Jer_oGOSWY6eCEYDcJcHc3yDpGUhfxVdDl8LhZ1UBu3EExL9OIybfx8qg-CFUF4g8DSvKfuWz73TbmTW5aZb_SwTc8XZkunjD98EtzDWQZkRjTHX7KqTT6J4_HvanYMOYKGAUg6dqOjwWpYp7rVMChnuAmUhL0sqerBu08omTDSwjm0RTKK4K0OBYbHUejq1LyYF42UdfymFnjIEie8fXmqILEb5-vFRuP-9JXkZBE6tHUNkvFK-J9ZTE3M2yxQ",
-    },
-    {
-        title: "Fresh Fruits",
-        image:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuDO7S7Jv8jRcgvw6Jer_oGOSWY6eCEYDcJcHc3yDpGUhfxVdDl8LhZ1UBu3EExL9OIybfx8qg-CFUF4g8DSvKfuWz73TbmTW5aZb_SwTc8XZkunjD98EtzDWQZkRjTHX7KqTT6J4_HvanYMOYKGAUg6dqOjwWpYp7rVMChnuAmUhL0sqerBu08omTDSwjm0RTKK4K0OBYbHUejq1LyYF42UdfymFnjIEie8fXmqILEb5-vFRuP-9JXkZBE6tHUNkvFK-J9ZTE3M2yxQ",
-    },
-    {
-        title: "Fresh Fruits",
-        image:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuDO7S7Jv8jRcgvw6Jer_oGOSWY6eCEYDcJcHc3yDpGUhfxVdDl8LhZ1UBu3EExL9OIybfx8qg-CFUF4g8DSvKfuWz73TbmTW5aZb_SwTc8XZkunjD98EtzDWQZkRjTHX7KqTT6J4_HvanYMOYKGAUg6dqOjwWpYp7rVMChnuAmUhL0sqerBu08omTDSwjm0RTKK4K0OBYbHUejq1LyYF42UdfymFnjIEie8fXmqILEb5-vFRuP-9JXkZBE6tHUNkvFK-J9ZTE3M2yxQ",
-    },
-    {
-        title: "Fresh Fruits",
-        image:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuDO7S7Jv8jRcgvw6Jer_oGOSWY6eCEYDcJcHc3yDpGUhfxVdDl8LhZ1UBu3EExL9OIybfx8qg-CFUF4g8DSvKfuWz73TbmTW5aZb_SwTc8XZkunjD98EtzDWQZkRjTHX7KqTT6J4_HvanYMOYKGAUg6dqOjwWpYp7rVMChnuAmUhL0sqerBu08omTDSwjm0RTKK4K0OBYbHUejq1LyYF42UdfymFnjIEie8fXmqILEb5-vFRuP-9JXkZBE6tHUNkvFK-J9ZTE3M2yxQ",
-    },
-];
-
-export const product = {
-    title: "Lay's Kettle Cooked Jalapeno Potato Chips",
-    description:
-        "Crispy, crunchy kettle-cooked chips with a spicy kick of jalapeño. Perfect snack for parties or solo munching!",
-    price: 22000,
-    stock: 342,
-    category: "Snacks",
-    tags: ["chips", "spicy", "kettle cooked", "lay's"],
-    image:
-        "https://lh3.googleusercontent.com/aida-public/AB6AXuDO7S7Jv8jRcgvw6Jer_oGOSWY6eCEYDcJcHc3yDpGUhfxVdDl8LhZ1UBu3EExL9OIybfx8qg-CFUF4g8DSvKfuWz73TbmTW5aZb_SwTc8XZkunjD98EtzDWQZkRjTHX7KqTT6J4_HvanYMOYKGAUg6dqOjwWpYp7rVMChnuAmUhL0sqerBu08omTDSwjm0RTKK4K0OBYbHUejq1LyYF42UdfymFnjIEie8fXmqILEb5-vFRuP-9JXkZBE6tHUNkvFK-J9ZTE3M2yxQ",
-};
-
-export const categories = ["Vegetables", "Fruits", "Dairy", "Snacks", "Beverages"];
-export const popularSearches = ["Sugar", "Tea", "Almonds", "Cashews", "Notebooks"];
-
-export const categoriesItems = [
-    {
-        name: "Fresh Vegetables",
-        image:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuDO7S7Jv8jRcgvw6Jer_oGOSWY6eCEYDcJcHc3yDpGUhfxVdDl8LhZ1UBu3EExL9OIybfx8qg-CFUF4g8DSvKfuWz73TbmTW5aZb_SwTc8XZkunjD98EtzDWQZkRjTHX7KqTT6J4_HvanYMOYKGAUg6dqOjwWpYp7rVMChnuAmUhL0sqerBu08omTDSwjm0RTKK4K0OBYbHUejq1LyYF42UdfymFnjIEie8fXmqILEb5-vFRuP-9JXkZBE6tHUNkvFK-J9ZTE3M2yxQ",
-    },
-    {
-        name: "Fruits",
-        image:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuANjo6N48WbLAYyZiva_TUvv65V9dML01gFd-jAJKI6U7v0evG2_gh2L1pOmPlG0KQBH9Y16Fj5CtuR67i5vJG1Xc8c9_bJAzyqdjI5twBdMWH4tdSIgTJOlr-seYe0fTK4UDC8dHCGXTLJsFKkuZa4ymc_7jtSVvl2BmAEilzQ7cO8736r2hWOzXsBFYLbOqLXSLZRBI8TN3gZpTNNBbha-oEIMOEHU1oIeQSO3GKlAG5UZFTS4nXfs4Y2IIB8YuN8jt5CVV82-9ni",
-    },
-    {
-        name: "Dairy & Eggs",
-        image:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuAy9Z8YazK0W_SXYRhP6LsD0qT-DIrd374b2VvD_6b18m3LP1SvpbChZN4LkrJhH26ynbCOwBsZ4mJ1JnJX1YBIJZsgTcd-RsYJqKamp8kyTPza5nWWpnesT4CeJu_1l7VkyZmi4Li2mpYMGgOY8YKiV_fPDSgLK5VofmX96hDQT69ZDnV--Z3u96fQTdfhDYUiuMXn_u_r7JexBPfbVb7UIgguH8nIiZgdj2kZ_zNKPa6i9jbY6ad5RIub1b7Se1tL-wjsoc_Ml4rk",
-    },
-    {
-        name: "Fresh Vegetables",
-        image:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuDO7S7Jv8jRcgvw6Jer_oGOSWY6eCEYDcJcHc3yDpGUhfxVdDl8LhZ1UBu3EExL9OIybfx8qg-CFUF4g8DSvKfuWz73TbmTW5aZb_SwTc8XZkunjD98EtzDWQZkRjTHX7KqTT6J4_HvanYMOYKGAUg6dqOjwWpYp7rVMChnuAmUhL0sqerBu08omTDSwjm0RTKK4K0OBYbHUejq1LyYF42UdfymFnjIEie8fXmqILEb5-vFRuP-9JXkZBE6tHUNkvFK-J9ZTE3M2yxQ",
-    },
-    {
-        name: "Fruits",
-        image:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuANjo6N48WbLAYyZiva_TUvv65V9dML01gFd-jAJKI6U7v0evG2_gh2L1pOmPlG0KQBH9Y16Fj5CtuR67i5vJG1Xc8c9_bJAzyqdjI5twBdMWH4tdSIgTJOlr-seYe0fTK4UDC8dHCGXTLJsFKkuZa4ymc_7jtSVvl2BmAEilzQ7cO8736r2hWOzXsBFYLbOqLXSLZRBI8TN3gZpTNNBbha-oEIMOEHU1oIeQSO3GKlAG5UZFTS4nXfs4Y2IIB8YuN8jt5CVV82-9ni",
-    },
-    {
-        name: "Dairy & Eggs",
-        image:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuAy9Z8YazK0W_SXYRhP6LsD0qT-DIrd374b2VvD_6b18m3LP1SvpbChZN4LkrJhH26ynbCOwBsZ4mJ1JnJX1YBIJZsgTcd-RsYJqKamp8kyTPza5nWWpnesT4CeJu_1l7VkyZmi4Li2mpYMGgOY8YKiV_fPDSgLK5VofmX96hDQT69ZDnV--Z3u96fQTdfhDYUiuMXn_u_r7JexBPfbVb7UIgguH8nIiZgdj2kZ_zNKPa6i9jbY6ad5RIub1b7Se1tL-wjsoc_Ml4rk",
-    },
-    {
-        name: "Fresh Vegetables",
-        image:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuDO7S7Jv8jRcgvw6Jer_oGOSWY6eCEYDcJcHc3yDpGUhfxVdDl8LhZ1UBu3EExL9OIybfx8qg-CFUF4g8DSvKfuWz73TbmTW5aZb_SwTc8XZkunjD98EtzDWQZkRjTHX7KqTT6J4_HvanYMOYKGAUg6dqOjwWpYp7rVMChnuAmUhL0sqerBu08omTDSwjm0RTKK4K0OBYbHUejq1LyYF42UdfymFnjIEie8fXmqILEb5-vFRuP-9JXkZBE6tHUNkvFK-J9ZTE3M2yxQ",
-    },
-    {
-        name: "Fruits",
-        image:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuANjo6N48WbLAYyZiva_TUvv65V9dML01gFd-jAJKI6U7v0evG2_gh2L1pOmPlG0KQBH9Y16Fj5CtuR67i5vJG1Xc8c9_bJAzyqdjI5twBdMWH4tdSIgTJOlr-seYe0fTK4UDC8dHCGXTLJsFKkuZa4ymc_7jtSVvl2BmAEilzQ7cO8736r2hWOzXsBFYLbOqLXSLZRBI8TN3gZpTNNBbha-oEIMOEHU1oIeQSO3GKlAG5UZFTS4nXfs4Y2IIB8YuN8jt5CVV82-9ni",
-    },
-    {
-        name: "Dairy & Eggs",
-        image:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuAy9Z8YazK0W_SXYRhP6LsD0qT-DIrd374b2VvD_6b18m3LP1SvpbChZN4LkrJhH26ynbCOwBsZ4mJ1JnJX1YBIJZsgTcd-RsYJqKamp8kyTPza5nWWpnesT4CeJu_1l7VkyZmi4Li2mpYMGgOY8YKiV_fPDSgLK5VofmX96hDQT69ZDnV--Z3u96fQTdfhDYUiuMXn_u_r7JexBPfbVb7UIgguH8nIiZgdj2kZ_zNKPa6i9jbY6ad5RIub1b7Se1tL-wjsoc_Ml4rk",
-    },
-    {
-        name: "Fresh Vegetables",
-        image:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuDO7S7Jv8jRcgvw6Jer_oGOSWY6eCEYDcJcHc3yDpGUhfxVdDl8LhZ1UBu3EExL9OIybfx8qg-CFUF4g8DSvKfuWz73TbmTW5aZb_SwTc8XZkunjD98EtzDWQZkRjTHX7KqTT6J4_HvanYMOYKGAUg6dqOjwWpYp7rVMChnuAmUhL0sqerBu08omTDSwjm0RTKK4K0OBYbHUejq1LyYF42UdfymFnjIEie8fXmqILEb5-vFRuP-9JXkZBE6tHUNkvFK-J9ZTE3M2yxQ",
-    },
-    {
-        name: "Fruits",
-        image:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuANjo6N48WbLAYyZiva_TUvv65V9dML01gFd-jAJKI6U7v0evG2_gh2L1pOmPlG0KQBH9Y16Fj5CtuR67i5vJG1Xc8c9_bJAzyqdjI5twBdMWH4tdSIgTJOlr-seYe0fTK4UDC8dHCGXTLJsFKkuZa4ymc_7jtSVvl2BmAEilzQ7cO8736r2hWOzXsBFYLbOqLXSLZRBI8TN3gZpTNNBbha-oEIMOEHU1oIeQSO3GKlAG5UZFTS4nXfs4Y2IIB8YuN8jt5CVV82-9ni",
-    },
-    {
-        name: "Dairy & Eggs",
-        image:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuAy9Z8YazK0W_SXYRhP6LsD0qT-DIrd374b2VvD_6b18m3LP1SvpbChZN4LkrJhH26ynbCOwBsZ4mJ1JnJX1YBIJZsgTcd-RsYJqKamp8kyTPza5nWWpnesT4CeJu_1l7VkyZmi4Li2mpYMGgOY8YKiV_fPDSgLK5VofmX96hDQT69ZDnV--Z3u96fQTdfhDYUiuMXn_u_r7JexBPfbVb7UIgguH8nIiZgdj2kZ_zNKPa6i9jbY6ad5RIub1b7Se1tL-wjsoc_Ml4rk",
-    },
-];
-
-export const footerLinks = [
-  {
-    title: "Company",
-    links: ["About Us", "Careers", "Contact"],
-  },
-  {
-    title: "Support",
-    links: ["Help Center", "Returns", "Shipping"],
-  },
-  {
-    title: "Legal",
-    links: ["Privacy Policy", "Terms of Service", "Disclaimer"],
-  },
-  {
-    title: "Account",
-    links: ["Login", "Register", "Orders"],
-  },
-  {
-    title: "Explore",
-    links: ["Blog", "Offers", "Locations"],
-  },
-];
-
-export const cartItemsMock: any = [
-  { id: 1, name: "Fresh Apples", price: 120, quantity: 2 },
-  { id: 2, name: "Organic Bananas", price: 80, quantity: 1 },
-];
+export const rajasthanData = [
+  { "state": "Rajasthan", "district": "Ajmer", "latitude": 26.4499, "longitude": 74.6399 },
+  { "state": "Rajasthan", "district": "Alwar", "latitude": 27.55299, "longitude": 76.63457 },
+  { "state": "Rajasthan", "district": "Banswara", "latitude": 23.5461, "longitude": 74.4345 },
+  { "state": "Rajasthan", "district": "Baran", "latitude": 25.1, "longitude": 76.5167 },
+  { "state": "Rajasthan", "district": "Barmer", "latitude": 25.75, "longitude": 71.3833 },
+  { "state": "Rajasthan", "district": "Bharatpur", "latitude": 27.2173, "longitude": 77.4895 },
+  { "state": "Rajasthan", "district": "Bhilwara", "latitude": 25.3463, "longitude": 74.6364 },
+  { "state": "Rajasthan", "district": "Bikaner", "latitude": 28.0229, "longitude": 73.3119 },
+  { "state": "Rajasthan", "district": "Bundi", "latitude": 25.4448, "longitude": 75.6373 },
+  { "state": "Rajasthan", "district": "Chittorgarh", "latitude": 24.8790, "longitude": 74.6290 },
+  { "state": "Rajasthan", "district": "Churu", "latitude": 28.2920, "longitude": 74.9618 },
+  { "state": "Rajasthan", "district": "Dausa", "latitude": 26.8910, "longitude": 76.3350 },
+  { "state": "Rajasthan", "district": "Dholpur", "latitude": 26.7025, "longitude": 77.8956 },
+  { "state": "Rajasthan", "district": "Dungarpur", "latitude": 23.8431, "longitude": 73.7147 },
+  { "state": "Rajasthan", "district": "Hanumangarh", "latitude": 29.5810, "longitude": 74.3294 },
+  { "state": "Rajasthan", "district": "Jaipur", "latitude": 26.9124, "longitude": 75.7873 },
+  { "state": "Rajasthan", "district": "Jaisalmer", "latitude": 26.9157, "longitude": 70.9083 },
+  { "state": "Rajasthan", "district": "Jalore", "latitude": 25.35, "longitude": 72.6167 },
+  { "state": "Rajasthan", "district": "Jhalawar", "latitude": 24.5965, "longitude": 76.1608 },
+  { "state": "Rajasthan", "district": "Jhunjhunu", "latitude": 28.1289, "longitude": 75.3978 },
+  { "state": "Rajasthan", "district": "Jodhpur", "latitude": 26.2389, "longitude": 73.0243 },
+  { "state": "Rajasthan", "district": "Karauli", "latitude": 26.4983, "longitude": 77.0150 },
+  { "state": "Rajasthan", "district": "Kota", "latitude": 25.2138, "longitude": 75.8648 },
+  { "state": "Rajasthan", "district": "Nagaur", "latitude": 27.2000, "longitude": 73.7333 },
+  { "state": "Rajasthan", "district": "Pali", "latitude": 25.7711, "longitude": 73.3234 },
+  { "state": "Rajasthan", "district": "Pratapgarh", "latitude": 24.0300, "longitude": 74.7833 },
+  { "state": "Rajasthan", "district": "Rajsamand", "latitude": 25.0667, "longitude": 73.8833 },
+  { "state": "Rajasthan", "district": "Sawai Madhopur", "latitude": 26.0230, "longitude": 76.3441 },
+  { "state": "Rajasthan", "district": "Sikar", "latitude": 27.6094, "longitude": 75.1399 },
+  { "state": "Rajasthan", "district": "Sirohi", "latitude": 24.8826, "longitude": 72.8588 },
+  { "state": "Rajasthan", "district": "Tonk", "latitude": 26.1667, "longitude": 75.7833 },
+  { "state": "Rajasthan", "district": "Udaipur", "latitude": 24.5854, "longitude": 73.7125 }
+]
 
 
-export const filterCategories = [
-    {
-      title: "Fresh Vegetables",
-      image:
-        "https://lh3.googleusercontent.com/aida-public/AB6AXuDO7S7Jv8jRcgvw6Jer_oGOSWY6eCEYDcJcHc3yDpGUhfxVdDl8LhZ1UBu3EExL9OIybfx8qg-CFUF4g8DSvKfuWz73TbmTW5aZb_SwTc8XZkunjD98EtzDWQZkRjTHX7KqTT6J4_HvanYMOYKGAUg6dqOjwWpYp7rVMChnuAmUhL0sqerBu08omTDSwjm0RTKK4K0OBYbHUejq1LyYF42UdfymFnjIEie8fXmqILEb5-vFRuP-9JXkZBE6tHUNkvFK-J9ZTE3M2yxQ",
-      subcategories: ["Arugula", "Broccoli", "Spinach"],
-    },
-    {
-      title: "Fruits",
-      image:
-        "https://lh3.googleusercontent.com/aida-public/AB6AXuDO7S7Jv8jRcgvw6Jer_oGOSWY6eCEYDcJcHc3yDpGUhfxVdDl8LhZ1UBu3EExL9OIybfx8qg-CFUF4g8DSvKfuWz73TbmTW5aZb_SwTc8XZkunjD98EtzDWQZkRjTHX7KqTT6J4_HvanYMOYKGAUg6dqOjwWpYp7rVMChnuAmUhL0sqerBu08omTDSwjm0RTKK4K0OBYbHUejq1LyYF42UdfymFnjIEie8fXmqILEb5-vFRuP-9JXkZBE6tHUNkvFK-J9ZTE3M2yxQ",
-      subcategories: ["Apple", "Banana", "Orange"],
-    },
-    {
-      title: "Dairy Products",
-      image:
-        "https://lh3.googleusercontent.com/aida-public/AB6AXuDO7S7Jv8jRcgvw6Jer_oGOSWY6eCEYDcJcHc3yDpGUhfxVdDl8LhZ1UBu3EExL9OIybfx8qg-CFUF4g8DSvKfuWz73TbmTW5aZb_SwTc8XZkunjD98EtzDWQZkRjTHX7KqTT6J4_HvanYMOYKGAUg6dqOjwWpYp7rVMChnuAmUhL0sqerBu08omTDSwjm0RTKK4K0OBYbHUejq1LyYF42UdfymFnjIEie8fXmqILEb5-vFRuP-9JXkZBE6tHUNkvFK-J9ZTE3M2yxQ",
-      subcategories: ["Milk", "Cheese", "Butter"],
-    },
-  ];
-
-
-export const brands = ["Good & Gather", "Green Giant", "Veg-land"];
-
-export const products = [
-    {
-      title: "Jalapeno Potato Chips",
-      subtitle: "Lay's Kettle Cooked",
-      price: "$15.00 - $25.00",
-      quantityText: "1 pack (200g)",
-      image:
-        "https://lh3.googleusercontent.com/aida-public/AB6AXuDO7S7Jv8jRcgvw6Jer_oGOSWY6eCEYDcJcHc3yDpGUhfxVdDl8LhZ1UBu3EExL9OIybfx8qg-CFUF4g8DSvKfuWz73TbmTW5aZb_SwTc8XZkunjD98EtzDWQZkRjTHX7KqTT6J4_HvanYMOYKGAUg6dqOjwWpYp7rVMChnuAmUhL0sqerBu08omTDSwjm0RTKK4K0OBYbHUejq1LyYF42UdfymFnjIEie8fXmqILEb5-vFRuP-9JXkZBE6tHUNkvFK-J9ZTE3M2yxQ",
-    },
-    {
-      title: "Jalapeno Potato Chips",
-      price: "$15.00 - $25.00",
-      quantityText: "1 pack (200g)",
-      image:
-        "https://lh3.googleusercontent.com/aida-public/AB6AXuDO7S7Jv8jRcgvw6Jer_oGOSWY6eCEYDcJcHc3yDpGUhfxVdDl8LhZ1UBu3EExL9OIybfx8qg-CFUF4g8DSvKfuWz73TbmTW5aZb_SwTc8XZkunjD98EtzDWQZkRjTHX7KqTT6J4_HvanYMOYKGAUg6dqOjwWpYp7rVMChnuAmUhL0sqerBu08omTDSwjm0RTKK4K0OBYbHUejq1LyYF42UdfymFnjIEie8fXmqILEb5-vFRuP-9JXkZBE6tHUNkvFK-J9ZTE3M2yxQ",
-    },
-    {
-      title: "Jalapeno Potato Chips",
-      subtitle: "Lay's Kettle Cooked",
-      price: "$15.00 - $25.00",
-      quantityText: "1 pack (200g)",
-      image:
-        "https://lh3.googleusercontent.com/aida-public/AB6AXuDO7S7Jv8jRcgvw6Jer_oGOSWY6eCEYDcJcHc3yDpGUhfxVdDl8LhZ1UBu3EExL9OIybfx8qg-CFUF4g8DSvKfuWz73TbmTW5aZb_SwTc8XZkunjD98EtzDWQZkRjTHX7KqTT6J4_HvanYMOYKGAUg6dqOjwWpYp7rVMChnuAmUhL0sqerBu08omTDSwjm0RTKK4K0OBYbHUejq1LyYF42UdfymFnjIEie8fXmqILEb5-vFRuP-9JXkZBE6tHUNkvFK-J9ZTE3M2yxQ",
-    },
-    {
-      title: "Jalapeno Potato Chips",
-      subtitle: "Lay's Kettle Cooked",
-      price: "$15.00 - $25.00",
-      quantityText: "1 pack (200g)",
-      image:
-        "https://lh3.googleusercontent.com/aida-public/AB6AXuDO7S7Jv8jRcgvw6Jer_oGOSWY6eCEYDcJcHc3yDpGUhfxVdDl8LhZ1UBu3EExL9OIybfx8qg-CFUF4g8DSvKfuWz73TbmTW5aZb_SwTc8XZkunjD98EtzDWQZkRjTHX7KqTT6J4_HvanYMOYKGAUg6dqOjwWpYp7rVMChnuAmUhL0sqerBu08omTDSwjm0RTKK4K0OBYbHUejq1LyYF42UdfymFnjIEie8fXmqILEb5-vFRuP-9JXkZBE6tHUNkvFK-J9ZTE3M2yxQ",
-    },
-    {
-      title: "Jalapeno Potato Chips",
-      subtitle: "Lay's Kettle Cooked",
-      price: "$15.00 - $25.00",
-      quantityText: "1 pack (200g)",
-      image:
-        "https://lh3.googleusercontent.com/aida-public/AB6AXuDO7S7Jv8jRcgvw6Jer_oGOSWY6eCEYDcJcHc3yDpGUhfxVdDl8LhZ1UBu3EExL9OIybfx8qg-CFUF4g8DSvKfuWz73TbmTW5aZb_SwTc8XZkunjD98EtzDWQZkRjTHX7KqTT6J4_HvanYMOYKGAUg6dqOjwWpYp7rVMChnuAmUhL0sqerBu08omTDSwjm0RTKK4K0OBYbHUejq1LyYF42UdfymFnjIEie8fXmqILEb5-vFRuP-9JXkZBE6tHUNkvFK-J9ZTE3M2yxQ",
-    },
-    {
-      title: "Jalapeno Potato Chips",
-      subtitle: "Lay's Kettle Cooked",
-      price: "$15.00 - $25.00",
-      quantityText: "1 pack (200g)",
-      image:
-        "https://lh3.googleusercontent.com/aida-public/AB6AXuDO7S7Jv8jRcgvw6Jer_oGOSWY6eCEYDcJcHc3yDpGUhfxVdDl8LhZ1UBu3EExL9OIybfx8qg-CFUF4g8DSvKfuWz73TbmTW5aZb_SwTc8XZkunjD98EtzDWQZkRjTHX7KqTT6J4_HvanYMOYKGAUg6dqOjwWpYp7rVMChnuAmUhL0sqerBu08omTDSwjm0RTKK4K0OBYbHUejq1LyYF42UdfymFnjIEie8fXmqILEb5-vFRuP-9JXkZBE6tHUNkvFK-J9ZTE3M2yxQ",
-    },
-    {
-      title: "Jalapeno Potato Chips",
-      subtitle: "Lay's Kettle Cooked",
-      price: "$15.00 - $25.00",
-      quantityText: "1 pack (200g)",
-      image:
-        "https://lh3.googleusercontent.com/aida-public/AB6AXuDO7S7Jv8jRcgvw6Jer_oGOSWY6eCEYDcJcHc3yDpGUhfxVdDl8LhZ1UBu3EExL9OIybfx8qg-CFUF4g8DSvKfuWz73TbmTW5aZb_SwTc8XZkunjD98EtzDWQZkRjTHX7KqTT6J4_HvanYMOYKGAUg6dqOjwWpYp7rVMChnuAmUhL0sqerBu08omTDSwjm0RTKK4K0OBYbHUejq1LyYF42UdfymFnjIEie8fXmqILEb5-vFRuP-9JXkZBE6tHUNkvFK-J9ZTE3M2yxQ",
-    },
-    {
-      title: "Jalapeno Potato Chips",
-      subtitle: "Lay's Kettle Cooked",
-      price: "$15.00 - $25.00",
-      quantityText: "1 pack (200g)",
-      image:
-        "https://lh3.googleusercontent.com/aida-public/AB6AXuDO7S7Jv8jRcgvw6Jer_oGOSWY6eCEYDcJcHc3yDpGUhfxVdDl8LhZ1UBu3EExL9OIybfx8qg-CFUF4g8DSvKfuWz73TbmTW5aZb_SwTc8XZkunjD98EtzDWQZkRjTHX7KqTT6J4_HvanYMOYKGAUg6dqOjwWpYp7rVMChnuAmUhL0sqerBu08omTDSwjm0RTKK4K0OBYbHUejq1LyYF42UdfymFnjIEie8fXmqILEb5-vFRuP-9JXkZBE6tHUNkvFK-J9ZTE3M2yxQ",
-    },
-    {
-      title: "Jalapeno Potato Chips",
-      subtitle: "Lay's Kettle Cooked",
-      price: "$15.00 - $25.00",
-      quantityText: "1 pack (200g)",
-      image:
-        "https://lh3.googleusercontent.com/aida-public/AB6AXuDO7S7Jv8jRcgvw6Jer_oGOSWY6eCEYDcJcHc3yDpGUhfxVdDl8LhZ1UBu3EExL9OIybfx8qg-CFUF4g8DSvKfuWz73TbmTW5aZb_SwTc8XZkunjD98EtzDWQZkRjTHX7KqTT6J4_HvanYMOYKGAUg6dqOjwWpYp7rVMChnuAmUhL0sqerBu08omTDSwjm0RTKK4K0OBYbHUejq1LyYF42UdfymFnjIEie8fXmqILEb5-vFRuP-9JXkZBE6tHUNkvFK-J9ZTE3M2yxQ",
-    },
-    {
-      title: "Jalapeno Potato Chips",
-      subtitle: "Lay's Kettle Cooked",
-      price: "$15.00 - $25.00",
-      quantityText: "1 pack (200g)",
-      image:
-        "https://lh3.googleusercontent.com/aida-public/AB6AXuDO7S7Jv8jRcgvw6Jer_oGOSWY6eCEYDcJcHc3yDpGUhfxVdDl8LhZ1UBu3EExL9OIybfx8qg-CFUF4g8DSvKfuWz73TbmTW5aZb_SwTc8XZkunjD98EtzDWQZkRjTHX7KqTT6J4_HvanYMOYKGAUg6dqOjwWpYp7rVMChnuAmUhL0sqerBu08omTDSwjm0RTKK4K0OBYbHUejq1LyYF42UdfymFnjIEie8fXmqILEb5-vFRuP-9JXkZBE6tHUNkvFK-J9ZTE3M2yxQ",
-    },
-    {
-      title: "Jalapeno Potato Chips",
-      subtitle: "Lay's Kettle Cooked",
-      price: "$15.00 - $25.00",
-      quantityText: "1 pack (200g)",
-      image:
-        "https://lh3.googleusercontent.com/aida-public/AB6AXuDO7S7Jv8jRcgvw6Jer_oGOSWY6eCEYDcJcHc3yDpGUhfxVdDl8LhZ1UBu3EExL9OIybfx8qg-CFUF4g8DSvKfuWz73TbmTW5aZb_SwTc8XZkunjD98EtzDWQZkRjTHX7KqTT6J4_HvanYMOYKGAUg6dqOjwWpYp7rVMChnuAmUhL0sqerBu08omTDSwjm0RTKK4K0OBYbHUejq1LyYF42UdfymFnjIEie8fXmqILEb5-vFRuP-9JXkZBE6tHUNkvFK-J9ZTE3M2yxQ",
-    },
-    {
-      title: "Jalapeno Potato Chips",
-      subtitle: "Lay's Kettle Cooked",
-      price: "$15.00 - $25.00",
-      quantityText: "1 pack (200g)",
-      image:
-        "https://lh3.googleusercontent.com/aida-public/AB6AXuDO7S7Jv8jRcgvw6Jer_oGOSWY6eCEYDcJcHc3yDpGUhfxVdDl8LhZ1UBu3EExL9OIybfx8qg-CFUF4g8DSvKfuWz73TbmTW5aZb_SwTc8XZkunjD98EtzDWQZkRjTHX7KqTT6J4_HvanYMOYKGAUg6dqOjwWpYp7rVMChnuAmUhL0sqerBu08omTDSwjm0RTKK4K0OBYbHUejq1LyYF42UdfymFnjIEie8fXmqILEb5-vFRuP-9JXkZBE6tHUNkvFK-J9ZTE3M2yxQ",
-    },
-  ];
-
+export const states = [
+  { "code": "AN", "name": "Andaman and Nicobar Islands" },
+  { "code": "AP", "name": "Andhra Pradesh" },
+  { "code": "AR", "name": "Arunachal Pradesh" },
+  { "code": "AS", "name": "Assam" },
+  { "code": "BR", "name": "Bihar" },
+  { "code": "CH", "name": "Chandigarh" },
+  { "code": "CT", "name": "Chhattisgarh" },
+  { "code": "DN", "name": "Dadra and Nagar Haveli and Daman and Diu" },
+  { "code": "DL", "name": "Delhi" },
+  { "code": "GA", "name": "Goa" },
+  { "code": "GJ", "name": "Gujarat" },
+  { "code": "HR", "name": "Haryana" },
+  { "code": "HP", "name": "Himachal Pradesh" },
+  { "code": "JK", "name": "Jammu and Kashmir" },
+  { "code": "JH", "name": "Jharkhand" },
+  { "code": "KA", "name": "Karnataka" },
+  { "code": "KL", "name": "Kerala" },
+  { "code": "LA", "name": "Ladakh" },
+  { "code": "LD", "name": "Lakshadweep" },
+  { "code": "MP", "name": "Madhya Pradesh" },
+  { "code": "MH", "name": "Maharashtra" },
+  { "code": "MN", "name": "Manipur" },
+  { "code": "ML", "name": "Meghalaya" },
+  { "code": "MZ", "name": "Mizoram" },
+  { "code": "NL", "name": "Nagaland" },
+  { "code": "OR", "name": "Odisha" },
+  { "code": "PY", "name": "Puducherry" },
+  { "code": "PB", "name": "Punjab" },
+  { "code": "RJ", "name": "Rajasthan" },
+  { "code": "SK", "name": "Sikkim" },
+  { "code": "TN", "name": "Tamil Nadu" },
+  { "code": "TG", "name": "Telangana" },
+  { "code": "TR", "name": "Tripura" },
+  { "code": "UP", "name": "Uttar Pradesh" },
+  { "code": "UT", "name": "Uttarakhand" },
+  { "code": "WB", "name": "West Bengal" }
+]

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Suspense, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -26,6 +26,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faLocationArrow,
   faLocationDot,
+  faUser,
 } from "@fortawesome/free-solid-svg-icons";
 import { useSession } from "next-auth/react";
 import Notification from "../notification/Notification";
@@ -49,7 +50,7 @@ const Header = () => {
   const [signUpModalOpen, setSignUpModalOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false); // NEW
-  const { isLoggedIn, user } = useAuth();
+  const { isLoggedIn, user, loading } = useAuth();
   const { data: cartItemsData } = useGetAllCartItemsQuery();
   const userLocation = useAppSelector((state) => state.userLocation);
   const { address: userAddress, latitude, longitude } = userLocation;
@@ -91,7 +92,7 @@ const Header = () => {
       if (error?.status === 400) {
         router.push("/not-deliverable");
       } else {
-        console.error("Location error:", error);
+        console.log("Location error:", error);
       }
     }
   };
@@ -133,8 +134,10 @@ const Header = () => {
           {/* Nav links - hidden on mobile */}
           <nav className="hidden lg:flex items-center gap-6 text-sm text-[#181111] font-medium">
             <a href="#">Offers</a>
-            {user?.role === "admin" && <a href="/admin">My Tools</a>}
-            <a href="#">Categories</a>
+            {!loading && user?.role === "admin" && (
+              <a href="/admin">My Tools</a>
+            )}
+            <a href="/products">Products</a>
             <a href="/contact-us">Help</a>
           </nav>
         </div>
@@ -180,20 +183,7 @@ const Header = () => {
               onClick={() => router.push("/profile")}
               className="h-10 w-10 bg-[#f4f0f0] rounded-full flex items-center justify-center overflow-hidden border hover:shadow-md transition"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="40"
-                height="40"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#181111"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="cursor-pointer hover:opacity-80 transition"
-              >
-                <path d="M20 21v-2a4 4 0 0 0-3-3.87M4 21v-2a4 4 0 0 1 3-3.87M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"></path>
-              </svg>
+              <FontAwesomeIcon icon={faUser} />
             </button>
           )}
           {!isLoggedIn && (
@@ -284,7 +274,7 @@ const Header = () => {
               Offers
             </a>
             <a
-              href="#"
+              href="/products"
               className="flex items-center gap-3 text-[#000000] text-lg font-semibold py-3 px-4 rounded-xl bg-white/80 shadow border-b border-[#ffe3e3] hover:bg-[#fffbe6] transition"
             >
               <svg
@@ -299,10 +289,10 @@ const Header = () => {
                 <rect x="4" y="4" width="16" height="16" rx="4" />
                 <path d="M8 8h8v8H8z" />
               </svg>
-              Categories
+              Products
             </a>
             <a
-              href="#"
+              href="/contact-us"
               className="flex items-center gap-3 text-[#000000] text-lg font-semibold py-3 px-4 rounded-xl bg-white/80 shadow border-b border-[#ffe3e3] hover:bg-[#fffbe6] transition"
             >
               <svg
@@ -339,7 +329,7 @@ const Header = () => {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   >
-                    <path d="M20 21v-2a4 4 0 0 0-3-3.87M4 21v-2a4 4 0 0 1 3-3.87M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"></path>
+                    <path d="M20 21v-2a4 4 0 0 0-3-3.87M4 21v-2a4 4 0 0 1 3-3.87M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" />
                   </svg>
                   Profile
                 </button>
@@ -363,14 +353,11 @@ const Header = () => {
               >
                 <span className="mr-2">🛒</span>
                 Cart
-                {cartItemsData &&
-                  cartItemsData?.result?.length > 0 &&
-                  cartCount &&
-                  cartCount > 0 && (
-                    <span className="absolute top-1 right-6 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full">
-                      {cartCount}
-                    </span>
-                  )}
+                {cartCount > 0 && (
+                  <span className="absolute top-1 right-6 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full">
+                    {cartCount}
+                  </span>
+                )}
               </button>
             </div>
           </div>

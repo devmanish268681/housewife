@@ -202,14 +202,13 @@ const SalesChart = ({ data, days, dark }: SalesTrendChartProps) => {
         >
           Sales Trend (Last 7 Days)
         </h2>
-        <span className="text-sm text-gray-400">Mock Data (D3.js)</span>
       </div>
       <div className="relative w-full">
         <svg
           ref={ref}
           width={dimensions.width}
           height={dimensions.height}
-          className="w-full h-60"
+          className="h-60"
         />
         <div
           ref={tooltipRef}

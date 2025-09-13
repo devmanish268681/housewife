@@ -33,6 +33,8 @@
     "express": "^5.1.0",
     "formik": "^2.4.6",
     "geolib": "^3.3.4",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^3.0.2",
     "lodash.isnil": "^4.0.0",
     "lru-cache": "^11.1.0",
     "next": "15.3.4",

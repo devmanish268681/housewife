@@ -5,7 +5,6 @@ import React, { useEffect, useState } from "react";
 import { signOut } from "next-auth/react";
 import ProfileCard from "@/components/profile/ProfileCard";
 import QuickActions from "@/components/profile/QuickActions";
-import LoyaltyCard from "@/components/profile/LoyaltyCard";
 import OrderHistory from "@/components/profile/OrderHistory";
 import AddressList from "@/components/profile/AddressList";
 import { useGetUserAddressQuery, useGetUserByIdQuery } from "@/lib/slices/userApiSlice";
@@ -47,7 +46,6 @@ const ProfilePage = () => {
 
   //actions
   const [activeOptions, setActiveOptions] = useState('orders');
-  console.log(activeOptions, "options")
 
   // Profile edit handlers
   const handleProfileEdit = () => {
