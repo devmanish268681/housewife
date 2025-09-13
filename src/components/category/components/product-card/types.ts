@@ -9,7 +9,7 @@ export type ProductCardProps = {
   quantityText?: string;
   image: string;
   stock?: number;
-  variants: ProductVariant[];
+  variants?: ProductVariant[];
   category?: string;
   variantId?: string;
 };
