@@ -72,15 +72,72 @@ export type Order = {
   deleted: boolean;
   userId: string;
   total: number;
-  paymentStatus: "pending" | "paid" | "failed";
-  status: "pending" | "confirmed" | "shipped" | "delivered" | "cancelled";
+  subTotal: number;
+  gstTotal: number;
+  deliveryFee: number;
+  paymentStatus: "pending" | "paid" | "failed"; // tweak as per your app
+  status: "pending" | "confirmed" | "dispatched" | "delivered" | "cancelled";
   addressId: string;
+  offerId: string | null;
+  invoice: string;
+  invoiceId: string | null;
+  isIGST: boolean;
+  user: User;
+  items: OrderItems[];
+  address: Address;
+  payments: [
+    {
+      method: string
+    }
+  ]
 };
 
+export type User = {
+  id: string;
+  name: string;
+  email: string;
+  password: string | null;
+  phoneNumber: string | null;
+  createdAt: string;
+  updatedAt: string;
+  deleted: boolean;
+  profileImage: string | null;
+  latitude: string | null;
+  longitude: string | null;
+  emailVerified: string | null;
+  roleId: string;
+};
+
+export type OrderItems = {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  deleted: boolean;
+  orderId: string;
+  productId: string;
+  quantity: number;
+  price: number;
+  productVariantId: string;
+  product: { name: string }
+};
+
+type Address = {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  deleted: boolean;
+  userId: string;
+  street: string;
+  city: string;
+  state: string;
+  country: string;
+  zipCode: string;
+};
 
 export type Orders = {
-  orders: Orders[],
-  totalCount: number
+  orders: Order[],
+  totalCount: number,
+  totalSales: number[]
 }
 
 export type Product = {

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Suspense, useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
@@ -16,6 +16,7 @@ import {
 
 //components
 import CheckoutModal from "../category/components/checkout-modal/CheckoutModal";
+import CouponCard from "./components/coupon-card/CouponCard";
 
 //context
 import { useAuth } from "@/lib/context/authContext";
@@ -28,10 +29,8 @@ import {
 } from "@/lib/slices/cartApiSlice";
 
 //types
-type CartProps = {
-  isOpen: boolean;
-  onClose: () => void;
-};
+import { CartProps } from "./types";
+
 
 const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
   //hooks
@@ -71,7 +70,7 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
       variantId: string
     ) => {
       const newQuantity =
-        action === "increment" ? quantity + 1 : Math.max(quantity - 1, 1);
+        action === "increment" ? quantity + 1 : quantity - 1;
       await updateCart(newQuantity, productId, variantId);
     },
     [updateCart]
@@ -153,9 +152,9 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        if(item?.quantity === 1){
+                        if (item?.quantity === 1) {
                           handleDelete(item?.id)
-                        }else{
+                        } else {
                           handleIncrementQuantity(
                             "decrement",
                             item.quantity,
@@ -196,6 +195,9 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
             )}
           </div>
 
+          {cartItemsData && cartItemsData?.result?.length > 0 && (
+            <CouponCard />
+          )}
           {/* Order Summary */}
           {cartItemsData && cartItemsData?.result?.length > 0 && (
             <div className="p-4 border-t space-y-2">

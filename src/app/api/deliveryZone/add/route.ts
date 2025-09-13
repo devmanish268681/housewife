@@ -16,7 +16,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: "user id missing" }, { status: 404 });
     }
 
-    const { latitude, longitude, radiusKm, zoneName } = body;
+    const { latitude, longitude, radiusKm, zoneName, state, district } = body;
 
     const validation = await validateRequest(body, deliveryZoneSchema);
 
@@ -45,6 +45,8 @@ export async function POST(request: Request) {
       latitude: latitude,
       longitude: longitude,
       radiusKm: radiusKm,
+      state: state,
+      district: district
     };
 
     await createDeliveryZone(deliveryZoneObj);

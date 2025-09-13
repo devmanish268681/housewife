@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Suspense, useEffect, useState } from "react";
+import React, {useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import Image from "next/image";
 
@@ -73,14 +73,14 @@ const ProductModal: React.FC<ProductModalProps> = ({
   }, [productQuantityCount, cartItemQuantity]);
 
   useEffect(() => {
-  if (isOpen) {
-    if (cartItemQuantity) {
-      setQuantity(cartItemQuantity.quantity);
-    } else {
-      setQuantity(0);
+    if (isOpen) {
+      if (cartItemQuantity) {
+        setQuantity(cartItemQuantity.quantity);
+      } else {
+        setQuantity(0);
+      }
     }
-  }
-}, [isOpen, cartItemQuantity]);
+  }, [isOpen, cartItemQuantity]);
 
   useEffect(() => {
     if (isProductInCart && isProductInCart?.length > 0) {
@@ -187,7 +187,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
       onClick={onClose}
     >
       <div
-        className="bg-white rounded m-3 p-6 max-w-xl w-full shadow-lg overflow-y-auto max-h-[90vh] relative"
+        className="bg-white rounded-2xl m-3 p-6 max-w-xl w-full shadow-lg overflow-y-auto max-h-[90vh] relative"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -233,7 +233,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
             currency: "INR",
           })}
         </p>
-        <p className="mb-1">
+        {/* <p className="mb-1">
           Stock:{" "}
           <span
             className={product.stock === 0 ? "text-red-600 font-semibold" : ""}
@@ -243,10 +243,10 @@ const ProductModal: React.FC<ProductModalProps> = ({
         </p>
         <p className="mb-2">
           Category: <span className="font-medium">{product.category}</span>
-        </p>
+        </p> */}
 
         {/* Tags */}
-        <div className="flex flex-wrap gap-2 mb-4" aria-label="Product tags">
+        {/* <div className="flex flex-wrap gap-2 mb-4" aria-label="Product tags">
           {product.tags.map((tag) => (
             <span
               key={tag}
@@ -255,7 +255,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
               {tag}
             </span>
           ))}
-        </div>
+        </div> */}
 
         {/* Quantity selector */}
         {quantity !== 0 && (
@@ -292,8 +292,8 @@ const ProductModal: React.FC<ProductModalProps> = ({
         <button
           onClick={() => handleCartClick()}
           className={`w-full py-2 rounded text-white transition ${product.stock === 0
-              ? "bg-gray-400 cursor-not-allowed"
-              : "bg-red-600 hover:bg-red-700"
+            ? "bg-gray-400 cursor-not-allowed"
+            : "bg-red-600 hover:bg-red-700"
             }`}
           disabled={product.stock === 0}
           aria-disabled={product.stock === 0}

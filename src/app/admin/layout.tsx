@@ -32,6 +32,18 @@ export default function AdminLayout({
             Brands
           </Link>
           <Link
+            href="/admin/offers"
+            className="hover:bg-gray-700 rounded px-3 py-2"
+          >
+            Offers
+          </Link>
+          <Link
+            href="/admin/deliverable-location"
+            className="hover:bg-gray-700 rounded px-3 py-2"
+          >
+            Deliverable Location
+          </Link>
+          <Link
             href="/admin/sub-categories"
             className="hover:bg-gray-700 rounded px-3 py-2"
           >

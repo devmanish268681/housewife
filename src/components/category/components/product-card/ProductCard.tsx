@@ -36,6 +36,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   price,
   stock,
   variantId,
+  variants,
   category,
   quantityText = "1 pack (200g)",
   image,
@@ -54,7 +55,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
     () => cartItems?.result?.find(item => item.productId === id),
     [cartItems, id]
   );
-  
+
   const cartItem = useAppSelector((state) => state.cart.items);
   const cartItemQuantity = cartItem?.find(item => item.id === id);
 
@@ -64,6 +65,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
     description: description,
     price: price,
     variantId: variantId,
+    variants: variants,
     stock: stock,
     category: category,
     tags: ["category"],
@@ -92,14 +94,14 @@ const ProductCard: React.FC<ProductCardProps> = ({
             name: title,
             image,
             price,
-            productVariantId:variantId,
+            productVariantId: variantId,
             quantity: newQuantity,
           })
         );
       } else {
-        if(newQuantity === 0){
+        if (newQuantity === 0) {
           console.log("qunajsjjss")
-          dispatch(removeItem({id}))
+          dispatch(removeItem({ id }))
         }
         dispatch(
           decrementQuantity({
@@ -129,12 +131,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
   }, [isProductInCart]);
 
   useEffect(() => {
-      if (cartItemQuantity) {
+    if (cartItemQuantity) {
       setQuantity(cartItemQuantity?.quantity);
     } else {
       setQuantity(0);
     }
-  },[cartItemQuantity])
+  }, [cartItemQuantity])
 
   return (
     <>
@@ -197,7 +199,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           <h2 className="text-base font-semibold text-gray-900 mb-1">
             {title}
           </h2>
-          <p className="text-xs text-gray-400">{quantityText}</p>
+          {/* <p className="text-xs text-gray-400">{quantityText}</p> */}
         </div>
       </article>
 

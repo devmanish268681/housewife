@@ -73,7 +73,6 @@ export async function POST(request: Request) {
       offerId,
       paymentMethod,
     };
-    console.log("bodyData", bodyData);
 
     const placeOrder = await placeOrderController(bodyData, userId);
 
@@ -108,14 +107,80 @@ export async function GET(request: Request) {
       orderBy: {
         createdAt: "asc",
       },
+      include: {
+        user: true,
+        items: {
+          include: {
+            product: {
+              select: {
+                name: true
+              }
+            }
+          }
+        },
+        payments: {
+          select: {
+            method: true
+          }
+        },
+        address: true
+      }
     });
+    const sales = await prisma.order.groupBy({
+      by: ["createdAt"],
+      _sum: { total: true }
+    });
+
+    const salesTrend = sales.map((s) => s._sum.total || 0);
+
     const ordersCount = await prisma.order.count();
-    return NextResponse.json({ orders: orders, totalCount: ordersCount });
+    return NextResponse.json({ orders: orders, totalCount: ordersCount, totalSales: salesTrend });
   } catch (error: any) {
     return NextResponse.json(
       {
         message: error.message || "Internal Server Error",
       },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PATCH(request: Request) {
+  try {
+    const url = new URL(request.url);
+    const searchParams = url.searchParams;
+    const id = searchParams.get("id") as string;
+    const session = await getServerSession(authOptions);
+    const userId = session?.user?.id as string;
+
+    if (!userId) {
+      return NextResponse.json(
+        { message: "userId is missing" },
+        { status: 400 }
+      );
+    }
+
+    const body = await request.json();
+    const { status, paymentStatus } = body;
+
+    await prisma.order.update({
+      where: {
+        id: id
+      },
+      data: {
+        status: status,
+        paymentStatus: paymentStatus
+      }
+    })
+
+    return NextResponse.json(
+      { message: "order status updated successfully" },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Internal Server Error:", error);
+    return NextResponse.json(
+      { message: "Internal Server Error" },
       { status: 500 }
     );
   }

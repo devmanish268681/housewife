@@ -9,19 +9,24 @@ import SalesChart from "./sales-chart/SalesChart";
 //constants
 import { mockStats } from "./constants";
 import { useAuth } from "@/lib/context/authContext";
+
+//slices
 import { useGetLowStocksQuery, useGetProductsQuery } from "@/lib/slices/productsApiSlice";
 import { useGetAllOrdersQuery } from "@/lib/slices/orderApiSlice";
 
+//utils
+import { timeAgo } from "@/lib/utils/utils";
+
 const Dashboard = () => {
   const [dark, setDark] = useState(false);
-  const {user} = useAuth();
-  const {data:productsData} = useGetProductsQuery();
-  const {data:ordersData} = useGetAllOrdersQuery();
-  const {data:lowStockData} = useGetLowStocksQuery();
+  const { user } = useAuth();
+  const { data: productsData } = useGetProductsQuery();
+  const { data: ordersData } = useGetAllOrdersQuery();
+  const { data: lowStockData } = useGetLowStocksQuery();
 
   const firstName = user?.name
-  ? user.name.split(" ")[0].replace(/^./, (c:string) => c.toUpperCase())
-  : "";
+    ? user.name.split(" ")[0].replace(/^./, (c: string) => c.toUpperCase())
+    : "";
 
   return (
     <div className="min-h-screen">
@@ -105,35 +110,35 @@ const Dashboard = () => {
         />
       </div>
       <SalesChart
-        data={mockStats.salesTrend}
+        data={ordersData?.totalSales || []}
         days={mockStats.salesDays}
         dark={dark}
       />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <div className="rounded-xl shadow-md p-6">
+        <div className="rrounded-xl shadow-md p-6 overflow-x-auto max-h-[286px]">
           <h2 className="text-xl font-semibold mb-4 text-gray-900">
             Recent Activity
           </h2>
           <ul className="space-y-4">
-            {mockStats.recentOrders.map((order) => (
-              <li key={order.id} className="flex items-center space-x-4">
+            {ordersData?.orders.map((order, index) => (
+              <li key={order?.id} className="flex items-center space-x-4">
                 <span className="inline-block w-3 h-3 rounded-full bg-blue-500"></span>
                 <div className="flex-1">
                   <div className="text-gray-800 font-medium">
-                    Order <span className="font-mono">{order.id}</span>{" "}
-                    {order.status === "Pending"
+                    Order <span className="font-mono">{`ORD - ${index}`}</span>{" "}
+                    {order.status === "pending"
                       ? "placed"
-                      : order.status === "Shipped"
-                        ? "shipped"
+                      : order.status === "delivered"
+                        ? "delivered"
                         : "delivered"}{" "}
-                    by {order.customer}
+                    by {order?.user?.name}
                   </div>
                   <div className="text-xs text-gray-400">
-                    {order.time} • {order.total}
+                    {timeAgo(order.createdAt)} • {`₹${order?.total}`}
                   </div>
                 </div>
                 <span
-                  className={`px-2 py-1 rounded text-xs font-semibold ${order.status === "Pending" ? "bg-yellow-100 text-yellow-800" : order.status === "Shipped" ? "bg-blue-100 text-blue-800" : "bg-green-100 text-green-800"}`}
+                  className={`px-2 py-1 rounded text-xs font-semibold ${order.status === "pending" ? "bg-yellow-100 text-yellow-800" : order.status === "delivered" ? "bg-blue-100 text-blue-800" : "bg-green-100 text-green-800"}`}
                 >
                   {order.status}
                 </span>

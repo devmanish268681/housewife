@@ -1,9 +1,12 @@
+import { ProductVariant } from "@/lib/types/categories";
+
 export type Product = {
   id: string;
   title: string;
   description: string;
   price: number;
   variantId?: string;
+  variants: ProductVariant[];
   stock?: number;
   category?: string;
   tags: string[];

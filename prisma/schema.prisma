@@ -271,6 +271,8 @@ model DeliveryZone {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   deleted   Boolean  @default(false)
+  state     String?
+  district  String?
   name      String
   latitude  String
   longitude String

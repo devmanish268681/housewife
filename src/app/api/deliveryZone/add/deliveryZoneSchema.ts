@@ -5,4 +5,6 @@ export const deliveryZoneSchema = z.object({
   longitude: z.string().min(-180).max(180),
   radiusKm: z.number().min(0.1),
   zoneName: z.string().min(1),
+  state: z.string(),
+  district: z.string()
 });

@@ -1,3 +1,5 @@
+import { ProductVariant } from "@/lib/types/categories";
+
 export type ProductCardProps = {
   id: string;
   title: string;
@@ -7,6 +9,7 @@ export type ProductCardProps = {
   quantityText?: string;
   image: string;
   stock?: number;
+  variants: ProductVariant[];
   category?: string;
   variantId?: string;
 };
