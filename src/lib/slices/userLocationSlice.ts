@@ -1,13 +1,14 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface LocationState {
-    address: string | null;
+    address?: string | null;
     pincode: string | null;
     latitude: number | null;
     longitude: number | null;
-    hasLocation: boolean;
-    loading: boolean;
-    error: string | null;
+    hasLocation?: boolean;
+    loading?: boolean;
+    error?: string | null;
+    addressByPincode?: boolean;
 }
 
 const initialState: LocationState = {
@@ -27,16 +28,17 @@ const userLocationSlice = createSlice({
         setLocationData: (
             state,
             action: PayloadAction<{
-                address: string;
+                address?: string;
                 pincode: string;
                 latitude: number;
                 longitude: number;
-                hasLocation: boolean;
-                error: string;
-                loading: boolean;
+                hasLocation?: boolean;
+                error?: string;
+                loading?: boolean;
+                addressByPincode?: boolean;
             }>
         ) => {
-            const { address, pincode, latitude, longitude, hasLocation, error, loading } = action.payload;
+            const { address, pincode, latitude, longitude, hasLocation, error, loading, addressByPincode } = action.payload;
             state.address = address;
             state.pincode = pincode;
             state.latitude = latitude;
@@ -44,6 +46,7 @@ const userLocationSlice = createSlice({
             state.hasLocation = hasLocation;
             state.error = error;
             state.loading = loading;
+            state.addressByPincode = addressByPincode
         },
         setLocationLoading: (state, action: PayloadAction<boolean>) => {
             state.loading = action.payload;
