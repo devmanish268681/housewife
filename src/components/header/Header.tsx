@@ -14,7 +14,7 @@ import SigninModal from "../sign-in/SIgnIn";
 import { Button } from "../common/Button";
 
 //context and hooks
-import { useAppSelector } from "@/lib/hooks";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { useAuth } from "@/lib/context/authContext";
 import { useGeolocation } from "@/lib/hooks/use-geolocation";
 
@@ -31,12 +31,14 @@ import {
 import { useSession } from "next-auth/react";
 import Notification from "../notification/Notification";
 import { useAddUserLocationMutation, useLazyGetUserLocationQuery } from "@/lib/slices/userLocationApiSlice";
+import { setLocationData } from "@/lib/slices/userLocationSlice";
 
 const Header = () => {
   //hooks
   const router = useRouter();
 
   const searchParams = useSearchParams();
+  const dispatch = useAppDispatch();
   const session = useSession();
   const userId = session?.data?.user?.id || "";
   const isAdmin = session?.data?.user?.role === "admin";
@@ -53,14 +55,20 @@ const Header = () => {
   const { isLoggedIn, user, loading } = useAuth();
   const { data: cartItemsData } = useGetAllCartItemsQuery();
   const userLocation = useAppSelector((state) => state.userLocation);
-  const { address: userAddress, latitude, longitude } = userLocation;
+  const { address: userAddress, latitude, longitude, addressByPincode } = userLocation;
+
   const {
     address,
     isLoading: locationLoading,
     getCurrentLocation,
+    latitude: userLatitude,
+    longitude: userLongitude,
     clearLocation,
+    pinCode,
     hasLocation,
+    error,
   } = useGeolocation();
+
   const cartItems = useAppSelector((state) => state.cart.items);
 
   const cartCount = cartItemsData?.result?.reduce(
@@ -71,7 +79,6 @@ const Header = () => {
   const handleCartClose = () => {
     setCartOpen(false);
     params.delete("open");
-
     router.push(`?${params.toString()}`);
   };
 
@@ -79,10 +86,12 @@ const Header = () => {
     if (!latitude || !longitude) return;
 
     try {
-      await addUserLocation({
-        latitude: String(latitude),
-        longitude: String(longitude),
-      }).unwrap();
+      if (!addressByPincode) {
+        await addUserLocation({
+          latitude: String(latitude),
+          longitude: String(longitude),
+        }).unwrap();
+      }
 
       await getUserLocation({
         latitude,
@@ -102,6 +111,18 @@ const Header = () => {
       clearLocation();
     } else {
       getCurrentLocation();
+      dispatch(
+        setLocationData({
+          address: String(address),
+          pincode: String(pinCode),
+          latitude: Number(userLatitude),
+          longitude: Number(userLongitude),
+          hasLocation: hasLocation,
+          error: String(error),
+          loading: locationLoading,
+          addressByPincode: false
+        })
+      );
       checkLocation();
     }
   };
@@ -354,7 +375,7 @@ const Header = () => {
                 <span className="mr-2">🛒</span>
                 Cart
                 {cartCount > 0 && (
-                  <span className="absolute top-1 right-6 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full">
+                  <span className="absolute right-6 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full">
                     {cartCount}
                   </span>
                 )}
