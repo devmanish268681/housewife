@@ -6,7 +6,7 @@ export type Product = {
   description: string;
   price: number;
   variantId?: string;
-  variants: ProductVariant[];
+  variants?: ProductVariant[];
   stock?: number;
   category?: string;
   tags: string[];
