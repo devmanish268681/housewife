@@ -1,5 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
+import { getRoleByName } from "./userService";
+import { getAddressByUserId } from "./addressService";
 
 export type UpdateOrderInput = Partial<
   Omit<Order, "id" | "createdAt" | "updatedAt" | "deleted">
@@ -233,12 +235,22 @@ export const applyOffer = async ({
 export const calculateGSTBreakup = async ({
   productWithTaxRates,
   buyerState,
-  sellerState,
 }: {
   productWithTaxRates: ProductWithTaxRates;
   buyerState: string;
-  sellerState: string;
 }): Promise<GSTBreakup> => {
+  const admin = await getRoleByName("admin");
+  const adminUserId = admin.userData?.users[0].id as string;
+console.log(adminUserId);
+
+  const adminAddress = await getAddressByUserId(adminUserId);
+
+  const sellerState = adminAddress.state;
+
+  if (!admin.success) {
+    throw new Error(admin.message);
+  }
+
   console.log("buyerState", buyerState);
   console.log("sellerState", sellerState);
 

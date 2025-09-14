@@ -169,17 +169,8 @@ export const placeOrderController = async (body: any, userId: string) => {
         if (!body.products || body.products.length === 0) {
           throw new Error("No products found in order.");
         }
-
+        let finalAmount = 0;
         for (const item of body.products) {
-          const admin = await getRoleByName("admin");
-          const adminUserId = admin.userData?.users[0].id as string;
-
-          const adminAddress = await getAddressByUserId(adminUserId);
-
-          if (!admin.success) {
-            throw new Error(admin.message);
-          }
-
           const variant = await prisma.productVariant.findUnique({
             where: { id: item.productVariantId },
           });
@@ -205,7 +196,7 @@ export const placeOrderController = async (body: any, userId: string) => {
           total += variant.price * item.quantity;
           let deliveryFee = body.deliveryFee;
           const productWithTaxRates: ProductWithTaxRates = {
-            basePrice: variant.price,
+            basePrice: variant.discountedPrice,
             deliveryFee: deliveryFee,
             quantity: item.quantity,
             cgstRate: product.cgst,
@@ -216,8 +207,9 @@ export const placeOrderController = async (body: any, userId: string) => {
           gstBreakup = await calculateGSTBreakup({
             productWithTaxRates,
             buyerState: body.state,
-            sellerState: adminAddress.state,
           });
+          finalAmount += gstBreakup.totalPrice;
+
           console.log("gstBreakup", gstBreakup);
 
           orderItemsData.push({
@@ -228,6 +220,7 @@ export const placeOrderController = async (body: any, userId: string) => {
           });
         }
 
+        gstBreakup.totalPrice = finalAmount;
         let OfferApplied;
         if (body.offerId) {
           OfferApplied = await applyOffer({

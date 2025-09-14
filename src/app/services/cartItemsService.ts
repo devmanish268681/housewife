@@ -25,6 +25,31 @@ export const bulkDeleteCartItemsByProductId = async (
   }
 };
 
+export const getAllCartItemsByUserId = async (
+  userId: string,
+  tx: Prisma.TransactionClient = prisma
+) => {
+  try {
+    const cartItem = await tx.cartItem.findMany({
+      where: { userId: userId },
+      include: {
+        product: true,
+        productVariant: true,
+        user: { include: { Address: true } },
+      },
+    });
+
+    if (!cartItem) {
+      throw new Error("cart items not found");
+    }
+
+    return cartItem;
+  } catch (error: any) {
+    console.error("Internal server error", error);
+    throw error;
+  }
+};
+
 export const deleteCartItemsById = async (
   cartItemId: string,
   tx: Prisma.TransactionClient = prisma
@@ -35,7 +60,7 @@ export const deleteCartItemsById = async (
     });
 
     if (!cartItem) {
-      throw new Error("product not found");
+      throw new Error("cart items not found");
     }
 
     await tx.cartItem.update({
