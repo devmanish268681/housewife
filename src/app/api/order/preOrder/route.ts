@@ -11,7 +11,7 @@ import {
 export async function GET(request: Request) {
   try {
     const session = await getServerSession(authOptions);
-    const userId = "0d1a885a-8371-4145-962f-8375a621e306" as string;
+    const userId = session?.user.id as string;
 
     if (!userId) {
       return NextResponse.json(
