@@ -20,6 +20,11 @@ export async function POST(request: Request) {
       endDate,
       isActive,
       scope,
+      brandId,
+      categoryId,
+      subCategoryId,
+      productId,
+      productVariantId,
     } = body;
 
     // Basic validation
@@ -54,6 +59,11 @@ export async function POST(request: Request) {
         startDate: new Date(startDate),
         endDate: new Date(endDate),
         isActive,
+        brandId,
+        categoryId,
+        subCategoryId,
+        productId,
+        productVariantId,
       },
     });
 
