@@ -1,7 +1,10 @@
 // app/api/offers/route.ts
 import { lockRowForUpdate } from "@/app/lib/lockRow";
 import { getOfferById, updateOfferById } from "@/app/services/offerService";
-import { prisma } from "@/lib/prisma";
+import {
+  applayDiscountedPriceByScope,
+  removeDiscountedPriceByScope,
+} from "@/app/services/ProductsService";
 import { NextResponse } from "next/server";
 
 export async function PATCH(request: Request) {
@@ -21,15 +24,59 @@ export async function PATCH(request: Request) {
     }
 
     const updatedOffer = await updateOfferById(id, { isActive: isActive });
+    console.log(
+      "updatedOffer.isActive",
+      updatedOffer.isActive &&
+        (updatedOffer.brandId ||
+          updatedOffer.categoryId ||
+          updatedOffer.subCategoryId ||
+          updatedOffer.productId ||
+          updatedOffer.productVariantId)
+    );
+
+    if (
+      updatedOffer.isActive &&
+      (updatedOffer.brandId ||
+        updatedOffer.categoryId ||
+        updatedOffer.subCategoryId ||
+        updatedOffer.productId ||
+        updatedOffer.productVariantId)
+    ) {
+      const updateProductVarient = await applayDiscountedPriceByScope(
+        existingOffer,
+        {
+          brandId: existingOffer?.brandId ?? undefined,
+          categoryId: existingOffer.categoryId ?? undefined,
+          productId: existingOffer.productId ?? undefined,
+          productVariantId: existingOffer.productVariantId ?? undefined,
+          subCategoryId: existingOffer.subCategoryId ?? undefined,
+        }
+      );
+    } else if (!updatedOffer.isActive) {
+      const updateProductVarient = await removeDiscountedPriceByScope(
+        existingOffer,
+        {
+          brandId: existingOffer?.brandId ?? undefined,
+          categoryId: existingOffer.categoryId ?? undefined,
+          productId: existingOffer.productId ?? undefined,
+          productVariantId: existingOffer.productVariantId ?? undefined,
+          subCategoryId: existingOffer.subCategoryId ?? undefined,
+        }
+      );
+    }
 
     return NextResponse.json(
-      { success: true, offer: updatedOffer },
+      {
+        success: true,
+        existingOffer,
+        offer: updatedOffer,
+      },
       { status: 200 }
     );
   } catch (error: any) {
     console.error("Internal Server Error:", error);
     return NextResponse.json(
-      { message: "Internal Server Error" },
+      { message: error.message || "Internal Server Error" },
       { status: 500 }
     );
   }

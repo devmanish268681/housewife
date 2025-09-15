@@ -1,5 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
+import { getRoleByName } from "./userService";
+import { getAddressByUserId } from "./addressService";
 
 export type UpdateOrderInput = Partial<
   Omit<Order, "id" | "createdAt" | "updatedAt" | "deleted">
@@ -14,6 +16,10 @@ type ApplyOfferInput = {
   userId: string;
   totalOrderAmount: number; // in INR
   offerId: string; // optional
+};
+type ApplyOfferToProductsInput = {
+  totalOrderAmount: number; // in INR
+  offer: any;
 };
 
 export type ProductWithTaxRates = {
@@ -114,6 +120,45 @@ export const getOrderByOrderId = async (
     throw error;
   }
 };
+export const applyOfferToProducts = async ({
+  totalOrderAmount,
+  offer,
+}: ApplyOfferToProductsInput) => {
+  try {
+    const now = new Date();
+
+    if (totalOrderAmount <= 0) {
+      throw new Error(`Minimum order value must be ₹ 0`);
+    }
+
+    // 💰 Calculate discount
+    let discount = 0;
+    if (offer) {
+      if (offer.type === "PERCENTAGE") {
+        discount = (offer.discountValue / 100) * totalOrderAmount;
+        if (offer.maxDiscount && discount > offer.maxDiscount) {
+          discount = offer.maxDiscount;
+        }
+      } else if (offer.type === "FLAT") {
+        discount = offer.discountValue;
+      }
+    }
+    const finalAmount = Math.max(totalOrderAmount - discount, 0);
+    // console.log("discoutn------", discount);
+    // console.log("finalAmount------", finalAmount);
+
+    return {
+      discountAmount: discount,
+      finalAmount,
+      discountValue: offer?.discountValue,
+      title: offer?.title,
+      type: offer?.type,
+    };
+  } catch (error: any) {
+    console.error("Internal server error", error);
+    throw error;
+  }
+};
 
 export const applyOffer = async ({
   userId,
@@ -190,12 +235,22 @@ export const applyOffer = async ({
 export const calculateGSTBreakup = async ({
   productWithTaxRates,
   buyerState,
-  sellerState,
 }: {
   productWithTaxRates: ProductWithTaxRates;
   buyerState: string;
-  sellerState: string;
 }): Promise<GSTBreakup> => {
+  const admin = await getRoleByName("admin");
+  const adminUserId = admin.userData?.users[0].id as string;
+console.log(adminUserId);
+
+  const adminAddress = await getAddressByUserId(adminUserId);
+
+  const sellerState = adminAddress.state;
+
+  if (!admin.success) {
+    throw new Error(admin.message);
+  }
+
   console.log("buyerState", buyerState);
   console.log("sellerState", sellerState);
 

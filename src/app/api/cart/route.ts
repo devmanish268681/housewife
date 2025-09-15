@@ -11,7 +11,7 @@ import { deleteCartItemsById } from "@/app/services/cartItemsService";
 export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions);
-    const userId = session?.user?.id as string;
+    const userId = session?.user.id as string;
 
     if (!userId) {
       return NextResponse.json(

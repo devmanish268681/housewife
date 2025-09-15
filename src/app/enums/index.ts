@@ -5,4 +5,8 @@ const OrderStatus = {
   Delivered: "delivered",
   Cancelled: "cancelled",
 };
-export default OrderStatus;
+export enum OfferType {
+  PERCENTAGE = "PERCENTAGE",
+  FLAT = "FLAT",
+}
+export default { OrderStatus, OfferType };
