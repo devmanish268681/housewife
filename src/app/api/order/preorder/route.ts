@@ -23,10 +23,10 @@ export async function GET(request: Request) {
     let cartWithGSTbreakup = [];
 
     let finalAmount = 0;
+    let deliveryFee = 50;
     for await (const cart of cartData) {
       const productWithTaxRates: ProductWithTaxRates = {
         basePrice: cart.productVariant?.discountedPrice as number,
-        deliveryFee: 50,
         quantity: cart.quantity,
         cgstRate: cart.product.cgst,
         igstRate: cart.product.igst,
@@ -35,13 +35,16 @@ export async function GET(request: Request) {
 
       const gstBreakup = await calculateGSTBreakup({
         productWithTaxRates: productWithTaxRates,
-        buyerState: cart.user.Address[0].state,
+        buyerState: cart?.user?.Address[0]?.state,
+        deliveryFee:50
       });
+
+      console.log(gstBreakup,"gst")
       finalAmount += gstBreakup.totalPrice;
       cartWithGSTbreakup.push({
         basePrice: cart.productVariant?.price,
-        deliveryFee: 50,
-        discountedPrice: cart.productVariant?.discountedPrice,
+        deliveryFee: deliveryFee,
+        discountedPrice: Number(cart?.productVariant?.discountedPrice) * cart.quantity,
         cgstRate: gstBreakup.cgst,
         igstRate: gstBreakup.igst,
         sgstRate: gstBreakup.sgst,
@@ -49,7 +52,7 @@ export async function GET(request: Request) {
       });
     }
 
-    return NextResponse.json({ cartWithGSTbreakup, finalAmount });
+    return NextResponse.json({ cartWithGSTbreakup, finalAmount:finalAmount + deliveryFee});
   } catch (error: any) {
     return NextResponse.json(
       {

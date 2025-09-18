@@ -51,6 +51,7 @@ export async function GET(request: Request) {
       image: cart.product.images,
       productId: cart.productId,
       variantId: cart.productVariantId,
+      discountPrice:Number(cart?.productVariant?.discountedPrice) * cart.quantity
     }));
 
     return NextResponse.json({ result: formattedRes });

@@ -29,6 +29,12 @@ export type Categories = {
     image: any,
     createdAt: string;
     description: string;
+    offers:
+    {
+        id: string,
+        discountedValue: number
+        type:string;
+    }[];
     updatedAt: string;
     subCategories: {
         id: string,
@@ -58,8 +64,9 @@ export type ProductVariant = {
     unit: string;
     unitSize: number;
     price: number;
+    discountedPrice: number;
     stock: number;
-    createdAt: string; // ISO date string
+    createdAt: string;
     updatedAt: string;
     deleted: boolean;
 };

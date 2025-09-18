@@ -11,6 +11,9 @@ export async function GET(request: Request) {
         subCategory: {
           where: { deleted: false },
         },
+        Offers: {
+          where: { deleted: false }
+        },
         products: {
           where: { deleted: false },
           include: {
@@ -23,6 +26,8 @@ export async function GET(request: Request) {
         },
       },
     });
+
+    console.log(categories, "categories")
 
     const formatted = categories.map((category) => {
       // Group products by subcategory
@@ -81,6 +86,12 @@ export async function GET(request: Request) {
         }
       }
 
+      const formattedOffers = category.Offers?.map((offer) => ({
+        id: offer.id,
+        discountedValue: offer.discountValue,
+        type:offer.type
+      })) || [];
+
       return {
         id: category.id,
         name: category.name,
@@ -88,6 +99,7 @@ export async function GET(request: Request) {
         updatedAt: category.updatedAt,
         image: category.image,
         description: category.description,
+        offers: formattedOffers,
         subCategories: Object.values(subCategoryMap),
       };
     });
@@ -108,10 +120,10 @@ export async function POST(request: Request) {
     const userId = session?.user?.id as string;
 
     if (!userId) {
-          return NextResponse.json(
-            { message: "user id missing" },
-            { status: 404 }
-          );
+      return NextResponse.json(
+        { message: "user id missing" },
+        { status: 404 }
+      );
 
     }
 
@@ -145,10 +157,10 @@ export async function PUT(request: Request) {
     const userId = session?.user?.id as string;
 
     if (!userId) {
-           return NextResponse.json(
-             { message: "user id missing" },
-             { status: 404 }
-           );
+      return NextResponse.json(
+        { message: "user id missing" },
+        { status: 404 }
+      );
 
     }
 

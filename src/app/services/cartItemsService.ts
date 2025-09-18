@@ -31,7 +31,7 @@ export const getAllCartItemsByUserId = async (
 ) => {
   try {
     const cartItem = await tx.cartItem.findMany({
-      where: { userId: userId },
+      where: { userId: userId,deleted:false},
       include: {
         product: true,
         productVariant: true,

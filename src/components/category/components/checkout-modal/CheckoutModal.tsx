@@ -18,7 +18,7 @@ import { useAppSelector } from "@/lib/hooks";
 
 // slices & context
 import { useGetAllCartItemsQuery } from "@/lib/slices/cartApiSlice";
-import { usePlaceOrdersMutation } from "@/lib/slices/orderApiSlice";
+import { useGetCartPreOrderQuery, usePlaceOrdersMutation } from "@/lib/slices/orderApiSlice";
 import { useAuth } from "@/lib/context/authContext";
 
 // types
@@ -48,6 +48,23 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
   const { data: cartItemsData } = useGetAllCartItemsQuery(undefined, {
     skip: !isOpen,
   });
+  const { data: preOrderData } = useGetCartPreOrderQuery();
+  
+    const totals = preOrderData?.cartWithGSTbreakup?.reduce(
+      (acc, item) => {
+        const discount = item.basePrice - item.discountedPrice;
+        return {
+          basePrice: acc.basePrice + item.basePrice,
+          discount: acc.discount + discount,
+          discountedPrice: acc.discountedPrice + item.discountedPrice,
+          deliveryFee: item.deliveryFee,
+          cgst: acc.cgst + item.cgstRate,
+          sgst: acc.sgst + item.sgstRate,
+          totalPrice: acc.totalPrice + item.totalPrice,
+        };
+      },
+      { basePrice: 0, discountedPrice: 0, deliveryFee: 0, discount: 0, cgst: 0, sgst: 0, totalPrice: 0 }
+    );
   const [placeOrders, { isLoading: isPlacing }] = usePlaceOrdersMutation();
 
   // parse address safely (avoid 'state' naming confusion)
@@ -469,12 +486,28 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
                   <span className="truncate">
                     {item.productName} × {item.quantity}
                   </span>
-                  <span>₹{(item.price * item.quantity).toFixed(2)}</span>
+
+                  <span className="flex gap-[4px] items-center">
+                      <p className="text-sm text-gray-500">
+                        ₹{Math.round(item?.discountPrice)}
+                      </p>
+                      {item?.discountPrice !== item?.price && (
+                        <div className="flex items-center space-x-2">
+                          <span className="font-normal line-through text-gray-500 text-sm">
+                            ₹{Math.round(item?.price)}
+                          </span>
+                        </div>
+                      )}
+                  </span>
                 </div>
               ))}
               <div className="flex justify-between">
-                <span>Subtotal</span>
-                <span>₹{subtotal.toFixed(2)}</span>
+                <span>CGST</span>
+                <span>₹{totals?.cgst.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>SGST</span>
+                <span>₹{totals?.sgst.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
                 <span>Delivery Fee</span>
@@ -482,7 +515,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
               </div>
               <div className="flex justify-between text-lg font-bold">
                 <span>Total</span>
-                <span>₹{total.toFixed(2)}</span>
+                <span>₹{preOrderData?.finalAmount}</span>
               </div>
             </div>
           </section>

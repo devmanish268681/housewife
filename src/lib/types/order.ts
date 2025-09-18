@@ -166,3 +166,19 @@ export type recentOrders = {
   addressId: string;
   items: OrderItem[];
 };
+
+
+export type CartItemWithGST = {
+  basePrice: number;
+  deliveryFee: number;
+  discountedPrice: number;
+  cgstRate: number;
+  igstRate: number;
+  sgstRate: number;
+  totalPrice: number;
+};
+
+export type CartWithGSTResponse = {
+  cartWithGSTbreakup: CartItemWithGST[];
+  finalAmount: number;
+};

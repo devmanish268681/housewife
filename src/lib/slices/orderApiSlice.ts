@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { Orders, RazorpayOrderResponse, recentOrders } from "../types/order";
+import { CartWithGSTResponse, Orders, RazorpayOrderResponse, recentOrders } from "../types/order";
 
 const baseQuery = fetchBaseQuery({
     baseUrl: "/api/order",
@@ -45,8 +45,14 @@ export const orderApiSlice = createApi({
                 method: "POST",
                 body
             })
+        }),
+        getCartPreOrder: builder.query<CartWithGSTResponse, void>({
+            query: () => ({
+                url: "/preorder",
+                method: "GET"
+            })
         })
     })
 })
 
-export const { usePlaceOrdersMutation, useGetAllOrdersQuery, useGetRecentOrdersQuery, useReorderOrderMutation, useUpdateOrderStatusMutation } = orderApiSlice
+export const { usePlaceOrdersMutation, useGetAllOrdersQuery, useGetRecentOrdersQuery, useReorderOrderMutation, useUpdateOrderStatusMutation, useGetCartPreOrderQuery } = orderApiSlice

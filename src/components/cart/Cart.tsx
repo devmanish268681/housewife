@@ -30,6 +30,7 @@ import {
 
 //types
 import { CartProps } from "./types";
+import { useGetCartPreOrderQuery } from "@/lib/slices/orderApiSlice";
 
 
 const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
@@ -44,6 +45,23 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
   const [addToCart] = useAddToCartMutation();
   const [deleteFromCart] = useDeleteFromCartMutation();
   const { data: cartItemsData } = useGetAllCartItemsQuery();
+  const { data: preOrderData } = useGetCartPreOrderQuery();
+
+  const totals = preOrderData?.cartWithGSTbreakup?.reduce(
+    (acc, item) => {
+      const discount = item.basePrice - item.discountedPrice;
+      return {
+        basePrice: acc.basePrice + item.basePrice,
+        discount: acc.discount + discount,
+        discountedPrice: acc.discountedPrice + item.discountedPrice,
+        deliveryFee: item.deliveryFee,
+        cgst: acc.cgst + item.cgstRate,
+        sgst: acc.sgst + item.sgstRate,
+        totalPrice: acc.totalPrice + item.totalPrice,
+      };
+    },
+    { basePrice: 0, discountedPrice: 0, deliveryFee: 0, discount: 0, cgst: 0, sgst: 0, totalPrice: 0 }
+  );
 
   const handleLogin = useCallback(() => {
     params.set("signIn", "true");
@@ -92,24 +110,15 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
     setIsCheckoutOpen(true);
   };
 
-  const getSubtotal = useMemo(
-    () =>
-      cartItemsData?.result?.reduce(
-        (acc, item) => acc + item.price * item.quantity,
-        0
-      ) || 0,
-    [cartItemsData]
-  );
-
   const deliveryFee = 50;
-  const total = Number(getSubtotal) + deliveryFee;
+
 
   if (!isOpen) return null;
 
   return (
     <div
-      className="fixed top-0 right-0 h-full w-full lg:w-[400px] bg-white shadow-lg z-50"
-      style={{ transition: "transform 0.3s ease-in-out" }}
+      className="fixed top-0 right-0 h-full w-full lg:w-[400px] bg-white z-50 overflow-y-auto"
+      style={{ transition: "transform 0.3s ease-in-out",height: "calc(100vh - 70px)"}}
     >
       {/* Cart Header */}
       <div className="flex justify-between items-center p-4 border-b">
@@ -144,9 +153,18 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
                   />
                   <div className="flex-1">
                     <h3 className="font-medium">{item.productName}</h3>
-                    <p className="text-sm text-gray-500">
-                      ₹{item.price} per kg
-                    </p>
+                    <div className="flex gap-[4px]">
+                      <p className="text-sm text-gray-500">
+                        ₹{Math.round(item?.discountPrice)}
+                      </p>
+                      {item?.discountPrice !== item?.price && (
+                        <div className="flex items-center space-x-2">
+                          <span className="font-normal line-through text-gray-500 text-sm">
+                            ₹{Math.round(item?.price)}
+                          </span>
+                        </div>
+                      )}
+                    </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <button
@@ -198,21 +216,44 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
           {cartItemsData && cartItemsData?.result?.length > 0 && (
             <CouponCard />
           )}
-          {/* Order Summary */}
-          {cartItemsData && cartItemsData?.result?.length > 0 && (
-            <div className="p-4 border-t space-y-2">
-              <div className="flex justify-between">
-                <span>Subtotal</span>
-                <span>₹{getSubtotal}</span>
+
+          {cartItemsData && cartItemsData?.result?.length > 0 && preOrderData && (
+            <div className="w-full max-w-md mx-auto bg-white p-5 space-y-3">
+              <h2 className="text-lg font-semibold text-gray-800">Cart Summary</h2>
+
+              {/* Base price */}
+              <div className="flex justify-between text-sm text-gray-700">
+                <span>Items Price</span>
+                <span>₹{totals?.discountedPrice.toFixed(2)}</span>
               </div>
-              <div className="flex justify-between">
+
+              {/* <div className="flex justify-between text-sm text-green-600">
+                <span>Discount</span>
+                <span>₹{totals?.discount.toFixed(2)}</span>
+              </div> */}
+
+              {/* Delivery */}
+              <div className="flex justify-between text-sm text-gray-700">
                 <span>Delivery Fee</span>
-                <span>₹{deliveryFee}</span>
+                <span>₹{deliveryFee.toFixed(2)}</span>
               </div>
-              <div className="flex justify-between font-bold text-lg">
-                <span>Total</span>
-                <span>₹{total}</span>
+
+              {/* Taxes */}
+              <div className="flex justify-between text-sm text-gray-700">
+                <span>CGST</span>
+                <span>₹{totals?.cgst.toFixed(2)}</span>
               </div>
+              <div className="flex justify-between text-sm text-gray-700">
+                <span>SGST</span>
+                <span>₹{totals?.sgst.toFixed(2)}</span>
+              </div>
+
+              {/* Final */}
+              <div className="border-t pt-3 flex justify-between text-base font-semibold text-gray-900">
+                <span>Total Payable <p className="text-xs text-gray-500">(Incl. all taxes and charges)</p></span>
+                <span>₹{preOrderData?.finalAmount}</span>
+              </div>
+
               <button
                 className="w-full px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-full transition"
                 onClick={() => handleCheckout()}

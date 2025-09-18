@@ -38,6 +38,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   variantId,
   variants,
   category,
+  discountedPrice,
   quantityText = "1 pack (200g)",
   image,
 }) => {
@@ -159,8 +160,20 @@ const ProductCard: React.FC<ProductCardProps> = ({
         {/* Product Info */}
         <div className="p-4">
           {/* Price and Quantity Controls */}
-          <div className="flex justify-between items-center font-bold mb-2">
-            <p>&#8377;{price}</p>
+          <div className="flex gap-1 items-center font-bold mb-2">
+            <p className="text-lg font-semibold">
+              ₹{Math.round(discountedPrice)}
+            </p>
+            {discountedPrice !== price && (
+            <div className="flex items-center space-x-2">
+              <span className="font-normal line-through text-gray-500 text-lg">
+                ₹{Math.round(price)}
+              </span>
+              <span className="text-xs font-medium text-green-600">
+                SAVE ₹{Math.round(price - discountedPrice)}
+              </span>
+            </div>
+            )}
             <div>
               {quantity === 0 ? (
                 <button

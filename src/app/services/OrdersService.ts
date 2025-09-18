@@ -24,7 +24,7 @@ type ApplyOfferToProductsInput = {
 
 export type ProductWithTaxRates = {
   basePrice: number; // base price per unit
-  deliveryFee: number;
+  deliveryFee?: number;
   quantity: number;
   cgstRate?: number; // per product
   sgstRate?: number;
@@ -135,12 +135,14 @@ export const applyOfferToProducts = async ({
     let discount = 0;
     if (offer) {
       if (offer.type === "PERCENTAGE") {
-        discount = (offer.discountValue / 100) * totalOrderAmount;
-        if (offer.maxDiscount && discount > offer.maxDiscount) {
-          discount = offer.maxDiscount;
+        discount = (offer.discountValue / 100) * totalOrderAmount; //32.05
+        if (discount > (offer.maxDiscount / 100) * totalOrderAmount) {
+          discount = (offer.maxDiscount / 100) * totalOrderAmount;
         }
+        console.log("percentage",discount);
       } else if (offer.type === "FLAT") {
         discount = offer.discountValue;
+        console.log("flat")
       }
     }
     const finalAmount = Math.max(totalOrderAmount - discount, 0);
@@ -235,13 +237,14 @@ export const applyOffer = async ({
 export const calculateGSTBreakup = async ({
   productWithTaxRates,
   buyerState,
+  deliveryFee
 }: {
   productWithTaxRates: ProductWithTaxRates;
   buyerState: string;
+  deliveryFee:number;
 }): Promise<GSTBreakup> => {
   const admin = await getRoleByName("admin");
   const adminUserId = admin.userData?.users[0].id as string;
-console.log(adminUserId);
 
   const adminAddress = await getAddressByUserId(adminUserId);
 
@@ -252,7 +255,6 @@ console.log(adminUserId);
   }
 
   console.log("buyerState", buyerState);
-  console.log("sellerState", sellerState);
 
   const isIGST =
     buyerState.trim().toLowerCase() !== sellerState.trim().toLowerCase();
@@ -272,8 +274,7 @@ console.log(adminUserId);
   const gstAmount = +(cgst + sgst + igst).toFixed(2);
   const totalPrice = +(
     baseAmount +
-    gstAmount +
-    productWithTaxRates.deliveryFee
+    gstAmount
   ).toFixed(2);
 
   return {
@@ -282,7 +283,7 @@ console.log(adminUserId);
     cgst: +cgst.toFixed(2),
     sgst: +sgst.toFixed(2),
     igst: +igst.toFixed(2),
-    totalPrice,
+    totalPrice:totalPrice,
     isIGST,
   };
 };

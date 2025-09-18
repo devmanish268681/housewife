@@ -27,18 +27,25 @@ const CategoriesSection = ({ data }: CategoriesSectionProps) => {
                 )
               }
             >
+              {/* Discount Badge */}
+              {category?.offers && category?.offers.length > 0 && (
+                <span className="absolute top-2 left-2 bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded-lg shadow">
+                  {category?.offers[0]?.discountedValue}% OFF
+                </span>
+              )}
+
               <div
                 className="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl"
                 style={{ backgroundImage: `url(${category?.image})` }}
               ></div>
-              <div
-                className="bg-white p-4 absolute bottom-0 w-full h-[70px] rounded-b-[12px]"
-              >
+
+              <div className="bg-white p-4 absolute bottom-0 w-full h-[70px] rounded-b-[12px]">
                 <p className="text-[#181111] text-lg font-semibold leading-normal">
                   {category?.name}
                 </p>
               </div>
             </div>
+
           ))}
         </div>
       </div>

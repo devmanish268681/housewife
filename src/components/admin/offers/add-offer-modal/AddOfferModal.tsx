@@ -11,6 +11,10 @@ import { useAddOffersMutation, useUpdateOffersMutation } from "@/lib/slices/offe
 //types
 import { DiscountType, Offers } from "@/lib/types/offers";
 import { formatDate } from "@/lib/utils/utils";
+import { useGetCategoriesQuery } from "@/lib/slices/categoriesApiSlice";
+import { useGetBrandsQuery } from "@/lib/slices/brandsApiSlice";
+import { useGetSubCategoryQuery } from "@/lib/slices/subCategoryApiSlice";
+import { useGetProductsQuery } from "@/lib/slices/productsApiSlice";
 
 const INITIAL_REVIEW_FORM_VALUES = {
   title: "",
@@ -24,6 +28,10 @@ const INITIAL_REVIEW_FORM_VALUES = {
   usagePerUser: 0,
   startDate: "",
   endDate: "",
+  categoryId: "",
+  subCategoryId: "",
+  productId: "",
+  brandId: "",
   isActive: false
 };
 const AddOfferModal = ({
@@ -38,6 +46,10 @@ const AddOfferModal = ({
   //slices
   const [addOffers] = useAddOffersMutation();
   const [updateOffers] = useUpdateOffersMutation();
+  const { data: categoryData } = useGetCategoriesQuery();
+  const { data: brandsData } = useGetBrandsQuery();
+  const { data: subCategoryData } = useGetSubCategoryQuery();
+  const { data: productsData } = useGetProductsQuery();
 
   const isEdit = details;
 
@@ -53,7 +65,7 @@ const AddOfferModal = ({
     },
   });
 
-  const { title, description, type, discountValue, maxDiscount, minOrderValue, couponCode, usageLimit, usagePerUser, startDate, endDate, isActive } = values;
+  const { title, description, type, discountValue, categoryId, brandId, subCategoryId, productId, maxDiscount, minOrderValue, couponCode, usageLimit, usagePerUser, startDate, endDate, isActive } = values;
 
   const handleAddBrand = async () => {
     const payload = {
@@ -68,7 +80,12 @@ const AddOfferModal = ({
       usagePerUser: Number(usagePerUser),
       startDate: startDate,
       endDate: endDate,
-      isActive: isActive
+      isActive: isActive,
+      scope:"display",
+      ...(categoryId && { categoryId }),
+      ...(brandId && { brandId }),
+      ...(subCategoryId && { subCategoryId }),
+      ...(productId && { productId })
     }
 
     if (details) {
@@ -123,6 +140,70 @@ const AddOfferModal = ({
               onChange={(e) => setFieldValue("description", e.target.value)}
               className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring}`}
             />
+          </div>
+          <div>
+            <label className="block mb-1 font-medium">Select Category</label>
+            <select
+              name="category"
+              value={categoryId}
+              onChange={(e) => setFieldValue("categoryId", e.target.value)}
+              className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring`}
+            >
+              <option value="">Category</option>
+              {categoryData?.categories.map((category) => (
+                <option value={category.id} key={category.id}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block mb-1 font-medium">Select Brand</label>
+            <select
+              name="brand"
+              value={brandId}
+              onChange={(e) => setFieldValue("brandId", e.target.value)}
+              className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring`}
+            >
+              <option value="">Brand</option>
+              {brandsData?.map((brand, index) => (
+                <option value={brand.id} key={`${brand.id} - ${index}`}>
+                  {brand.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block mb-1 font-medium">Select Sub Category</label>
+            <select
+              name="subCategory"
+              value={subCategoryId}
+              onChange={(e) => setFieldValue("subCategoryId", e.target.value)}
+              className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring`}
+            >
+              <option value="">Sub Category</option>
+              {subCategoryData?.map((category) => (
+                <option value={category.id} key={category.id}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block mb-1 font-medium">Select Product</label>
+            <select
+              name="product"
+              value={productId}
+              onChange={(e) => setFieldValue("productId", e.target.value)}
+              className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring`}
+            >
+              <option value="">Product</option>
+              {productsData?.data.map((category) => (
+                <option value={category.id} key={category.id}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
           </div>
           <div>
             <label className="block mb-1 font-medium">Type</label>

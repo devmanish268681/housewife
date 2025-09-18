@@ -4,16 +4,21 @@ export type Offers = {
   description?: string;
   type: "PERCENTAGE" | "FLAT";
   discountValue: number;
+  categoryId:string;
+  brandId:string;
+  subCategoryId:string;
+  productId:string;
+  productVariantId:string;
   maxDiscount?: number;
   minOrderValue?: number;
   couponCode?: string;
   usageLimit?: number;
   usagePerUser?: number;
-  startDate: string;  // ISO date string
-  endDate: string;    // ISO date string
+  startDate: string;
+  endDate: string;
   isActive: boolean;
-  createdAt: string;  // ISO date string
-  updatedAt: string;  // ISO date string
+  createdAt: string;
+  updatedAt: string;
   deleted: boolean;
 };
 
