@@ -91,6 +91,7 @@ const CategoriesCard = ({
               subtitle={"tetsing"}
               description={product?.description}
               price={Number(product?.variants[0]?.price)}
+              discountedPrice={Number(product?.variants[0]?.discountedPrice)}
               quantityText={"1 pack (200g)"}
               image={product?.images[0]}
               stock={product?.variants[0]?.stock}

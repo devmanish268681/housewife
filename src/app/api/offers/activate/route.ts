@@ -27,11 +27,11 @@ export async function PATCH(request: Request) {
     console.log(
       "updatedOffer.isActive",
       updatedOffer.isActive &&
-        (updatedOffer.brandId ||
-          updatedOffer.categoryId ||
-          updatedOffer.subCategoryId ||
-          updatedOffer.productId ||
-          updatedOffer.productVariantId)
+      (updatedOffer.brandId ||
+        updatedOffer.categoryId ||
+        updatedOffer.subCategoryId ||
+        updatedOffer.productId ||
+        updatedOffer.productVariantId)
     );
 
     if (

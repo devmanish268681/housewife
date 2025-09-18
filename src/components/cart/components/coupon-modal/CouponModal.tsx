@@ -64,7 +64,7 @@ const CouponModal = ({
                 </div> */}
 
                 {/* Coupon List */}
-                <div className="space-y-4 overflow-y-auto h-[600px]" style={{ height: "calc(100vh - 123px)" }}>
+                <div className="space-y-4 overflow-y-auto h-[700px]">
                     {coupons?.offer?.map((coupon) => {
                         return (
                             <div

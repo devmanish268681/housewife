@@ -7,6 +7,7 @@ export type CartItem = {
   unitSize: string;
   quantity: number;
   variantId: string;
+  discountPrice:number;
   image: string[];
 };
 
