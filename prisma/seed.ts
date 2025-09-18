@@ -24,9 +24,6 @@ const {
 } = require("./data");
 
 const { PrismaClient } = require("@prisma/client");
-const axios = require("axios");
-const { load } = require("cheerio");
-const path = require("path");
 const prisma = new PrismaClient();
 
 type ImageUrlWithProductName = {
