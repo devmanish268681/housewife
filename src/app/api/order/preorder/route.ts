@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getAllCartItemsByUserId } from "@/app/services/cartItemsService";
 import {
+  applyOffer,
   calculateGSTBreakup,
   ProductWithTaxRates,
 } from "@/app/services/OrdersService";
@@ -12,6 +13,8 @@ export async function GET(request: Request) {
   try {
     const session = await getServerSession(authOptions);
     const userId = session?.user.id as string;
+    const { searchParams } = new URL(request.url);
+    const offerId = searchParams.get("id");
 
     if (!userId) {
       return NextResponse.json(
@@ -24,6 +27,7 @@ export async function GET(request: Request) {
 
     let finalAmount = 0;
     let deliveryFee = 50;
+    let amount = 0;
     for await (const cart of cartData) {
       const productWithTaxRates: ProductWithTaxRates = {
         basePrice: cart.productVariant?.discountedPrice as number,
@@ -41,6 +45,7 @@ export async function GET(request: Request) {
 
       console.log(gstBreakup,"gst")
       finalAmount += gstBreakup.totalPrice;
+      amount += gstBreakup.totalPrice;
       cartWithGSTbreakup.push({
         basePrice: cart.productVariant?.price,
         deliveryFee: deliveryFee,
@@ -52,7 +57,18 @@ export async function GET(request: Request) {
       });
     }
 
-    return NextResponse.json({ cartWithGSTbreakup, finalAmount:finalAmount + deliveryFee});
+    finalAmount = amount + 50; //50 is deliveryFee
+
+    if (offerId) {
+      const offer = await applyOffer({
+        userId: userId,
+        totalOrderAmount: finalAmount,
+        offerId,
+      });
+      finalAmount += offer.finalAmount;
+    }
+
+    return NextResponse.json({ cartWithGSTbreakup, finalAmount });
   } catch (error: any) {
     return NextResponse.json(
       {

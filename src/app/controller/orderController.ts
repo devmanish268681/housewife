@@ -220,7 +220,7 @@ export const placeOrderController = async (body: any, userId: string) => {
           });
         }
 
-        gstBreakup.totalPrice = finalAmount;
+        gstBreakup.totalPrice = finalAmount + body.deliveryFee;
         let OfferApplied;
         if (body.offerId) {
           OfferApplied = await applyOffer({
