@@ -111,6 +111,16 @@ const Header = () => {
       clearLocation();
     } else {
       getCurrentLocation();
+      checkLocation();
+    }
+  };
+
+  useEffect(() => {
+    getCurrentLocation();
+  },[]);
+
+  useEffect(() => {
+    if(address){
       dispatch(
         setLocationData({
           address: String(address),
@@ -123,9 +133,8 @@ const Header = () => {
           addressByPincode: false
         })
       );
-      checkLocation();
     }
-  };
+  },[address])
 
   useEffect(() => {
     setCartOpen(Boolean(isCartOpen));
@@ -154,7 +163,7 @@ const Header = () => {
           />
           {/* Nav links - hidden on mobile */}
           <nav className="hidden lg:flex items-center gap-6 text-sm text-[#181111] font-medium">
-            <a href="#">Offers</a>
+            {/* <a href="#">Offers</a> */}
             {!loading && user?.role === "admin" && (
               <a href="/admin">My Tools</a>
             )}
@@ -276,7 +285,7 @@ const Header = () => {
                 <path d="M6 6l12 12M6 18L18 6" />
               </svg>
             </button>
-            <a
+            {/* <a
               href="#"
               className="flex items-center gap-3 text-[#000000] text-lg font-semibold py-3 px-4 rounded-xl bg-white/80 shadow border-b border-[#ffe3e3] hover:bg-[#fffbe6] transition"
             >
@@ -293,7 +302,7 @@ const Header = () => {
                 <path d="M7 11h8" />
               </svg>
               Offers
-            </a>
+            </a> */}
             <a
               href="/products"
               className="flex items-center gap-3 text-[#000000] text-lg font-semibold py-3 px-4 rounded-xl bg-white/80 shadow border-b border-[#ffe3e3] hover:bg-[#fffbe6] transition"

@@ -5,12 +5,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 //hooks
-import { useGeolocation } from "@/lib/hooks/use-geolocation";
 import { useAppSelector } from "@/lib/hooks";
-
-//third-party
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
 
 //types
 import { Product } from "@/lib/types/products";
@@ -20,7 +15,6 @@ import { useGetProductsQuery } from "@/lib/slices/productsApiSlice";
 
 const HeroBanner = () => {
   //states & hooks
-  const [location, setLocation] = useState("your area");
   const [locationVisible, setLocationVisible] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [suggestions, setSuggestions] = useState<Product[]>([]);
@@ -34,15 +28,7 @@ const HeroBanner = () => {
 
   //utils
   const { address: userAddress } = userLocation;
-  const { address, getCurrentLocation, clearLocation, hasLocation } = useGeolocation();
-
-  const handleLocationClick = () => {
-    if (hasLocation) {
-      clearLocation();
-    } else {
-      getCurrentLocation();
-    }
-  };
+  const [streetParsed, stateName, country] = userAddress?.split(",") || [];
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && searchTerm.trim() !== "") {
@@ -68,14 +54,6 @@ const HeroBanner = () => {
   }, [searchTerm, products]);
 
 
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setLocation("Delhi");
-      setLocationVisible(true);
-    }, 1200);
-    return () => clearTimeout(timeout);
-  }, []);
-
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-teal-700 via-cyan-600 to-blue-800 text-white pt-20 md:pt-24 pb-28 px-4 sm:px-6 md:px-12">
       <div className="max-w-7xl mx-auto flex flex-col-reverse md:flex-row items-center gap-12 sm:gap-14 md:gap-16">
@@ -89,7 +67,7 @@ const HeroBanner = () => {
               className={`font-extrabold transition-opacity ${locationVisible ? "opacity-100" : "opacity-0"
                 }`}
             >
-              {location}
+              {stateName || '--'}
             </span>
           </h1>
 
@@ -132,27 +110,6 @@ const HeroBanner = () => {
             >
               🛒 Shop Now
             </button>
-            {!hasLocation && !address && !userAddress && (
-              <button
-                onClick={handleLocationClick}
-                aria-label="Allow Location"
-                className="bg-teal-900/90 text-lime-400 font-bold rounded-full px-8 py-3 shadow-lg border-2 border-lime-400 transform transition hover:scale-105 hover:shadow-xl"
-              >
-                📍 Allow Location
-              </button>
-            )}
-            {(hasLocation && address) || userAddress ? (
-              <span
-                className="bg-teal-900/90 text-lime-400 font-bold rounded-full px-8 py-3 shadow-lg border-2 border-lime-400 transform transition hover:scale-105 hover:shadow-xl"
-                aria-label={`Current location: ${address || userAddress}`}
-              >
-                <FontAwesomeIcon
-                  icon={faLocationDot}
-                  className="w-4 h-4 text-red-600"
-                />{" "}
-                {address || userAddress}
-              </span>
-            ) : null}
           </div>
         </div>
 

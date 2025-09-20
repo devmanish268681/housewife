@@ -61,11 +61,12 @@ export async function GET(request: Request) {
 
     if (offerId) {
       const offer = await applyOffer({
-        userId: userId,
+         userId: userId,
         totalOrderAmount: finalAmount,
         offerId,
       });
-      finalAmount += offer.finalAmount;
+
+      finalAmount -= offer?.discountAmount;
     }
 
     return NextResponse.json({ cartWithGSTbreakup, finalAmount });

@@ -136,7 +136,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
 
     if (user) {
       try {
-        await addToCart(payload).then(() => setQuantity(newQuantity));
+        await addToCart(payload).unwrap().then(() => setQuantity(newQuantity));
       } catch (error) {
         toast.error("Failed to update cart");
       }
@@ -154,7 +154,6 @@ const ProductModal: React.FC<ProductModalProps> = ({
         );
       } else {
         if (newQuantity === 0) {
-          console.log("qunajsjjss")
           dispatch(removeItem({ id: product?.id }))
         }
         dispatch(
