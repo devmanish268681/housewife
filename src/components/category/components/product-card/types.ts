@@ -6,7 +6,7 @@ export type ProductCardProps = {
   subtitle: string;
   description: string;
   price: number;
-  discountedPrice:number;
+  discountedPrice?:number;
   quantityText?: string;
   image: string;
   stock?: number;

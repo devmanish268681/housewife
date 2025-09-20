@@ -206,21 +206,20 @@ export const applyOffer = async ({
       }
     }
 
-    // 💰 Calculate discount
     let discount = 0;
-    if (offer) {
-      if (offer.type === "PERCENTAGE") {
-        discount = (offer.discountValue / 100) * totalOrderAmount;
-        if (offer.maxDiscount && discount > offer.maxDiscount) {
-          discount = offer.maxDiscount;
-        }
-      } else if (offer.type === "FLAT") {
-        discount = offer.discountValue;
-      }
+   if (offer) {
+  if (offer.type === "PERCENTAGE") {
+    discount = (offer.discountValue / 100) * totalOrderAmount;
+
+    const maxDiscount = offer.maxDiscount ?? Infinity;
+    if (discount > (maxDiscount / 100) * totalOrderAmount) {
+      discount = (maxDiscount / 100) * totalOrderAmount;
     }
+  } else if (offer.type === "FLAT") {
+    discount = offer.discountValue;
+  }
+}
     const finalAmount = Math.max(totalOrderAmount - discount, 0);
-    console.log("discoutn------", discount);
-    console.log("finalAmount------", finalAmount);
 
     return {
       discountAmount: discount,
@@ -241,7 +240,7 @@ export const calculateGSTBreakup = async ({
 }: {
   productWithTaxRates: ProductWithTaxRates;
   buyerState: string;
-  deliveryFee:number;
+  deliveryFee?:number;
 }): Promise<GSTBreakup> => {
   const admin = await getRoleByName("admin");
   const adminUserId = admin.userData?.users[0].id as string;

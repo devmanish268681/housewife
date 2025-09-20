@@ -12,10 +12,11 @@ import {
 
 //components
 import Loading from "../common/Loading";
+import CategoriesCard from "./components/categories-card/CategoriesCard";
 
 //dynamic components
 const CategoriesFilter = dynamic(() => import("./components/categories-filter/CategoriesFilter"), { ssr: false });
-const CategoriesCard = dynamic(() => import("./components/categories-card/CategoriesCard"), { ssr: false });
+// const CategoriesCard = dynamic(() => import("./components/categories-card/CategoriesCard"), { ssr: false });
 
 const Categories = () => {
   //state & hooks

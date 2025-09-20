@@ -18,7 +18,7 @@ import { useAppSelector } from "@/lib/hooks";
 
 // slices & context
 import { useGetAllCartItemsQuery } from "@/lib/slices/cartApiSlice";
-import { useGetCartPreOrderQuery, usePlaceOrdersMutation } from "@/lib/slices/orderApiSlice";
+import { useLazyGetCartPreOrderQuery, usePlaceOrdersMutation } from "@/lib/slices/orderApiSlice";
 import { useAuth } from "@/lib/context/authContext";
 
 // types
@@ -40,7 +40,7 @@ const colorsMap: Record<PaymentMethod, string> = {
   Card: "text-blue-600",
 };
 
-const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
+const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose,offerId }) => {
   const { user } = useAuth();
 
   // slices
@@ -48,7 +48,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
   const { data: cartItemsData } = useGetAllCartItemsQuery(undefined, {
     skip: !isOpen,
   });
-  const { data: preOrderData } = useGetCartPreOrderQuery();
+  const [getCartPreOrder,{ data: preOrderData}] = useLazyGetCartPreOrderQuery();
   
     const totals = preOrderData?.cartWithGSTbreakup?.reduce(
       (acc, item) => {
@@ -273,6 +273,16 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
     const razorpay = new (window as any).Razorpay(options);
     razorpay.open();
   };
+
+  useEffect(() => {
+      getCartPreOrder({})
+    },[])
+  
+    useEffect(() => {
+      if(offerId){
+        getCartPreOrder({id:offerId})
+      }
+    },[offerId])
 
   if (!isOpen) return null;
 

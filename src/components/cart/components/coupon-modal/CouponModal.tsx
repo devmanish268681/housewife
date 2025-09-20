@@ -16,13 +16,19 @@ const CouponModal = ({
     isOpen,
     onClose,
     coupons,
+    setOfferId
 }: {
     isOpen: boolean;
     onClose: () => void;
+    setOfferId: (id: string) => void;
     coupons?: OfferResponse;
 }) => {
     const [code, setCode] = useState("");
     const [expandedId, setExpandedId] = useState<string | null>(null);
+
+    const handleApplyOffer = (id: string) => {
+        setOfferId(id);
+    }
 
     if (!isOpen) return null;
 
@@ -98,7 +104,7 @@ const CouponModal = ({
                                                 />
                                             </button>
                                         </div>
-                                        <button className="ml-3 bg-blue-50 text-blue-600 hover:bg-blue-100 text-xs font-bold px-3 py-1.5 rounded-full">
+                                        <button className="ml-3 bg-blue-50 text-blue-600 hover:bg-blue-100 text-xs font-bold px-3 py-1.5 rounded-full" onClick={() => handleApplyOffer(coupon.id)}>
                                             APPLY
                                         </button>
                                     </div>
