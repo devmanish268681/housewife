@@ -158,7 +158,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           {/* Price and Quantity Controls */}
           <div className="flex gap-1 items-center font-bold mb-2">
             <p className="text-lg font-semibold">
-              ₹{Math.round(discountedPrice)}
+              ₹{Math.round(Number(discountedPrice))}
             </p>
             {discountedPrice !== price && (
               <div className="flex items-center space-x-2">
@@ -166,7 +166,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                   ₹{Math.round(price)}
                 </span>
                 <span className="text-xs font-medium text-green-600">
-                  SAVE ₹{Math.round(price - discountedPrice)}
+                  SAVE ₹{Math.round(price - Number(discountedPrice))}
                 </span>
               </div>
             )}
