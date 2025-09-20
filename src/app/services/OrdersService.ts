@@ -240,7 +240,7 @@ export const calculateGSTBreakup = async ({
 }: {
   productWithTaxRates: ProductWithTaxRates;
   buyerState: string;
-  deliveryFee:number;
+  deliveryFee?:number;
 }): Promise<GSTBreakup> => {
   const admin = await getRoleByName("admin");
   const adminUserId = admin.userData?.users[0].id as string;
