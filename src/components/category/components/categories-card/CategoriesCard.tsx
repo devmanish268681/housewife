@@ -12,9 +12,10 @@ import { CategoriesCardProps } from "./types";
 
 //slices
 import { useLazyGetProductsByCategoryQuery } from "@/lib/slices/categoriesApiSlice";
+import ProductCard from "../product-card/ProductCard";
 
 //dynamic component
-const ProductCard = dynamic(() => import("../product-card/ProductCard"), { ssr: false });
+// const ProductCard = dynamic(() => import("../product-card/ProductCard"), { ssr: false });
 
 const CategoriesCard = ({
   products: initialProducts,

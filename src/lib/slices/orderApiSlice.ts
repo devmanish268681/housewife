@@ -46,13 +46,14 @@ export const orderApiSlice = createApi({
                 body
             })
         }),
-        getCartPreOrder: builder.query<CartWithGSTResponse, void>({
-            query: () => ({
-                url: "/preorder",
-                method: "GET"
+        getCartPreOrder: builder.query<CartWithGSTResponse, {id?:string}>({
+            query: (params) => ({
+                url:`/preorder`,
+                method: "GET",
+                params
             })
         })
     })
 })
 
-export const { usePlaceOrdersMutation, useGetAllOrdersQuery, useGetRecentOrdersQuery, useReorderOrderMutation, useUpdateOrderStatusMutation, useGetCartPreOrderQuery } = orderApiSlice
+export const { usePlaceOrdersMutation,useLazyGetRecentOrdersQuery, useGetAllOrdersQuery, useGetRecentOrdersQuery, useReorderOrderMutation, useUpdateOrderStatusMutation, useGetCartPreOrderQuery,useLazyGetCartPreOrderQuery } = orderApiSlice

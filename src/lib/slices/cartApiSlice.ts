@@ -19,6 +19,25 @@ export const cartApiSlice = createApi({
         method: "POST",
         body
       }),
+      async onQueryStarted(newItem, { dispatch, queryFulfilled }) {
+        const patchResult = dispatch(
+          cartApiSlice.util.updateQueryData("getAllCartItems", undefined, (draft: any) => {
+            const existing = draft.result.find((i: any) => i.productId === newItem.productId);
+            if (existing) {
+              existing.quantity = newItem.quantity;
+            } else {
+              draft.result.push({ ...newItem, optimistic: true });
+            }
+          })
+        );
+
+        try {
+          await queryFulfilled;
+        } catch {
+          patchResult.undo();
+        }
+      },
+
       invalidatesTags: ['Cart']
     }),
     deleteFromCart: builder.mutation({

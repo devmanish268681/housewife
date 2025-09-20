@@ -52,10 +52,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   const [addToCart] = useAddToCartMutation();
   const { data: cartItems } = useGetAllCartItemsQuery();
 
-  const isProductInCart = useMemo(
-    () => cartItems?.result?.find(item => item.productId === id),
-    [cartItems, id]
-  );
+  const isProductInCart = cartItems?.result?.filter(item => item.productId === id)
 
   const cartItem = useAppSelector((state) => state.cart.items);
   const cartItemQuantity = cartItem?.find(item => item.id === id);
@@ -79,16 +76,14 @@ const ProductCard: React.FC<ProductCardProps> = ({
       productVariantId: variantId,
       quantity: newQuantity,
     };
-
     if (user) {
       try {
-        await addToCart(payload).then(() => setQuantity(newQuantity));
+        await addToCart(payload).unwrap().then(() => setQuantity(newQuantity));
       } catch (error) {
         toast.error("Failed to update cart");
       }
     } else {
       if (newQuantity > quantity) {
-        console.log("hello qunaityt")
         dispatch(
           incrementQuantity({
             id,
@@ -101,7 +96,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
         );
       } else {
         if (newQuantity === 0) {
-          console.log("qunajsjjss")
           dispatch(removeItem({ id }))
         }
         dispatch(
@@ -110,9 +104,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
           })
         );
       }
-
-      setQuantity(newQuantity);
     }
+    setQuantity(newQuantity);
   };
 
   const handleAddButton = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -122,22 +115,25 @@ const ProductCard: React.FC<ProductCardProps> = ({
     toast.success("Product added successfully to cart");
   };
 
-  const handleQuantity = (action: "increment" | "decrement") => {
-    const newQty = action === "increment" ? quantity + 1 : Math.max(quantity - 1, 0);
-    if (newQty >= 0) updateCart(newQty);
+  const handleQuantity = async (action: "increment" | "decrement") => {
+    const newQty = action === "increment" ? quantity + 1 : quantity !== 1 ? quantity - 1 : 0;
+    if (newQty < 0) return;
+    await updateCart(newQty);
   };
 
   useEffect(() => {
-    if (isProductInCart) setQuantity(isProductInCart.quantity);
+    if (isProductInCart && isProductInCart?.length > 0) {
+      setQuantity(isProductInCart[0]?.quantity)
+    };
   }, [isProductInCart]);
+
 
   useEffect(() => {
     if (cartItemQuantity) {
       setQuantity(cartItemQuantity?.quantity);
-    } else {
-      setQuantity(0);
     }
   }, [cartItemQuantity])
+
 
   return (
     <>
@@ -165,14 +161,14 @@ const ProductCard: React.FC<ProductCardProps> = ({
               ₹{Math.round(discountedPrice)}
             </p>
             {discountedPrice !== price && (
-            <div className="flex items-center space-x-2">
-              <span className="font-normal line-through text-gray-500 text-lg">
-                ₹{Math.round(price)}
-              </span>
-              <span className="text-xs font-medium text-green-600">
-                SAVE ₹{Math.round(price - discountedPrice)}
-              </span>
-            </div>
+              <div className="flex items-center space-x-2">
+                <span className="font-normal line-through text-gray-500 text-lg">
+                  ₹{Math.round(price)}
+                </span>
+                <span className="text-xs font-medium text-green-600">
+                  SAVE ₹{Math.round(price - discountedPrice)}
+                </span>
+              </div>
             )}
             <div>
               {quantity === 0 ? (

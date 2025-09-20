@@ -7,5 +7,6 @@ export type CartItem = {
 
 export type CheckoutModalProps = {
   isOpen: boolean;
+  offerId?:string;
   onClose: () => void;
 };

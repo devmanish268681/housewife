@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect,useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
@@ -30,7 +30,7 @@ import {
 
 //types
 import { CartProps } from "./types";
-import { useGetCartPreOrderQuery } from "@/lib/slices/orderApiSlice";
+import { useLazyGetCartPreOrderQuery } from "@/lib/slices/orderApiSlice";
 
 
 const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
@@ -38,6 +38,7 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
   const searchParams = useSearchParams();
   const params = new URLSearchParams(searchParams.toString());
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [offerId,setOfferId] = useState<string>();
   const { isLoggedIn, user } = useAuth();
   const router = useRouter();
 
@@ -45,7 +46,7 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
   const [addToCart] = useAddToCartMutation();
   const [deleteFromCart] = useDeleteFromCartMutation();
   const { data: cartItemsData } = useGetAllCartItemsQuery();
-  const { data: preOrderData } = useGetCartPreOrderQuery();
+  const [getCartPreOrder,{ data: preOrderData}] = useLazyGetCartPreOrderQuery();
 
   const totals = preOrderData?.cartWithGSTbreakup?.reduce(
     (acc, item) => {
@@ -72,7 +73,7 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
     async (newQuantity: number, productId: string, variantId: string) => {
       if (!user) return;
       try {
-        await addToCart({ productId, productVariantId: variantId, quantity: newQuantity });
+        await addToCart({ productId, productVariantId: variantId, quantity: newQuantity }).unwrap().then(() => getCartPreOrder({}));
       } catch {
         toast.error("Failed to update cart");
       }
@@ -111,6 +112,16 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
   };
 
   const deliveryFee = 50;
+
+  useEffect(() => {
+    getCartPreOrder({})
+  },[])
+
+  useEffect(() => {
+    if(offerId){
+      getCartPreOrder({id:offerId})
+    }
+  },[offerId])
 
 
   if (!isOpen) return null;
@@ -214,7 +225,7 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
           </div>
 
           {cartItemsData && cartItemsData?.result?.length > 0 && (
-            <CouponCard />
+            <CouponCard  setOfferId={setOfferId}/>
           )}
 
           {cartItemsData && cartItemsData?.result?.length > 0 && preOrderData && (
@@ -251,7 +262,7 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
               {/* Final */}
               <div className="border-t pt-3 flex justify-between text-base font-semibold text-gray-900">
                 <span>Total Payable <p className="text-xs text-gray-500">(Incl. all taxes and charges)</p></span>
-                <span>₹{preOrderData?.finalAmount}</span>
+                <span>₹{preOrderData?.finalAmount.toFixed(2)}</span>
               </div>
 
               <button
@@ -264,6 +275,7 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
           )}
 
           <CheckoutModal
+            offerId={offerId}
             isOpen={isCheckoutOpen}
             onClose={() => setIsCheckoutOpen(false)}
           />

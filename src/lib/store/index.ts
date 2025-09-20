@@ -32,7 +32,8 @@ export const makeStore = () => {
             cart: cartReducer,
             userLocation: userLocationReducer,
         },
-        middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(categoriesApiSlice.middleware).concat(brandsApiSlice.middleware).concat(cartApiSlice.middleware).concat(recommendedProductsApiSlice.middleware).concat(orderApiSlice.middleware).concat(productsApiSlice.middleware).concat(subCategoryApiSlice.middleware).concat(userApiSlice.middleware).concat(userLocationApiSlice.middleware).concat(offersApiSlice.middleware).concat(deliverableZoneApiSlice.middleware)
+        middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(categoriesApiSlice.middleware).concat(brandsApiSlice.middleware).concat(cartApiSlice.middleware).concat(recommendedProductsApiSlice.middleware).concat(orderApiSlice.middleware).concat(productsApiSlice.middleware).concat(subCategoryApiSlice.middleware).concat(userApiSlice.middleware).concat(userLocationApiSlice.middleware).concat(offersApiSlice.middleware).concat(deliverableZoneApiSlice.middleware),
+        devTools: process.env.NODE_ENV !== "production",
     })
 }
 
