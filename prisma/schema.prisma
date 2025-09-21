@@ -59,8 +59,6 @@ model User {
   updatedAt     DateTime   @updatedAt
   deleted       Boolean    @default(false)
   profileImage  String
-  latitude      String?
-  longitude     String?
   emailVerified String?
   roles         Role       @relation(fields: [roleId], references: [id])
   roleId        String
@@ -244,7 +242,9 @@ model Address {
   deleted   Boolean  @default(false)
   user      User     @relation(fields: [userId], references: [id])
   userId    String
-  street    String
+  street    String?
+  latitude  Float 
+  longitude Float
   city      String
   state     String
   country   String
@@ -293,8 +293,8 @@ model DeliveryZone {
   state     String?
   district  String?
   name      String
-  latitude  String
-  longitude String
+  latitude  Float
+  longitude Float
   radiusKm  Float
 }
 

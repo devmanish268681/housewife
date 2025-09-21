@@ -271,18 +271,25 @@ async function main() {
       email: "admin@example.com",
       profileImage: "admin.png",
       roleName: "admin",
+      latitude: 18.6056704,
+      longitude: 73.8066432,
     },
     {
       name: "Delivery Agent 1",
       email: "agent1@example.com",
       profileImage: "agent1.png",
       roleName: "delivery_agent",
+      latitude: 18.6056704,
+      longitude: 73.8066432,
     },
     {
       name: "Manish Patil",
       email: "manishpatil@gmail.com",
       profileImage: "manish.png",
       roleName: "user",
+      zoneName: "Pune",
+      latitude: 18.6056704,
+      longitude: 73.8066432,
     },
   ];
 
@@ -290,7 +297,7 @@ async function main() {
   for (const user of usersToCreate) {
     const createdUser = await prisma.user.create({
       data: {
-        name: user.name,
+        name: user?.name,
         email: user.email,
         profileImage: user.profileImage,
         roleId: roleMap[user.roleName],
@@ -299,9 +306,10 @@ async function main() {
 
     const createdDeliveryZone = await prisma.deliveryZone.create({
       data: {
-        name: "Mumbai Central",
-        latitude: "19.076",
-        longitude: "72.8777",
+        name: user?.zoneName ?? "Mumbai Central",
+        latitude: user.latitude,
+        longitude: user.longitude,
+        state: "Maharashtra",
         radiusKm: 3,
       },
     });
@@ -316,6 +324,8 @@ async function main() {
           state: "Maharashtra",
           country: "India",
           zipCode: "411001",
+          latitude: user.latitude,
+          longitude: user.longitude,
         },
       });
     }

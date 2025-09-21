@@ -3,7 +3,7 @@ import { validateRequest } from "@/app/lib/validateRequest";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
 import { userLocationSchema } from "./userLocationSchema";
-import { getUserById, updateUserLocation } from "@/app/services/userService";
+import { createAddressRecord } from "@/app/services/addressService";
 
 export async function POST(request: Request) {
   try {
@@ -15,7 +15,16 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: "user id missing" }, { status: 404 });
     }
 
-    const { latitude, longitude } = body;
+    const addressObj = {
+      userId: userId,
+      city: body.city,
+      country: body.country,
+      zipCode: body.zipCode,
+      state: body.state,
+      latitude: parseFloat(body.latitude),
+      longitude: parseFloat(body.longitude),
+    };
+    console.log({ addressObj });
 
     const validation = await validateRequest(body, userLocationSchema);
 
@@ -23,9 +32,15 @@ export async function POST(request: Request) {
       return NextResponse.json({ errors: validation.error }, { status: 400 });
     }
 
-    const user = await getUserById(userId);
+    const address = await createAddressRecord(addressObj);
 
-    await updateUserLocation(user.id, latitude, longitude);
+    console.log({ address });
+    if (!address.id) {
+      return NextResponse.json(
+        { message: "error while creating address record" },
+        { status: 400 }
+      );
+    }
 
     return NextResponse.json(
       { message: "user location updated succesfully" },

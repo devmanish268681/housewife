@@ -27,7 +27,7 @@ export async function GET(request: Request) {
       },
     });
 
-    console.log(categories, "categories")
+    // console.log(categories, "categories")
 
     const formatted = categories.map((category) => {
       // Group products by subcategory
