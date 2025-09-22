@@ -8,6 +8,7 @@ import {
   calculateGSTBreakup,
   ProductWithTaxRates,
 } from "@/app/services/OrdersService";
+import { getOfferByCouponCode } from "@/app/services/offerService";
 
 export async function GET(request: Request) {
   try {
@@ -15,6 +16,7 @@ export async function GET(request: Request) {
     const userId = session?.user.id as string;
     const { searchParams } = new URL(request.url);
     const offerId = searchParams.get("id");
+    const couponCode = searchParams.get("couponCode");
 
     if (!userId) {
       return NextResponse.json(
@@ -59,9 +61,21 @@ export async function GET(request: Request) {
 
     finalAmount = amount + 50; //50 is deliveryFee
 
+    if (couponCode) {
+      const offerData = await getOfferByCouponCode(couponCode);
+
+      const offer = await applyOffer({
+        userId: userId,
+        totalOrderAmount: finalAmount,
+        offerId: offerData.id,
+      });
+
+      finalAmount -= offer?.discountAmount;
+    }
+
     if (offerId) {
       const offer = await applyOffer({
-         userId: userId,
+        userId: userId,
         totalOrderAmount: finalAmount,
         offerId,
       });

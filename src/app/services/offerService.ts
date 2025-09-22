@@ -37,6 +37,22 @@ export const getOfferById = async (
   }
 };
 
+export const getOfferByCouponCode = async (
+  couponCode: string,
+  tx: Prisma.TransactionClient = prisma
+) => {
+  try {
+    const offer = await tx.offers.findFirstOrThrow({
+      where: { couponCode: couponCode, deleted: false },
+    });
+
+    return offer;
+  } catch (error: any) {
+    console.error("Internal server error", error);
+    throw error;
+  }
+};
+
 export const getOfferByTitle = async (
   title: string,
   tx: Prisma.TransactionClient = prisma

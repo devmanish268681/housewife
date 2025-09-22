@@ -117,6 +117,7 @@ import { createPaymentsRecord } from "../services/paymentsService";
 import { createOrderInvoice } from "../services/InvoiceService";
 import { isUserWithinRadius } from "../services/locationService";
 import { lockRowForUpdate } from "../lib/lockRow";
+import { getOfferByCouponCode } from "../services/offerService";
 
 const isServerLive = async () => {
   try {
@@ -223,7 +224,20 @@ export const placeOrderController = async (body: any, userId: string) => {
 
         gstBreakup.totalPrice = finalAmount + body.deliveryFee;
         let OfferApplied;
-        if (body.offerId) {
+
+        if (body.couponCode && !body.offerId) {
+          const offerData = await getOfferByCouponCode(body.couponCode);
+
+          const offer = await applyOffer({
+            userId: userId,
+            totalOrderAmount: gstBreakup?.totalPrice,
+            offerId: offerData.id,
+          });
+
+          gstBreakup.totalPrice = offer.finalAmount;
+        }
+
+        if (body.offerId && !body.couponCode) {
           OfferApplied = await applyOffer({
             offerId: body.offerId,
             totalOrderAmount: gstBreakup?.totalPrice,
