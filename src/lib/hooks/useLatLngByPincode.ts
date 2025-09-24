@@ -1,38 +1,55 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useDebounce } from "./useDebounce"; // import debounce hook
 
 export function useLatLngByPincode(pincode?: string) {
-    const [latLng, setLatLng] = useState<{ lat: string; lng: string, addr: string } | null>(null);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+  const [latLng, setLatLng] = useState<{ lat: string; lng: string; addr: string } | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-        if (!pincode) return;
+  // ✅ debounce user input
+  const debouncedPincode = useDebounce(pincode, 800); // 800ms wait
 
-        const fetchLatLng = async () => {
-            setLoading(true);
-            setError(null);
-            try {
-                const res = await fetch(
-                    `https://nominatim.openstreetmap.org/search?postalcode=${pincode}&country=India&format=json`
-                );
-                const data = await res.json();
+  useEffect(() => {
+    if (!debouncedPincode) return;
 
-                if (data.length > 0) {
-                    setLatLng({ lat: data[0].lat, lng: data[0].lon, addr: data[0]?.display_name });
-                } else {
-                    setError("Pincode not found");
-                }
-            } catch (err) {
-                setError("Something went wrong");
-            } finally {
-                setLoading(false);
-            }
-        };
+    const fetchLatLng = async () => {
+      setLoading(true);
+      setError(null);
 
-        fetchLatLng();
-    }, [pincode]);
+      try {
+        const apiKey = process.env.NEXT_PUBLIC_LOCATIONIQ_API_KEY || "pk.1234567890abcdef";
+        const url = `https://us1.locationiq.com/v1/search.php?key=${apiKey}&postalcode=${encodeURIComponent(
+          debouncedPincode
+        )}&country=India&format=json`;
 
-    return { latLng, loading, error };
+        const res = await fetch(url);
+
+        if (!res.ok) {
+          throw new Error(`API error: ${res.status}`);
+        }
+
+        const data = await res.json();
+
+        if (data && data.length > 0) {
+          setLatLng({
+            lat: data[0].lat,
+            lng: data[0].lon,
+            addr: data[0].display_name || "Unknown address",
+          });
+        } else {
+          setError("Pincode not found");
+        }
+      } catch (err) {
+        setError("Something went wrong");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLatLng();
+  }, [debouncedPincode]);
+
+  return { latLng, loading, error };
 }

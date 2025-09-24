@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { useRouter, useSearchParams } from "next/navigation";
+// import { useRouter, useSearchParams } from "next/navigation";
 
 //images
 import maxymart from "../../../public/assets/maxymart_logo.svg";
@@ -32,10 +32,13 @@ import { useSession } from "next-auth/react";
 import Notification from "../notification/Notification";
 import { useAddUserLocationMutation, useLazyGetUserLocationQuery } from "@/lib/slices/userLocationApiSlice";
 import { setLocationData } from "@/lib/slices/userLocationSlice";
+import { useLocale, useTranslations } from "next-intl";
+import { usePathname, useRouter} from "@/i18n/navigation";
+import { useSearchParams } from "next/navigation";
 
 const Header = () => {
   //hooks
-  const router = useRouter();
+  // const router = useRouter();
 
   const searchParams = useSearchParams();
   const dispatch = useAppDispatch();
@@ -45,17 +48,34 @@ const Header = () => {
   const [addUserLocation] = useAddUserLocationMutation();
   const [getUserLocation] = useLazyGetUserLocationQuery();
 
+  const router = useRouter();
+  const pathname = usePathname();
+  const locale = useLocale();
+
+  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const nextLocale = e.target.value;
+    const segments = pathname.split("/").slice(2);
+    const newPath = "/" + segments.join("/");
+
+    router.push(newPath, { locale: nextLocale });
+  };
+
+
   const params = new URLSearchParams(searchParams.toString());
   const isCartOpen = searchParams.get("open");
   const isSignIn = searchParams.get("signIn");
   const [signInModalOpen, setSignInModalOpen] = useState(false);
   const [signUpModalOpen, setSignUpModalOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
+  const [lang,setLang] = useState("eng");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false); // NEW
   const { isLoggedIn, user, loading } = useAuth();
   const { data: cartItemsData } = useGetAllCartItemsQuery();
   const userLocation = useAppSelector((state) => state.userLocation);
   const { address: userAddress, latitude, longitude, addressByPincode } = userLocation;
+  const t = useTranslations('HomePage.navlinks');
+  // const locale = store.get('locale')?.value || 'en';
+  // console.log(locale,"lo")
 
   const {
     address,
@@ -117,10 +137,10 @@ const Header = () => {
 
   useEffect(() => {
     getCurrentLocation();
-  },[]);
+  }, []);
 
   useEffect(() => {
-    if(address){
+    if (address) {
       dispatch(
         setLocationData({
           address: String(address),
@@ -134,15 +154,15 @@ const Header = () => {
         })
       );
     }
-  },[address])
+  }, [address])
 
   useEffect(() => {
     setCartOpen(Boolean(isCartOpen));
   }, [isCartOpen]);
 
-  useEffect(() => {
-    checkLocation();
-  }, [latitude, longitude, addUserLocation, getUserLocation, router]);
+  // useEffect(() => {
+  //   checkLocation();
+  // }, [latitude, longitude, addUserLocation, getUserLocation, router]);
 
   useEffect(() => {
     setSignInModalOpen(Boolean(isSignIn));
@@ -167,12 +187,21 @@ const Header = () => {
             {!loading && user?.role === "admin" && (
               <a href="/admin">My Tools</a>
             )}
-            <a href="/products">Products</a>
-            <a href="/contact-us">Help</a>
+            <a href="/products">{t('products')}</a>
+            <a href="/contact-us">{t('help')}</a>
           </nav>
         </div>
         {/* Hide login/profile and cart on mobile, show only on lg+ */}
         <div className="hidden lg:flex gap-2 sm:gap-3 md:gap-4 items-center">
+          <div>
+            <select
+              onChange={handleChange} defaultValue={locale}
+              className="bg-transparent border-none p-2 rounded-none focus:outline-none focus:ring-0"
+            >
+              <option value="en">En</option>
+              <option value="hi">Hi</option>
+            </select>
+          </div>
           <Button
             onClick={handleLocationClick}
             className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-200 shadow-sm border ${hasLocation || userAddress
@@ -192,10 +221,10 @@ const Header = () => {
             <div className="flex flex-col items-start text-sm leading-tight">
               <span className="font-medium">
                 {locationLoading
-                  ? "Getting location..."
+                  ? `${t('getting_location')}...`
                   : hasLocation || userAddress
-                    ? "Delivering to"
-                    : "Location"}
+                    ? `${t(`delivering_to`)}`
+                    : `${t(`location`)}`}
               </span>
 
               {/* Address Preview */}

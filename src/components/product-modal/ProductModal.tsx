@@ -20,6 +20,7 @@ import { useAuth } from "@/lib/context/authContext";
 
 //types
 import { ProductModalProps } from "./types";
+import { useTranslations } from "next-intl";
 
 const ProductModal: React.FC<ProductModalProps> = ({
   isOpen,
@@ -35,6 +36,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
   const searchParams = useSearchParams();
   const params = new URLSearchParams(searchParams.toString());
   const { user } = useAuth();
+  const t = useTranslations('HomePage.cart');
 
   //slices
   const [addToCart] = useAddToCartMutation();
@@ -298,10 +300,10 @@ const ProductModal: React.FC<ProductModalProps> = ({
           aria-disabled={product.stock === 0}
         >
           {product.stock === 0
-            ? "Out of Stock"
+            ? `${t('out_of_stock')}`
             : quantity === 0
-              ? "Add to Cart"
-              : "Go to Cart"}
+              ? `${t('add_to_cart')}`
+              : `${t('go_to_cart')}`}
         </button>
 
         {/* Related Products */}

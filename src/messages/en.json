@@ -1,0 +1,143 @@
+{
+  "HomePage": {
+    "navlinks": {
+      "products": "Products",
+      "help": "Help",
+      "getting_location": "Getting Location",
+      "delivering_to": "Delivering To",
+      "location": "Location"
+    },
+    "hero-section": {
+      "maxymart_delivers": "MaxyMart Delivers",
+      "fresh_groceries": "fresh groceries",
+      "essentials": "essentials",
+      "to": "to",
+      "description": "Groceries, fruits, vegetables & more — delivered fast & fresh to your doorstep",
+      "input_placeholder": "Search for products...",
+      "shop_now": "Shop Now"
+    },
+    "category_section": {
+      "category_heading": "Shop by Category",
+      "off": "OFF"
+    },
+    "feature": {
+      "fast_delivery": "Fast Delivery",
+      "fast_description": "Essentials delivered in hours.",
+      "fresh_products": "Fresh, Authentic Products",
+      "fresh_desc": "Groceries, skincare, and more.",
+      "trust__quality": "Trusted Quality",
+      "trust_desc": "Verified items. Easy returns."
+    },
+    "popular_items": {
+      "heading": "Popular Items"
+    },
+    "how_delivery_works": {
+      "heading": "How Delivery Works",
+      "choose_product": {
+        "heading": "Choose Products",
+        "description": "Browse and add groceries, cosmetics, or stationery to your cart."
+      },
+      "select_address": {
+        "heading": "Select Address & Slot",
+        "description": "Pick your delivery location and a convenient time slot."
+      },
+      "fast_delivery": {
+        "heading": "Get Fast Delivery",
+        "description": "Sit back and relax while we deliver your order quickly."
+      }
+    },
+    "self_care": {
+      "heading": "Beauty & Self-Care"
+    },
+    "daily_fresh": {
+      "heading": "Daily Fresh & Pantry"
+    },
+    "healthy_snacking": {
+      "heading": "Healthy Snacking"
+    },
+    "back_to_school": {
+      "heading": "Back to School / Work Essentials"
+    },
+    "category": {
+      "placeholder": "Search subcategories or brands...",
+      "brands": "Brands",
+      "categories_not_found": "No subcategories found.",
+      "filter": "Filter",
+      "save": "SAVE",
+      "add": "Add"
+    },
+    "cart": {
+      "your_cart": "Your Cart",
+      "your_cart_empty": "Your cart is empty",
+      "apply": "Apply",
+      "view_all_coupon": "View all coupons",
+      "cart_summary": "Cart Summary",
+      "items_price": "Items Price",
+      "cgst": "CGST",
+      "sgst": "SGST",
+      "total_payable": "Total Payable",
+      "proceed_to_checkout": "Proceed to Checkout",
+      "incl_all_taxes_charges": "Incl. all taxes and charges",
+      "delivery_fee": "Delivery Fee",
+      "apply_coupon": "Apply Coupon",
+      "coupon_valid_once": "Coupon valid only once per user unless specified.",
+      "min_order_value": "Minimum order value",
+      "its_important":"required after discounts.",
+      "tax_delivery_not_discounted": "Taxes, delivery, and packaging charges not discounted.",
+      "cannot_combine_offers": "Cannot be combined with other offers.",
+      "company_offer_withdraw": "Company may withdraw offer anytime without notice.",
+      "more":"More",
+      "hide_terms":"Hide Terms",
+      "add_to_cart":"Add to Cart",
+      "out_of_stock": "Out of Stock",
+      "go_to_cart": "Go to Cart"
+    },
+    "profile":{
+      "log_out":"Log Out",
+      "regular_user": "Regular User",
+      "edit_profile": "Edit Profile",
+      "full_name": "Full Name",
+      "email": "Email",
+      "phone": "Phone",
+      "cancel": "Cancel",
+      "save": "Save",
+      "orders": "Orders",
+      "addresses": "Addresses",
+      "saved_addresses": "Saved Addresses",
+      "edit": "Edit",
+      "add_new_address": "Add New Address",
+      "street": "Street",
+      "city": "City",
+      "state": "State",
+      "country": "Country",
+      "zipcode": "Zipcode",
+      "login_required_profile":"You must be logged in to view your profile",
+      "order_id":"Order ID",
+       "quantity": "Qty",
+       "reorder": "Reorder",
+      "view_details": "View Details",
+      "home": "Home"
+    },
+    "checkout": {
+      "checkout": "Checkout",
+      "customer_details": "Customer Details",
+      "address": "Address",
+      "full_name": "Full Name",
+      "full_address": "Full Address",
+      "door_flat_no": "Door / Flat no",
+      "street_area": "Street Area",
+      "landmark_optional": "Landmark (Optional)",
+      "pincode": "Pincode",
+      "payment_method": "Payment Method",
+      "cash_on_delivery": "Cash On Delivery",
+      "total": "Total",
+      "proceed_to_pay": "Proceed to Pay",
+      "phone": "Phone",
+      "upi_wallet": "UPI / Wallet",
+      "credit_debit_card": "Credit / Debit Card",
+      "order_summary": "Order Summary",
+      "delivery_fee": "Delivery Fee",
+      "processing": "Processing"
+    }
+  }
+}

@@ -12,6 +12,7 @@ import { Product } from "@/lib/types/products";
 
 //slices
 import { useGetProductsQuery } from "@/lib/slices/productsApiSlice";
+import { useTranslations } from "next-intl";
 
 const HeroBanner = () => {
   //states & hooks
@@ -19,6 +20,7 @@ const HeroBanner = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [suggestions, setSuggestions] = useState<Product[]>([]);
   const router = useRouter();
+  const t = useTranslations('HomePage.hero-section');
 
   //user-location
   const userLocation = useAppSelector((state) => state.userLocation);
@@ -61,25 +63,26 @@ const HeroBanner = () => {
         {/* Left Content */}
         <div className="flex-1 max-w-xl">
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight drop-shadow-lg">
-            MaxyMart delivers <span className="text-lime-400">fresh groceries</span> &{" "}
-            essentials <br /> to{" "}
+            {t("maxymart_delivers")}{" "}
+            <span className="text-lime-400">{t("fresh_groceries")}</span>{" "}
+            & {t("essentials")} <br />
+            {t("to")}{" "}
             <span
-              className={`font-extrabold transition-opacity ${locationVisible ? "opacity-100" : "opacity-0"
-                }`}
+              className={`font-extrabold transition-opacity ${locationVisible ? "opacity-100" : "opacity-0"}`}
             >
-              {stateName || '--'}
+              {stateName || "--"}
             </span>
           </h1>
 
           <p className="mt-4 sm:mt-6 text-base sm:text-lg font-medium text-lime-200 max-w-md drop-shadow-sm">
-            Groceries, fruits, vegetables & more — delivered fast & fresh to your doorstep.
+            {t('description')}
           </p>
 
           {/* Search Input */}
           <div className="mt-5 sm:mt-6 relative">
             <input
               type="text"
-              placeholder="Search for products..."
+              placeholder={t('input_placeholder')}
               className="w-full px-5 py-3 text-teal-900 rounded-full bg-white placeholder:text-gray-500 shadow-lg focus:outline-none focus:ring-2 focus:ring-lime-400"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -108,7 +111,7 @@ const HeroBanner = () => {
               aria-label="Shop Now"
               className="bg-lime-400 text-teal-900 font-bold rounded-full px-8 py-3 shadow-lg transform transition hover:scale-105 hover:shadow-xl"
             >
-              🛒 Shop Now
+              🛒 {t('shop_now')}
             </button>
           </div>
         </div>

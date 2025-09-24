@@ -2,6 +2,7 @@
 
 import { useUpdateUserMutation } from "@/lib/slices/userApiSlice";
 import { useFormik } from "formik";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
@@ -13,6 +14,7 @@ interface ProfileEditModalProps {
 const ProfileEditModal = ({ isOpen, onClose, user }: ProfileEditModalProps
 ) => {
   const [updateUser] = useUpdateUserMutation();
+  const t = useTranslations('HomePage.profile');
   const { values, setFieldValue, resetForm } = useFormik({
     initialValues: {
       name: '',
@@ -54,7 +56,7 @@ const ProfileEditModal = ({ isOpen, onClose, user }: ProfileEditModalProps
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 animate-fadeIn">
         {/* Header */}
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold text-gray-800">Edit Profile</h2>
+          <h2 className="text-xl font-bold text-gray-800">{t('edit_profile')}</h2>
           <button
             className="text-gray-500 hover:text-gray-700"
             onClick={onClose}
@@ -69,19 +71,19 @@ const ProfileEditModal = ({ isOpen, onClose, user }: ProfileEditModalProps
             className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-yellow-400 focus:outline-none"
             value={name}
             onChange={(e) => setFieldValue("name", e.target.value)}
-            placeholder="Name"
+            placeholder={t('full_name')}
           />
           <input
             className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-yellow-400 focus:outline-none"
             value={email}
             onChange={(e) => setFieldValue("email", e.target.value)}
-            placeholder="Email"
+            placeholder={t('email')}
           />
           <input
             className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-yellow-400 focus:outline-none"
             value={phone}
             onChange={(e) => setFieldValue("phone", e.target.value)}
-            placeholder="Phone"
+            placeholder={t('phone')}
           />
         </div>
 
@@ -91,13 +93,13 @@ const ProfileEditModal = ({ isOpen, onClose, user }: ProfileEditModalProps
             className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 transition"
             onClick={onClose}
           >
-            Cancel
+            {t('cancel')}
           </button>
           <button
             className="px-4 py-2 rounded bg-red-600 hover:bg-red-700 text-white transition"
             onClick={handleProfileSave}
           >
-            Save
+            {t('save')}
           </button>
         </div>
       </div>

@@ -5,6 +5,7 @@ import Image from "next/image";
 
 //types
 import { CatgoriesFilterProps } from "./types";
+import { useTranslations } from "next-intl";
 
 
 const CategoriesFilter = ({
@@ -14,7 +15,7 @@ const CategoriesFilter = ({
   categoriesData
 }: CatgoriesFilterProps) => {
   const [search, setSearch] = useState("");
-
+  const t = useTranslations('HomePage.category');
   const [drawerOpen, setDrawerOpen] = useState(false); // NEW
 
   // Find the current category object
@@ -45,7 +46,7 @@ const CategoriesFilter = ({
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search subcategories or brands..."
+          placeholder={t('placeholder')}
           className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-400"
         />
       </div>
@@ -76,14 +77,14 @@ const CategoriesFilter = ({
           ))
         ) : (
           <span className="text-gray-400 text-center">
-            No subcategories found.
+            {t('categories_not_found')}
           </span>
         )}
       </div>
       {/* Brands List */}
       {filteredBrands && filteredBrands?.length > 0 && (
         <div className="mt-8">
-          <h3 className="text-lg font-semibold mb-3">Brands</h3>
+          <h3 className="text-lg font-semibold mb-3">{t('brands')}</h3>
           <div className="flex flex-col gap-2">
             {filteredBrands?.map((brand, index) => (
               <div
@@ -111,7 +112,7 @@ const CategoriesFilter = ({
         className="fixed bottom-6 right-6 z-40 bg-[#e82630] text-white px-6 py-3 rounded-full shadow-lg font-bold text-lg lg:hidden"
         onClick={() => setDrawerOpen(true)}
       >
-        Filter
+        {t('filter')}
       </button>
       {/* Mobile: Drawer */}
       {drawerOpen && (

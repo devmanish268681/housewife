@@ -1,14 +1,16 @@
 import React, { useState } from "react";
 import Carousel from "../carousel/Carousel";
 import { RecommendedProps } from "@/lib/types/recommended";
+import { useTranslations } from "next-intl";
 
 const Recommended = ({ items }: RecommendedProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const t = useTranslations('HomePage.popular_items');
 
   return (
     <section className="py-6 flex flex-col gap-4" aria-labelledby="recommended-section">
       <Carousel
-        title="Popular Items"
+        title={t('heading')}
         items={items}
         onClick={() => setIsModalOpen(true)}
       />

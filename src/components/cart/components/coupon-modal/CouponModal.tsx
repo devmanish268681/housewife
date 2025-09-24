@@ -11,6 +11,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 //types
 import { OfferResponse } from "@/lib/types/offers";
+import { useTranslations } from "next-intl";
 
 const CouponModal = ({
     isOpen,
@@ -25,6 +26,7 @@ const CouponModal = ({
 }) => {
     const [code, setCode] = useState("");
     const [expandedId, setExpandedId] = useState<string | null>(null);
+    const t = useTranslations('HomePage');
 
     const handleApplyOffer = (id: string) => {
         setOfferId(id);
@@ -37,7 +39,7 @@ const CouponModal = ({
             <div className="bg-white w-50 h-[900px] rounded-3xl p-5 shadow-xl animate-slide-up">
                 {/* Header */}
                 <div className="flex justify-between items-center border-b pb-3 mb-4">
-                    <h2 className="text-lg font-bold text-gray-800">Apply Coupon</h2>
+                    <h2 className="text-lg font-bold text-gray-800">{t('cart.apply_coupon')}</h2>
                     <button
                         onClick={onClose}
                         className="p-1 rounded-full hover:bg-gray-100"
@@ -56,7 +58,7 @@ const CouponModal = ({
                         className="flex-1 bg-transparent outline-none text-sm px-2"
                     />
                     <button className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-4 py-1.5 rounded-full shadow">
-                        APPLY
+                        {t('cart.apply')}
                     </button>
                 </div>
 
@@ -96,7 +98,7 @@ const CouponModal = ({
                                                 onClick={() => setExpandedId(expandedId === coupon.id ? null : coupon.id)}
                                                 className="flex items-center gap-1 text-xs font-semibold text-blue-600 mt-1 hover:underline"
                                             >
-                                                {expandedId === coupon.id ? "Hide Terms" : "+ MORE"}
+                                                {expandedId === coupon.id ? `${t('cart.hide_terms')}` : `+ ${t('cart.more')}`}
                                                 <FontAwesomeIcon
                                                     icon={faChevronDown}
                                                     className={`w-3 h-3 transition-transform ${expandedId === coupon.id ? "rotate-180" : ""
@@ -105,18 +107,18 @@ const CouponModal = ({
                                             </button>
                                         </div>
                                         <button className="ml-3 bg-blue-50 text-blue-600 hover:bg-blue-100 text-xs font-bold px-3 py-1.5 rounded-full" onClick={() => handleApplyOffer(coupon.id)}>
-                                            APPLY
+                                            {t('cart.apply')}
                                         </button>
                                     </div>
 
                                     {/* Terms & Conditions (collapsible) */}
                                     {expandedId === coupon.id && (
                                         <ul className="list-disc pl-5 text-xs text-gray-600 mt-3 space-y-1">
-                                            <li>Coupon valid only once per user unless specified.</li>
-                                            <li>Minimum order value ₹{coupon?.minOrderValue} required after discounts.</li>
-                                            <li>Taxes, delivery, and packaging charges not discounted.</li>
-                                            <li>Cannot be combined with other offers.</li>
-                                            <li>Company may withdraw offer anytime without notice.</li>
+                                            <li>{t('cart.coupon_valid_once')}</li>
+                                            <li>{t('cart.min_order_value')} ₹{coupon?.minOrderValue} {t('cart.its_important')}</li>
+                                            <li>{t('cart.tax_delivery_not_discounted')}</li>
+                                            <li>{t('cart.cannot_combine_offers')}</li>
+                                            <li>{t('cart.company_offer_withdraw')}</li>
                                         </ul>
                                     )}
                                 </div>

@@ -8,6 +8,7 @@ import QuickActions from "@/components/profile/QuickActions";
 import OrderHistory from "@/components/profile/OrderHistory";
 import AddressList from "@/components/profile/AddressList";
 import { useGetUserAddressQuery, useGetUserByIdQuery } from "@/lib/slices/userApiSlice";
+import { useTranslations } from "next-intl";
 
 const demoAddresses = [
   {
@@ -27,6 +28,7 @@ const demoAddresses = [
 const ProfilePage = () => {
   const { user, isLoggedIn, loading } = useAuth();
   const { data: userData } = useGetUserByIdQuery({ id: user?.id });
+  const t = useTranslations('HomePage.profile');
 
   // Profile edit state
   const [editProfile, setEditProfile] = useState(false);
@@ -99,7 +101,7 @@ const ProfilePage = () => {
   if (!isLoggedIn) {
     return (
       <div className="p-8 text-red-600">
-        You must be logged in to view your profile.
+        {t('login_required_profile')}
       </div>
     );
   }
