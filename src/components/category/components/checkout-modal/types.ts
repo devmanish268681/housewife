@@ -8,5 +8,6 @@ export type CartItem = {
 export type CheckoutModalProps = {
   isOpen: boolean;
   offerId?:string;
+  couponCode?:string;
   onClose: () => void;
 };

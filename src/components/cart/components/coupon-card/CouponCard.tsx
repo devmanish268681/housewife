@@ -11,8 +11,10 @@ import { useTranslations } from "next-intl";
 
 interface CouponCardProps{
     setOfferId:(id:string) => void;
+    setCouponCode:(name:string) => void;
+    couponCode?:string;
 }
-const CouponCard = ({setOfferId}:CouponCardProps) => {
+const CouponCard = ({setOfferId,setCouponCode,couponCode}:CouponCardProps) => {
     const [isCouponModalOpen, setIsCouponModalOpen] = useState(false);
     const { data: offers } = useGetOffersQuery();
     const t = useTranslations('HomePage.cart');
@@ -58,7 +60,7 @@ const CouponCard = ({setOfferId}:CouponCardProps) => {
                     {t('view_all_coupon')} →
                 </button>
             </div>
-            <CouponModal setOfferId={setOfferId} isOpen={isCouponModalOpen} onClose={() => setIsCouponModalOpen(false)} coupons={offers} />
+            <CouponModal setOfferId={setOfferId} isOpen={isCouponModalOpen} onClose={() => setIsCouponModalOpen(false)} coupons={offers} setCouponCode={setCouponCode} couponCode={couponCode} />
         </div>
     );
 }

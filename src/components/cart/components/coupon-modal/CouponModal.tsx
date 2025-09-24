@@ -17,14 +17,17 @@ const CouponModal = ({
     isOpen,
     onClose,
     coupons,
-    setOfferId
+    setOfferId,
+    setCouponCode,
+    couponCode
 }: {
     isOpen: boolean;
     onClose: () => void;
     setOfferId: (id: string) => void;
+    setCouponCode:(name:string) => void;
     coupons?: OfferResponse;
+    couponCode?:string
 }) => {
-    const [code, setCode] = useState("");
     const [expandedId, setExpandedId] = useState<string | null>(null);
     const t = useTranslations('HomePage');
 
@@ -52,8 +55,8 @@ const CouponModal = ({
                 <div className="flex items-center bg-gray-100 rounded-full px-3 py-2 mb-4">
                     <input
                         type="text"
-                        value={code}
-                        onChange={(e) => setCode(e.target.value)}
+                        value={couponCode}
+                        onChange={(e) => setCouponCode(e.target.value)}
                         placeholder="Enter Coupon Code"
                         className="flex-1 bg-transparent outline-none text-sm px-2"
                     />

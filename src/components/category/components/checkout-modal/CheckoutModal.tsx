@@ -41,7 +41,7 @@ const colorsMap: Record<PaymentMethod, string> = {
   Card: "text-blue-600",
 };
 
-const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose,offerId }) => {
+const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, offerId,couponCode }) => {
   const { user } = useAuth();
 
   // slices
@@ -50,23 +50,23 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose,offerId }
     skip: !isOpen,
   });
   const t = useTranslations('HomePage.checkout');
-  const [getCartPreOrder,{ data: preOrderData}] = useLazyGetCartPreOrderQuery();
-  
-    const totals = preOrderData?.cartWithGSTbreakup?.reduce(
-      (acc, item) => {
-        const discount = item.basePrice - item.discountedPrice;
-        return {
-          basePrice: acc.basePrice + item.basePrice,
-          discount: acc.discount + discount,
-          discountedPrice: acc.discountedPrice + item.discountedPrice,
-          deliveryFee: item.deliveryFee,
-          cgst: acc.cgst + item.cgstRate,
-          sgst: acc.sgst + item.sgstRate,
-          totalPrice: acc.totalPrice + item.totalPrice,
-        };
-      },
-      { basePrice: 0, discountedPrice: 0, deliveryFee: 0, discount: 0, cgst: 0, sgst: 0, totalPrice: 0 }
-    );
+  const [getCartPreOrder, { data: preOrderData }] = useLazyGetCartPreOrderQuery();
+
+  const totals = preOrderData?.cartWithGSTbreakup?.reduce(
+    (acc, item) => {
+      const discount = item.basePrice - item.discountedPrice;
+      return {
+        basePrice: acc.basePrice + item.basePrice,
+        discount: acc.discount + discount,
+        discountedPrice: acc.discountedPrice + item.discountedPrice,
+        deliveryFee: item.deliveryFee,
+        cgst: acc.cgst + item.cgstRate,
+        sgst: acc.sgst + item.sgstRate,
+        totalPrice: acc.totalPrice + item.totalPrice,
+      };
+    },
+    { basePrice: 0, discountedPrice: 0, deliveryFee: 0, discount: 0, cgst: 0, sgst: 0, totalPrice: 0 }
+  );
   const [placeOrders, { isLoading: isPlacing }] = usePlaceOrdersMutation();
 
   // parse address safely (avoid 'state' naming confusion)
@@ -172,6 +172,8 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose,offerId }
         products,
         street: vals.area,
         flatNo: vals.doorno,
+        offerId: offerId,
+        couponCode:couponCode,
         state: stateName?.trim() || "",
         city: stateName?.trim() || "",
         country: country?.trim() || "India",
@@ -190,14 +192,17 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose,offerId }
         const data = res?.data?.placeOrder?.placeOrder?.order;
 
         if (!data?.id || !data?.amount) {
-          console.error("Invalid Razorpay order data:", data);
+          // console.error("Invalid Razorpay order data:", data);
           alert("Failed to create Razorpay order. Please try again.");
           return;
         }
-        openRazorpayCheckout(data, vals);
+
+        if ((vals.paymentMethod as PaymentMethod)?.toLowerCase() !== "cod") {
+          openRazorpayCheckout(data, vals);
+        }
       } catch (err) {
         console.error("Order placement failed:", err);
-        alert("Something went wrong while placing your order. Please try again.");
+        // alert("Something went wrong while placing your order. Please try again.");
       }
     },
   });
@@ -277,14 +282,14 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose,offerId }
   };
 
   useEffect(() => {
-      getCartPreOrder({})
-    },[])
-  
-    useEffect(() => {
-      if(offerId){
-        getCartPreOrder({id:offerId})
-      }
-    },[offerId])
+    getCartPreOrder({})
+  }, [])
+
+  useEffect(() => {
+    if (offerId || couponCode) {
+      getCartPreOrder({ id: offerId,couponCode:couponCode })
+    }
+  }, [offerId,couponCode])
 
   if (!isOpen) return null;
 
@@ -500,16 +505,16 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose,offerId }
                   </span>
 
                   <span className="flex gap-[4px] items-center">
-                      <p className="text-sm text-gray-500">
-                        ₹{Math.round(item?.discountPrice)}
-                      </p>
-                      {item?.discountPrice !== item?.price && (
-                        <div className="flex items-center space-x-2">
-                          <span className="font-normal line-through text-gray-500 text-sm">
-                            ₹{Math.round(item?.price)}
-                          </span>
-                        </div>
-                      )}
+                    <p className="text-sm text-gray-500">
+                      ₹{Math.round(item?.discountPrice)}
+                    </p>
+                    {item?.discountPrice !== item?.price && (
+                      <div className="flex items-center space-x-2">
+                        <span className="font-normal line-through text-gray-500 text-sm">
+                          ₹{Math.round(item?.price)}
+                        </span>
+                      </div>
+                    )}
                   </span>
                 </div>
               ))}

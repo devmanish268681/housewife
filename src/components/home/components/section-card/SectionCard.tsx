@@ -12,7 +12,7 @@ const SectionCard = ({ title, items }: { title: string; items: Product[] }) => {
         {items?.map((item, index) => (
           <Link
             key={item.id}
-            href={`category/groceries?categoryId=${item.categoryId}`}
+            href={`groceries?categoryId=${item.categoryId}`}
             className="bg-white border rounded-xl p-3 shadow-sm text-center hover:shadow-md transition"
           >
             <Image
