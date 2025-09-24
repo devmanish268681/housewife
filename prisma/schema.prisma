@@ -189,6 +189,7 @@ model Order {
   updatedAt     DateTime    @updatedAt
   deleted       Boolean     @default(false)
   userId        String
+  storeId String
   items         OrderItem[]
   total         Float // final total = subtotal + gstTotal + deliveryFee
   subTotal      Float // sum of base prices
@@ -296,7 +297,21 @@ model DeliveryZone {
   latitude  Float
   longitude Float
   radiusKm  Float
+  stores    Store[] 
+  }
+model Store {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deleted   Boolean  @default(false)
+  name      String
+  latitude  Float
+  longitude Float
+  mapLink      String?
+  zoneId    String
+  zone      DeliveryZone @relation(fields: [zoneId], references: [id])
 }
+
 
 enum OfferType {
   PERCENTAGE

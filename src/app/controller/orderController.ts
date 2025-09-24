@@ -114,8 +114,10 @@ import { createOrderItemsRecord } from "../services/OrderItemsService";
 import { updatedProductVariant } from "../services/ProductsService";
 import { createRazorpayOrder } from "../lib/createRazorpayOrder";
 import { createPaymentsRecord } from "../services/paymentsService";
-import { createOrderInvoice } from "../services/InvoiceService";
-import { isUserWithinRadius } from "../services/locationService";
+import {
+  findNearestStoreInZone,
+  isUserWithinRadius,
+} from "../services/locationService";
 import { lockRowForUpdate } from "../lib/lockRow";
 import { getOfferByCouponCode } from "../services/offerService";
 
@@ -149,6 +151,14 @@ export const placeOrderController = async (body: any, userId: string) => {
         if (!zone.isWithinRadius) {
           throw new Error("Sorry, we do not deliver to your location yet.");
         }
+
+        const { store: nearestStore, distance: storeDistance } =
+          await findNearestStoreInZone(
+            Number(user.Address[0].latitude),
+            Number(user.Address[0].longitude),
+            zone.zoneId!,
+            tx
+          );
 
         const adressObj = {
           userId: user.id,
@@ -249,6 +259,7 @@ export const placeOrderController = async (body: any, userId: string) => {
 
         const orderObj = {
           userId,
+          storeId: nearestStore.id,
           addressId: userAdress.id,
           total: gstBreakup?.totalPrice,
           status: "pending",
