@@ -1,30 +1,38 @@
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
-import { getToken } from 'next-auth/jwt'
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+import { getToken } from 'next-auth/jwt';
+import createMiddleware from 'next-intl/middleware';
+import { routing } from './i18n/routing';
 
-// This middleware protects all /admin routes
+// 1) Setup intl middleware
+const intlMiddleware = createMiddleware(routing);
+
 export async function middleware(request: NextRequest) {
-    // Decode the token using your NEXTAUTH_SECRET
-    const token = await getToken({
-        req: request,
-        secret: process.env.NEXTAUTH_SECRET,
-    })
+  // First run i18n middleware (locale handling)
+  const response = intlMiddleware(request);
+  if (response) return response;
 
-    // Check if this is an admin route
-    const isAdminRoute = request.nextUrl.pathname.startsWith('/admin')
+  // 2) Auth check for /admin
+  const token = await getToken({
+    req: request,
+    secret: process.env.NEXTAUTH_SECRET,
+  });
 
-    if (isAdminRoute) {
-        // If not logged in or not an admin, redirect
-        if (!token || token.role !== 'admin') {
-            return NextResponse.redirect(new URL('/', request.url))
-        }
+  const isAdminRoute = request.nextUrl.pathname.startsWith('/admin');
+
+  if (isAdminRoute) {
+    if (!token || token.role !== 'admin') {
+      return NextResponse.redirect(new URL('/', request.url));
     }
+  }
 
-    // Allow the request to proceed
-    return NextResponse.next()
+  return NextResponse.next();
 }
 
-// Only apply middleware to /admin routes
+// 3) Match both i18n and admin routes
 export const config = {
-    matcher: ['/admin/:path*'],
-}
+  matcher: [
+    '/((?!api|trpc|_next|_vercel|.*\\..*).*)', // i18n
+    '/admin/:path*', // admin auth
+  ],
+};

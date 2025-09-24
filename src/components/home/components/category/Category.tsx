@@ -4,16 +4,18 @@ import { useRouter } from "next/navigation";
 
 //types
 import { CategoriesSectionProps } from "@/lib/types/categories";
+import { useTranslations } from "next-intl";
 
 const CategoriesSection = ({ data }: CategoriesSectionProps) => {
   //state & hooks
   const router = useRouter();
+  const t = useTranslations('HomePage.category_section');
 
   return (
     <section className="flex flex-1 py-5">
       <div className="layout-content-container flex flex-col flex-1">
         <h2 className="text-[#181111] tracking-light text-[28px] font-bold leading-tight px-4 text-left pb-3 pt-5">
-          Shop by Category
+          {t('category_heading')}
         </h2>
 
         <div className="grid grid-cols-[repeat(auto-fit,minmax(158px,1fr))] gap-3 p-4 cursor-pointer">
@@ -23,14 +25,14 @@ const CategoriesSection = ({ data }: CategoriesSectionProps) => {
               className="flex flex-col relative gap-3 shadow-md rounded-xl"
               onClick={() =>
                 router.push(
-                  `/category/${category?.name?.toLowerCase()}?categoryId=${category?.id}`
+                  `/${category?.name?.toLowerCase()}?categoryId=${category?.id}`
                 )
               }
             >
               {/* Discount Badge */}
               {category?.offers && category?.offers.length > 0 && (
                 <span className="absolute top-2 left-2 bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded-lg shadow">
-                  {category?.offers[0]?.discountedValue}% OFF
+                  {category?.offers[0]?.discountedValue}% {t('off')}
                 </span>
               )}
 

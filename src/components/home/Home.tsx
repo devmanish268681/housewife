@@ -13,11 +13,13 @@ import FeatureProducts from "./components/feature-products/FeatureProducts";
 import { useGetCategoriesQuery } from "@/lib/slices/categoriesApiSlice";
 import { useGetProductsQuery } from "@/lib/slices/productsApiSlice";
 import Loading from "../common/Loading";
+import { useTranslations } from "next-intl";
 
 const HomePage = () => {
   //slices
   const { data: categoriesData, isLoading: isCatgoriesLoading } = useGetCategoriesQuery();
   const { data: products, isLoading: isProductsLoading } = useGetProductsQuery();
+  const t = useTranslations('HomePage');
 
   //products
   const beautyCategoryId = categoriesData?.categories.find(
@@ -71,19 +73,19 @@ const HomePage = () => {
           <Recommended items={popularItems} />
           <DeliverySteps />
           <SectionCard
-            title="Beauty & Self-Care"
+            title={t('self_care.heading')}
             items={beautyCategoryProducts || []}
           />
           <SectionCard
-            title="Daily Fresh & Pantry"
+            title={t('daily_fresh.heading')}
             items={dryFruitsCategoryProducts || []}
           />
           <SectionCard
-            title="Healthy Snacking"
+            title={t('healthy_snacking.heading')}
             items={groceryCategoryProducts || []}
           />
           <SectionCard
-            title="Back to School / Work Essentials"
+            title={t('back_to_school.heading')}
             items={stationaryCategoryProducts || []}
           />
         </>

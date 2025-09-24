@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import ProfileEditModal from "./components/profile-edit-modal/ProfileEditModal";
+import { useTranslations } from "next-intl";
 // import EditProfileModal from "./components/EditProfileModal";
 
 interface ProfileCardProps {
@@ -25,6 +26,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
   signOut,
 }) => {
   const [isEditModalOpen, setEditIsModalOpen] = useState(false);
+  const t = useTranslations('HomePage.profile');
 
   const handleProfileEdit = () => {
     setEditIsModalOpen(true)
@@ -37,7 +39,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
           className="bg-red-500 hover:bg-red-600 text-white font-semibold px-5 py-2 rounded-full shadow transition"
           onClick={() => signOut({ callbackUrl: "/" })}
         >
-          Log Out
+          {t('log_out')}
         </button>
       </div>
       <img
@@ -53,13 +55,13 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
       )}
       <p className="text-gray-700 mb-2">{profileEmail}</p>
       <span className="bg-[#fffde7] text-[#b59f00] px-3 py-1 rounded-full text-xs font-semibold shadow">
-        Regular User
+        {t('regular_user')}
       </span>
       <button
         className="mt-2 text-xs text-[#b59f00] underline hover:text-[#181111]"
         onClick={handleProfileEdit}
       >
-        Edit Profile
+        {t('edit_profile')}
       </button>
       <ProfileEditModal user={user} isOpen={isEditModalOpen} onClose={() => setEditIsModalOpen(false)} />
     </div>

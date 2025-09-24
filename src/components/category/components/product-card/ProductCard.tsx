@@ -27,6 +27,7 @@ import { useAuth } from "@/lib/context/authContext";
 
 //types
 import { ProductCardProps } from "./types";
+import { useLocale, useTranslations } from "next-intl";
 
 
 const ProductCard: React.FC<ProductCardProps> = ({
@@ -47,6 +48,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const dispatch = useAppDispatch();
   const { user } = useAuth();
+  const locale = useLocale();
+
+  const t = useTranslations('HomePage.category');
 
   //slices
   const [addToCart] = useAddToCartMutation();
@@ -166,7 +170,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                   ₹{Math.round(price)}
                 </span>
                 <span className="text-xs font-medium text-green-600">
-                  SAVE ₹{Math.round(price - Number(discountedPrice))}
+                  {locale === 'hi' ? `₹${Math.round(price - Number(discountedPrice))} ${t('save')}` : `${t('save')} ₹${Math.round(price - Number(discountedPrice))}`}
                 </span>
               </div>
             )}
@@ -176,7 +180,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                   onClick={(e) => handleAddButton(e)}
                   className="bg-red-600 text-white rounded-full px-3 py-1 text-sm font-semibold shadow hover:bg-red-700"
                 >
-                  Add
+                  {t('add')}
                 </button>
               ) : (
                 <div className="flex items-center bg-red-600 text-white rounded-full px-3 py-1 gap-2 text-sm font-semibold">

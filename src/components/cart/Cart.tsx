@@ -31,6 +31,7 @@ import {
 //types
 import { CartProps } from "./types";
 import { useLazyGetCartPreOrderQuery } from "@/lib/slices/orderApiSlice";
+import { useTranslations } from "next-intl";
 
 
 const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
@@ -47,6 +48,8 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
   const [deleteFromCart] = useDeleteFromCartMutation();
   const { data: cartItemsData } = useGetAllCartItemsQuery();
   const [getCartPreOrder,{ data: preOrderData}] = useLazyGetCartPreOrderQuery();
+
+  const t = useTranslations('HomePage.cart');
 
   const totals = preOrderData?.cartWithGSTbreakup?.reduce(
     (acc, item) => {
@@ -129,11 +132,11 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
   return (
     <div
       className="fixed top-0 right-0 h-full w-full lg:w-[400px] bg-white z-50 overflow-y-auto"
-      style={{ transition: "transform 0.3s ease-in-out",height: "calc(100vh - 70px)"}}
+      style={{ transition: "transform 0.3s ease-in-out"}}
     >
       {/* Cart Header */}
       <div className="flex justify-between items-center p-4 border-b">
-        <h2 className="text-xl font-semibold">Your Cart</h2>
+        <h2 className="text-xl font-semibold">{t('your_cart')}</h2>
         <button
           onClick={onClose}
           className="p-2 hover:bg-gray-100 rounded-full"
@@ -230,11 +233,11 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
 
           {cartItemsData && cartItemsData?.result?.length > 0 && preOrderData && (
             <div className="w-full max-w-md mx-auto bg-white p-5 space-y-3">
-              <h2 className="text-lg font-semibold text-gray-800">Cart Summary</h2>
+              <h2 className="text-lg font-semibold text-gray-800">{t('cart_summary')}</h2>
 
               {/* Base price */}
               <div className="flex justify-between text-sm text-gray-700">
-                <span>Items Price</span>
+                <span>{t('items_price')}</span>
                 <span>₹{totals?.discountedPrice.toFixed(2)}</span>
               </div>
 
@@ -245,23 +248,23 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
 
               {/* Delivery */}
               <div className="flex justify-between text-sm text-gray-700">
-                <span>Delivery Fee</span>
+                <span>{t('delivery_fee')}</span>
                 <span>₹{deliveryFee.toFixed(2)}</span>
               </div>
 
               {/* Taxes */}
               <div className="flex justify-between text-sm text-gray-700">
-                <span>CGST</span>
+                <span>{t('cgst')}</span>
                 <span>₹{totals?.cgst.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-sm text-gray-700">
-                <span>SGST</span>
+                <span>{t('sgst')}</span>
                 <span>₹{totals?.sgst.toFixed(2)}</span>
               </div>
 
               {/* Final */}
               <div className="border-t pt-3 flex justify-between text-base font-semibold text-gray-900">
-                <span>Total Payable <p className="text-xs text-gray-500">(Incl. all taxes and charges)</p></span>
+                <span>{t('total_payable')} <p className="text-xs text-gray-500">{`(${t(`incl_all_taxes_charges`)})`}</p></span>
                 <span>₹{preOrderData?.finalAmount.toFixed(2)}</span>
               </div>
 
@@ -269,7 +272,7 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
                 className="w-full px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-full transition"
                 onClick={() => handleCheckout()}
               >
-                Proceed to Checkout
+                {t('proceed_to_checkout')}
               </button>
             </div>
           )}

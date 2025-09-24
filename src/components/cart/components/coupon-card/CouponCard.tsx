@@ -7,6 +7,7 @@ import { useGetOffersQuery } from "@/lib/slices/offersApiSlice";
 
 //components
 import CouponModal from "../coupon-modal/CouponModal";
+import { useTranslations } from "next-intl";
 
 interface CouponCardProps{
     setOfferId:(id:string) => void;
@@ -14,6 +15,7 @@ interface CouponCardProps{
 const CouponCard = ({setOfferId}:CouponCardProps) => {
     const [isCouponModalOpen, setIsCouponModalOpen] = useState(false);
     const { data: offers } = useGetOffersQuery();
+    const t = useTranslations('HomePage.cart');
 
     const visibleCoupons = offers?.offer?.slice(0, 2);
 
@@ -43,7 +45,7 @@ const CouponCard = ({setOfferId}:CouponCardProps) => {
                         </div>
                     </div>
                     <button className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-1.5 rounded-full" onClick={() => handleApplyOffer(offer.id)}>
-                        Apply
+                        {t('apply')}
                     </button>
                 </div>
             ))}
@@ -53,7 +55,7 @@ const CouponCard = ({setOfferId}:CouponCardProps) => {
                     onClick={() => setIsCouponModalOpen(true)}
                     className="bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-semibold px-4 py-1.5 rounded-full"
                 >
-                    View all coupons →
+                    {t('view_all_coupon')} →
                 </button>
             </div>
             <CouponModal setOfferId={setOfferId} isOpen={isCouponModalOpen} onClose={() => setIsCouponModalOpen(false)} coupons={offers} />

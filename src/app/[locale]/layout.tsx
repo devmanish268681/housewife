@@ -8,6 +8,7 @@ import 'ag-grid-community/styles/ag-theme-alpine.css';
 //components
 import Header from "@/components/header/Header";
 import Footer from "@/components/footer/Footer";
+import { hasLocale, NextIntlClientProvider } from 'next-intl';
 
 //store
 import StoreProvider from "@/lib/store/StoreProvider";
@@ -19,6 +20,9 @@ import Script from "next/script";
 import { Metadata } from "next";
 import CartLoader from "@/components/cart-loader/CartLoader";
 import { Suspense } from "react";
+import { getMessages } from "next-intl/server";
+import { routing } from "@/i18n/routing";
+import { notFound } from "next/navigation";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -44,23 +48,38 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
+  params
 }: Readonly<{
   children: React.ReactNode;
+  params:any
 }>) {
+  const {locale} = await params;
+  if (!hasLocale(routing.locales, locale)) {
+    notFound();
+  }
+
+  let messages;
+  try {
+    messages = (await import(`../../messages/${locale}.json`)).default;
+  } catch {
+    notFound();
+  }
   return (
-    <html lang="en">
+    <html lang={locale}>
       <body suppressHydrationWarning={true}>
         <StoreProvider>
-          <AuthProvider>
-            <Suspense>
-            <Header />
-            <CartLoader />
-              {children}
-            <Footer />
-            </Suspense>
-          </AuthProvider>
+          <NextIntlClientProvider locale={locale} messages={messages}>
+            <AuthProvider>
+              <Suspense>
+                <Header />
+                <CartLoader />
+                {children}
+                <Footer />
+              </Suspense>
+            </AuthProvider>
+          </NextIntlClientProvider>
         </StoreProvider>
         <Toaster
           position="top-right"

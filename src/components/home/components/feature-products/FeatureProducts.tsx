@@ -4,11 +4,32 @@ import React from "react";
 
 //third-party
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useTranslations } from "next-intl";
+import { faClock, faLeaf, faShield } from "@fortawesome/free-solid-svg-icons";
 
 //constants
-import { features } from "./constants";
+
+
 
 const FeatureProducts = () => {
+  const t = useTranslations('HomePage.feature');
+  const features = [
+    {
+      icon: faClock,
+      title: t('fast_delivery'),
+      description: t('fast_description'),
+    },
+    {
+      icon: faLeaf,
+      title: t('fresh_products'),
+      description: t('fresh_desc'),
+    },
+    {
+      icon: faShield,
+      title: t('trust__quality'),
+      description: t('trust_desc'),
+    },
+  ];
   return (
     <section
       aria-labelledby="feature-products-heading"

@@ -1,6 +1,7 @@
 "use client"
 import { useAddUserAddressMutation, useEditUserAddressMutation } from "@/lib/slices/userApiSlice";
 import { useFormik } from "formik";
+import { useTranslations } from "next-intl";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
 
@@ -22,6 +23,7 @@ interface AddressEditModalProps {
 const AddressEditModal = ({ isOpen, onClose, address,isAdd,setIsAdd }: AddressEditModalProps) => {
   const [editUserAddress] = useEditUserAddressMutation();
   const [addUserAddress] = useAddUserAddressMutation();
+  const t = useTranslations('HomePage.profile');
 
   const { values, setFieldValue, resetForm } = useFormik({
     initialValues: {
@@ -86,38 +88,38 @@ const AddressEditModal = ({ isOpen, onClose, address,isAdd,setIsAdd }: AddressEd
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-xl">
-        <h2 className="text-lg font-semibold mb-4">Add New Address</h2>
+        <h2 className="text-lg font-semibold mb-4">{t('add_new_address')}</h2>
 
         <div className="flex flex-col gap-3 w-full">
           <input
             className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-yellow-400 focus:outline-none"
             value={street}
             onChange={(e) => setFieldValue("street", e.target.value)}
-            placeholder="Street"
+            placeholder={t('street')}
           />
           <input
             className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-yellow-400 focus:outline-none"
             value={city}
             onChange={(e) => setFieldValue("city", e.target.value)}
-            placeholder="City"
+            placeholder={t('city')}
           />
           <input
             className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-yellow-400 focus:outline-none"
             value={state}
             onChange={(e) => setFieldValue("state", e.target.value)}
-            placeholder="State"
+            placeholder={t('state')}
           />
           <input
             className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-yellow-400 focus:outline-none"
             value={country}
             onChange={(e) => setFieldValue("country", e.target.value)}
-            placeholder="Country"
+            placeholder={t('country')}
           />
           <input
             className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-yellow-400 focus:outline-none"
             value={zip}
             onChange={(e) => setFieldValue("zip", e.target.value)}
-            placeholder="Zip Code"
+            placeholder={t('zipCode')}
           />
         </div>
 
@@ -126,13 +128,13 @@ const AddressEditModal = ({ isOpen, onClose, address,isAdd,setIsAdd }: AddressEd
             className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 transition"
             onClick={handleAddressCancel}
           >
-            Cancel
+            {t('cancel')}
           </button>
           <button
             className="px-4 py-2 rounded bg-red-600 hover:bg-red-700 text-white transition"
             onClick={handleAddressSave}
           >
-            Save
+            {t('save')}
           </button>
         </div>
       </div>
