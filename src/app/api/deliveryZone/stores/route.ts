@@ -2,8 +2,9 @@ import { NextResponse } from "next/server";
 import { validateRequest } from "@/app/lib/validateRequest";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
-import { userLocationSchema } from "./userLocationSchema";
 import { createAddressRecord } from "@/app/services/addressService";
+import { createStoreByZoneId } from "@/app/services/locationService";
+import { storeSchema } from "./storeSchema";
 
 export async function POST(request: Request) {
   try {
@@ -15,35 +16,31 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: "user id missing" }, { status: 404 });
     }
 
-    const addressObj = {
-      userId: userId,
-      city: body.city,
-      country: body.country,
-      zipCode: body.zipCode,
-      state: body.state,
-      latitude: parseFloat(body.latitude),
-      longitude: parseFloat(body.longitude),
-    };
-    console.log({ addressObj });
-
-    const validation = await validateRequest(body, userLocationSchema);
+    const validation = await validateRequest(body, storeSchema);
 
     if (!validation.success) {
       return NextResponse.json({ errors: validation.error }, { status: 400 });
     }
 
-    const address = await createAddressRecord(addressObj);
+    const storeObj = {
+      name: body.storeName,
+      mapLink: body.link,
+      zoneId: body.zoneId,
+      latitude: body.latitude,
+      longitude: body.longitude,
+    };
 
-    console.log({ address });
-    if (!address.id) {
+    const store = await createStoreByZoneId(storeObj);
+
+    if (!store.id) {
       return NextResponse.json(
-        { message: "error while creating address record" },
+        { message: "error while creating store record" },
         { status: 400 }
       );
     }
 
     return NextResponse.json(
-      { message: "user location updated succesfully" },
+      { message: "store added succesfully" },
       { status: 200 }
     );
   } catch (error: any) {

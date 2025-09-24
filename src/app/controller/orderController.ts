@@ -101,11 +101,8 @@
 // };
 
 import { prisma } from "@/lib/prisma";
-import { getRoleByName, getUserById } from "../services/userService";
-import {
-  createAddressRecord,
-  getAddressByUserId,
-} from "../services/addressService";
+import { getUserById } from "../services/userService";
+import { updateAddressRecord } from "../services/addressService";
 import { Prisma } from "@prisma/client";
 import {
   applyOffer,
@@ -117,9 +114,12 @@ import { createOrderItemsRecord } from "../services/OrderItemsService";
 import { updatedProductVariant } from "../services/ProductsService";
 import { createRazorpayOrder } from "../lib/createRazorpayOrder";
 import { createPaymentsRecord } from "../services/paymentsService";
-import { createOrderInvoice } from "../services/InvoiceService";
-import { isUserWithinRadius } from "../services/locationService";
+import {
+  findNearestStoreInZone,
+  isUserWithinRadius,
+} from "../services/locationService";
 import { lockRowForUpdate } from "../lib/lockRow";
+import { getOfferByCouponCode } from "../services/offerService";
 
 const isServerLive = async () => {
   try {
@@ -139,18 +139,26 @@ export const placeOrderController = async (body: any, userId: string) => {
 
     const result = await prisma.$transaction(
       async (tx: Prisma.TransactionClient) => {
-        if (!user.latitude && !user.longitude) {
+        if (!user.Address[0].latitude && !user.Address[0].longitude) {
           throw new Error("user location not found");
         }
 
         const zone = await isUserWithinRadius(
-          user.latitude as string,
-          user.longitude as string
+          user.Address[0].latitude,
+          user.Address[0].longitude
         );
 
         if (!zone.isWithinRadius) {
           throw new Error("Sorry, we do not deliver to your location yet.");
         }
+
+        const { store: nearestStore, distance: storeDistance } =
+          await findNearestStoreInZone(
+            Number(user.Address[0].latitude),
+            Number(user.Address[0].longitude),
+            zone.zoneId!,
+            tx
+          );
 
         const adressObj = {
           userId: user.id,
@@ -161,7 +169,11 @@ export const placeOrderController = async (body: any, userId: string) => {
           state: body.state,
         };
 
-        const userAdress = await createAddressRecord(tx, adressObj);
+        const userAdress = await updateAddressRecord(
+          user.Address[0].id,
+          adressObj,
+          tx
+        );
         let total = 0;
         const orderItemsData = [];
         let gstBreakup: any;
@@ -222,7 +234,20 @@ export const placeOrderController = async (body: any, userId: string) => {
 
         gstBreakup.totalPrice = finalAmount + body.deliveryFee;
         let OfferApplied;
-        if (body.offerId) {
+
+        if (body.couponCode && !body.offerId) {
+          const offerData = await getOfferByCouponCode(body.couponCode);
+
+          const offer = await applyOffer({
+            userId: userId,
+            totalOrderAmount: gstBreakup?.totalPrice,
+            offerId: offerData.id,
+          });
+
+          gstBreakup.totalPrice = offer.finalAmount;
+        }
+
+        if (body.offerId && !body.couponCode) {
           OfferApplied = await applyOffer({
             offerId: body.offerId,
             totalOrderAmount: gstBreakup?.totalPrice,
@@ -234,6 +259,7 @@ export const placeOrderController = async (body: any, userId: string) => {
 
         const orderObj = {
           userId,
+          storeId: nearestStore.id,
           addressId: userAdress.id,
           total: gstBreakup?.totalPrice,
           status: "pending",

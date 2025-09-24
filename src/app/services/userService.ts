@@ -21,31 +21,11 @@ export const getRoleByName = async (role: string) => {
   }
 };
 
-export const updateUserLocation = async (
-  userId: string,
-  latitude: string,
-  longitude: string
-) => {
-  try {
-    const updatedUser = await prisma.user.update({
-      where: { id: userId },
-      data: {
-        latitude,
-        longitude,
-      },
-    });
-
-    return updatedUser;
-  } catch (error: any) {
-    console.error("Failed to update user location", error);
-    throw new Error(error.message || "Internal server error");
-  }
-};
-
 export const getUserById = async (userId: string) => {
   try {
     const existingUser = await prisma.user.findUnique({
       where: { id: userId },
+      include: { Address: true },
     });
 
     if (!existingUser) {
