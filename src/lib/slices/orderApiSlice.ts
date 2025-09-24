@@ -46,7 +46,7 @@ export const orderApiSlice = createApi({
                 body
             })
         }),
-        getCartPreOrder: builder.query<CartWithGSTResponse, {id?:string}>({
+        getCartPreOrder: builder.query<CartWithGSTResponse, {id?:string,couponCode?:string}>({
             query: (params) => ({
                 url:`/preorder`,
                 method: "GET",

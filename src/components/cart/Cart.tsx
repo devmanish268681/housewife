@@ -40,6 +40,7 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
   const params = new URLSearchParams(searchParams.toString());
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [offerId,setOfferId] = useState<string>();
+  const [couponCode,setCouponCode] = useState<string>();
   const { isLoggedIn, user } = useAuth();
   const router = useRouter();
 
@@ -121,10 +122,10 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
   },[])
 
   useEffect(() => {
-    if(offerId){
-      getCartPreOrder({id:offerId})
+    if(offerId || couponCode){
+      getCartPreOrder({id:offerId,couponCode:couponCode})
     }
-  },[offerId])
+  },[offerId,couponCode])
 
 
   if (!isOpen) return null;
@@ -228,7 +229,7 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
           </div>
 
           {cartItemsData && cartItemsData?.result?.length > 0 && (
-            <CouponCard  setOfferId={setOfferId}/>
+            <CouponCard  setOfferId={setOfferId} setCouponCode={setCouponCode} couponCode={couponCode}/>
           )}
 
           {cartItemsData && cartItemsData?.result?.length > 0 && preOrderData && (
@@ -278,6 +279,7 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
           )}
 
           <CheckoutModal
+            couponCode={couponCode}
             offerId={offerId}
             isOpen={isCheckoutOpen}
             onClose={() => setIsCheckoutOpen(false)}
