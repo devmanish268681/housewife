@@ -330,6 +330,39 @@ async function main() {
       });
     }
   }
+  const zone = await prisma.deliveryZone.findMany();
+  if (!zone) {
+    throw new Error("No delivery zones found. Please seed zones first.");
+  }
+  console.log(zone);
+
+  await prisma.store.createMany({
+    data: [
+      {
+        name: "Downtown Store",
+        latitude: 18.6056704,
+        longitude: 73.8066432,
+        mapLink: "https://goo.gl/maps/example1",
+        zoneId: zone[0].id,
+      },
+      {
+        name: "Airport Store",
+        latitude: 13.1986,
+        longitude: 77.7066,
+        mapLink: "https://goo.gl/maps/example2",
+        zoneId: zone[1].id,
+      },
+      {
+        name: "Mall Road Store",
+        latitude: 12.2958,
+        longitude: 76.6394,
+        mapLink: "https://goo.gl/maps/example3",
+        zoneId: zone[2].id,
+      },
+    ],
+  });
+
+  console.log("✅ stores seeded successfully");
 
   // 4. Verify
   const allUsers = await prisma.user.findMany({

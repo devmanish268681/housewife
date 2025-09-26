@@ -42,9 +42,13 @@ export const getOfferByCouponCode = async (
   tx: Prisma.TransactionClient = prisma
 ) => {
   try {
-    const offer = await tx.offers.findFirstOrThrow({
+    const offer = await tx.offers.findUnique({
       where: { couponCode: couponCode, deleted: false },
     });
+
+    if (!offer) {
+      throw new Error("offer not found for this coupon code");
+    }
 
     return offer;
   } catch (error: any) {

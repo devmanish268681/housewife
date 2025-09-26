@@ -7,7 +7,7 @@ export const createAddressRecord = async (
 ) => {
   try {
     let address;
-    const existingAdress: Address = await tx.address.findFirstOrThrow({
+    const [existingAdress]: Address[] = await tx.address.findMany({
       where: { userId: addressObj.userId },
     });
 
