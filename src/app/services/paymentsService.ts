@@ -45,7 +45,7 @@ export const updatePaymentsRecord = async (
 
     return updatePayementData;
   } catch (error: any) {
-    console.error("Internal server error", error);
+    console.error("Error in updatePaymentsRecord", error);
     throw error;
   }
 };
