@@ -18,12 +18,16 @@ import { useAppSelector } from "@/lib/hooks";
 
 // slices & context
 import { useGetAllCartItemsQuery } from "@/lib/slices/cartApiSlice";
-import { useLazyGetCartPreOrderQuery, usePlaceOrdersMutation } from "@/lib/slices/orderApiSlice";
+import {
+  useLazyGetCartPreOrderQuery,
+  usePlaceOrdersMutation,
+} from "@/lib/slices/orderApiSlice";
 import { useAuth } from "@/lib/context/authContext";
 
 // types
 import { CheckoutModalProps } from "./types";
 import { useTranslations } from "next-intl";
+import toast from "react-hot-toast";
 
 type PaymentMethod = "COD" | "UPI" | "Card";
 
@@ -41,16 +45,24 @@ const colorsMap: Record<PaymentMethod, string> = {
   Card: "text-blue-600",
 };
 
-const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, offerId,couponCode }) => {
+const CheckoutModal: React.FC<CheckoutModalProps> = ({
+  isOpen,
+  onClose,
+  offerId,
+  couponCode,
+}) => {
   const { user } = useAuth();
 
   // slices
-  const { address: userAddress } = useAppSelector((state) => state.userLocation);
+  const { address: userAddress } = useAppSelector(
+    (state) => state.userLocation
+  );
   const { data: cartItemsData } = useGetAllCartItemsQuery(undefined, {
     skip: !isOpen,
   });
-  const t = useTranslations('HomePage.checkout');
-  const [getCartPreOrder, { data: preOrderData }] = useLazyGetCartPreOrderQuery();
+  const t = useTranslations("HomePage.checkout");
+  const [getCartPreOrder, { data: preOrderData }] =
+    useLazyGetCartPreOrderQuery();
 
   const totals = preOrderData?.cartWithGSTbreakup?.reduce(
     (acc, item) => {
@@ -65,7 +77,15 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, offerId,
         totalPrice: acc.totalPrice + item.totalPrice,
       };
     },
-    { basePrice: 0, discountedPrice: 0, deliveryFee: 0, discount: 0, cgst: 0, sgst: 0, totalPrice: 0 }
+    {
+      basePrice: 0,
+      discountedPrice: 0,
+      deliveryFee: 0,
+      discount: 0,
+      cgst: 0,
+      sgst: 0,
+      totalPrice: 0,
+    }
   );
   const [placeOrders, { isLoading: isPlacing }] = usePlaceOrdersMutation();
 
@@ -122,22 +142,25 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, offerId,
   const validationSchema = useMemo(
     () =>
       Yup.object({
-        fullName: Yup.string().trim().required("Name is required"),
+        fullName: Yup.string().trim().required(t(`name_is_required`)),
         phone: Yup.string()
           .trim()
-          .matches(/^[6-9]\d{9}$/, "Enter a valid 10-digit phone")
-          .required("Phone is required"),
-        address: Yup.string().trim().required("Address is required"),
-        doorno: Yup.string().trim().required("Door/Flat no. is required"),
-        area: Yup.string().trim().required("Street/Area is required"),
+          .matches(/^[6-9]\d{9}$/, t(`valid_phone`))
+          .required(t(`phone_is_required`)),
+        address: Yup.string().trim().required(t(`address_is_required`)),
+        doorno: Yup.string().trim().required(t(`door_is_required`)),
+        area: Yup.string().trim().required(t(`street_is_required`)),
         landmark: Yup.string().trim().nullable(),
         pincode: Yup.string()
           .trim()
-          .matches(/^\d{6}$/, "Enter a valid 6-digit pincode")
-          .required("Pincode is required"),
+          .matches(/^\d{6}$/, t(`valid_pincode`))
+          .required(t(`pincode_required`)),
         paymentMethod: Yup.mixed<PaymentMethod>()
-          .oneOf(paymentMethods as readonly PaymentMethod[], "Select a payment method")
-          .required("Payment method is required"),
+          .oneOf(
+            paymentMethods as readonly PaymentMethod[],
+            t(`select_a_payment_method`)
+          )
+          .required(t(`payment_required`)),
       }),
     []
   );
@@ -157,7 +180,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, offerId,
     validationSchema,
     onSubmit: async (vals) => {
       if (!cartItemsData?.result?.length) {
-        alert("Your cart is empty");
+        toast.error(t(`your_cart_empty`));
         return;
       }
 
@@ -173,7 +196,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, offerId,
         street: vals.area,
         flatNo: vals.doorno,
         offerId: offerId,
-        couponCode:couponCode,
+        couponCode: couponCode,
         state: stateName?.trim() || "",
         city: stateName?.trim() || "",
         country: country?.trim() || "India",
@@ -188,12 +211,15 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, offerId,
       };
 
       try {
-        const res = await placeOrders(payload);
-        const data = res?.data?.placeOrder?.placeOrder?.order;
+        let data: any;
+        await placeOrders(payload)
+          .unwrap()
+          .then((res: any) => {
+            data = res?.data?.placeOrder?.placeOrder?.order;
+          })
+          .catch((err) => toast.error(err?.data.message));
 
         if (!data?.id || !data?.amount) {
-          // console.error("Invalid Razorpay order data:", data);
-          alert("Failed to create Razorpay order. Please try again.");
           return;
         }
 
@@ -201,9 +227,11 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, offerId,
           openRazorpayCheckout(data, vals);
         }
       } catch (err) {
-        console.error("Order placement failed:", err);
-        // alert("Something went wrong while placing your order. Please try again.");
+        toast.error(t(`something_went_wrong`));
       }
+
+      resetForm();
+      onClose();
     },
   });
 
@@ -218,6 +246,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, offerId,
       pincode,
       paymentMethod,
     },
+    resetForm,
     errors,
     touched,
     handleChange,
@@ -226,9 +255,6 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, offerId,
   } = formik;
 
   const deliveryFee = 50;
-  const subtotal =
-    cartItemsData?.result?.reduce((sum, item) => sum + item.price * item.quantity, 0) ?? 0;
-  const total = subtotal + deliveryFee;
 
   const openRazorpayCheckout = (
     orderData: { id: string; amount: number; currency?: string },
@@ -238,7 +264,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, offerId,
       key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
       amount: orderData.amount,
       currency: orderData.currency || "INR",
-      name: "My Grocery Store",
+      name: "Maxymart",
       description: "Order Payment",
       order_id: orderData.id,
       handler: async (response: any) => {
@@ -255,13 +281,11 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, offerId,
           });
 
           if (!verifyRes.ok) throw new Error("Payment verification failed");
-          alert("Payment successful! Your order is placed.");
+          toast.error(t("payment_successful"));
           onClose();
         } catch (err) {
           console.error("Payment verification failed:", err);
-          alert(
-            "Payment successful but verification failed. Please contact support."
-          );
+          toast.error(t("payment_successful_verification_failed"));
         }
       },
       prefill: {
@@ -269,12 +293,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, offerId,
         email: user?.email || "",
         contact: vals.phone || "",
       },
-      theme: { color: "#dc2626" }, // Tailwind red-600
-      modal: {
-        ondismiss: () => {
-          // Optional: handle dismiss if needed
-        },
-      },
+      theme: { color: "#dc2626" },
     };
 
     const razorpay = new (window as any).Razorpay(options);
@@ -282,14 +301,14 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, offerId,
   };
 
   useEffect(() => {
-    getCartPreOrder({})
-  }, [])
+    getCartPreOrder({});
+  }, []);
 
   useEffect(() => {
     if (offerId || couponCode) {
-      getCartPreOrder({ id: offerId,couponCode:couponCode })
+      getCartPreOrder({ id: offerId, couponCode: couponCode });
     }
-  }, [offerId,couponCode])
+  }, [offerId, couponCode]);
 
   if (!isOpen) return null;
 
@@ -315,13 +334,11 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, offerId,
         {/* Header */}
         <div className="sticky top-0 z-10 flex items-center justify-between border-b bg-white/80 px-5 py-4 backdrop-blur">
           <h2 id="checkout-title" className="text-xl font-bold">
-            {t('checkout')}
+            {t("checkout")}
           </h2>
           <button
-            ref={closeBtnRef}
             onClick={onClose}
-            className="rounded-full p-2 text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-600"
-            aria-label="Close checkout modal"
+            className="p-2 hover:bg-gray-100 rounded-full"
           >
             <FontAwesomeIcon icon={faTimes} size="lg" />
           </button>
@@ -332,7 +349,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, offerId,
           {/* Customer Details */}
           <section aria-labelledby="customer-details" className="space-y-3">
             <h3 id="customer-details" className="font-semibold">
-              {t('customer_details')}
+              {t("customer_details")}
             </h3>
 
             <div className="grid grid-cols-1 gap-3">
@@ -342,13 +359,21 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, offerId,
                   type="text"
                   value={fullName}
                   onChange={handleChange}
-                  placeholder={t('full_name')}
-                  className="w-full rounded-lg border px-3 py-2 focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-200"
+                  placeholder={t("full_name")}
+                  className="w-full rounded-lg border px-3 py-2 
+             focus:border-blue-500 focus:outline-none 
+             focus:ring-2 focus:ring-blue-200"
                   aria-invalid={!!(touched.fullName && errors.fullName)}
-                  aria-describedby={touched.fullName && errors.fullName ? "err-fullName" : undefined}
+                  aria-describedby={
+                    touched.fullName && errors.fullName
+                      ? "err-fullName"
+                      : undefined
+                  }
                 />
                 {touched.fullName && errors.fullName && (
-                  <p id="err-fullName" className="mt-1 text-sm text-red-600">{errors.fullName}</p>
+                  <p id="err-fullName" className="mt-1 text-sm text-red-600">
+                    {errors.fullName}
+                  </p>
                 )}
               </div>
 
@@ -358,13 +383,25 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, offerId,
                   type="tel"
                   value={phone}
                   onChange={handleChange}
-                  placeholder={t('phone')}
-                  className="w-full rounded-lg border px-3 py-2 focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-200"
+                  placeholder={t("phone")}
+                  className="w-full rounded-lg border px-3 py-2 
+             focus:border-blue-500 focus:outline-none 
+             focus:ring-2 focus:ring-blue-200"
                   aria-invalid={!!(touched.phone && errors.phone)}
-                  aria-describedby={touched.phone && errors.phone ? "err-phone" : undefined}
+                  aria-describedby={
+                    touched.phone && errors.phone ? "err-phone" : undefined
+                  }
+                  onKeyPress={(e) => {
+                    if (!/[0-9]/.test(e.key)) {
+                      e.preventDefault();
+                    }
+                  }}
+                  maxLength={10}
                 />
                 {touched.phone && errors.phone && (
-                  <p id="err-phone" className="mt-1 text-sm text-red-600">{errors.phone}</p>
+                  <p id="err-phone" className="mt-1 text-sm text-red-600">
+                    {errors.phone}
+                  </p>
                 )}
               </div>
             </div>
@@ -372,7 +409,9 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, offerId,
 
           {/* Address */}
           <section aria-labelledby="address-section" className="space-y-3">
-            <h3 id="address-section" className="font-semibold">{t('address')}</h3>
+            <h3 id="address-section" className="font-semibold">
+              {t("address")}
+            </h3>
 
             <div className="grid grid-cols-1 gap-3">
               <div>
@@ -381,8 +420,10 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, offerId,
                   type="text"
                   value={address}
                   onChange={handleChange}
-                  placeholder={t('full_address')}
-                  className="w-full rounded-lg border px-3 py-2 focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-200"
+                  placeholder={t("full_address")}
+                  className="w-full rounded-lg border px-3 py-2 
+             focus:border-blue-500 focus:outline-none 
+             focus:ring-2 focus:ring-blue-200"
                   aria-invalid={!!(touched.address && errors.address)}
                 />
                 {touched.address && errors.address && (
@@ -397,8 +438,10 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, offerId,
                     type="text"
                     value={doorno}
                     onChange={handleChange}
-                    placeholder={t('door_flat_no')}
-                    className="w-full rounded-lg border px-3 py-2 focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-200"
+                    placeholder={t("door_flat_no")}
+                    className="w-full rounded-lg border px-3 py-2 
+             focus:border-blue-500 focus:outline-none 
+             focus:ring-2 focus:ring-blue-200"
                     aria-invalid={!!(touched.doorno && errors.doorno)}
                   />
                   {touched.doorno && errors.doorno && (
@@ -412,8 +455,10 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, offerId,
                     type="text"
                     value={area}
                     onChange={handleChange}
-                    placeholder={t('street_area')}
-                    className="w-full rounded-lg border px-3 py-2 focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-200"
+                    placeholder={t("street_area")}
+                    className="w-full rounded-lg border px-3 py-2 
+             focus:border-blue-500 focus:outline-none 
+             focus:ring-2 focus:ring-blue-200"
                     aria-invalid={!!(touched.area && errors.area)}
                   />
                   {touched.area && errors.area && (
@@ -429,8 +474,10 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, offerId,
                     type="text"
                     value={landmark}
                     onChange={handleChange}
-                    placeholder={t('landmark_optional')}
-                    className="w-full rounded-lg border px-3 py-2 focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-200"
+                    placeholder={t("landmark_optional")}
+                    className="w-full rounded-lg border px-3 py-2 
+             focus:border-blue-500 focus:outline-none 
+             focus:ring-2 focus:ring-blue-200"
                   />
                 </div>
 
@@ -439,13 +486,18 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, offerId,
                     name="pincode"
                     type="tel"
                     value={pincode}
+                    maxLength={6}
                     onChange={handleChange}
-                    placeholder={t('pincode')}
-                    className="w-full rounded-lg border px-3 py-2 focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-200"
+                    placeholder={t("pincode")}
+                    className="w-full rounded-lg border px-3 py-2 
+             focus:border-blue-500 focus:outline-none 
+             focus:ring-2 focus:ring-blue-200"
                     aria-invalid={!!(touched.pincode && errors.pincode)}
                   />
                   {touched.pincode && errors.pincode && (
-                    <p className="mt-1 text-sm text-red-600">{errors.pincode}</p>
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.pincode}
+                    </p>
                   )}
                 </div>
               </div>
@@ -454,7 +506,9 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, offerId,
 
           {/* Payment */}
           <section aria-labelledby="payment-method" className="space-y-3">
-            <h3 id="payment-method" className="font-semibold">{t('payment_method')}</h3>
+            <h3 id="payment-method" className="font-semibold">
+              {t("payment_method")}
+            </h3>
 
             <div className="grid grid-cols-1 gap-2">
               {paymentMethods.map((method) => {
@@ -463,7 +517,11 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, offerId,
                   <label
                     key={method}
                     className={`flex items-center gap-3 rounded-xl border p-3 transition
-                    ${selected ? "border-red-500 bg-red-50" : "border-gray-200 hover:border-gray-300"}`}
+  ${
+    selected
+      ? "border-blue-500 bg-blue-50 ring-2 ring-blue-200"
+      : "border-gray-200 hover:border-gray-300 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-200"
+  }`}
                   >
                     <input
                       type="radio"
@@ -479,23 +537,30 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, offerId,
                     />
                     <span className="select-none">
                       {method === "COD"
-                        ? `${t('cash_on_delivery')}`
+                        ? `${t("cash_on_delivery")}`
                         : method === "UPI"
-                          ? `${t('upi_wallet')}`
-                          : `${t('credit_debit_card')}`}
+                          ? `${t("upi_wallet")}`
+                          : `${t("credit_debit_card")}`}
                     </span>
                   </label>
                 );
               })}
             </div>
             {touched.paymentMethod && errors.paymentMethod && (
-              <p className="mt-1 text-sm text-red-600">{errors.paymentMethod as string}</p>
+              <p className="mt-1 text-sm text-red-600">
+                {errors.paymentMethod as string}
+              </p>
             )}
           </section>
 
           {/* Order Summary */}
-          <section aria-labelledby="order-summary" className="space-y-3 border-t pt-4">
-            <h3 id="order-summary" className="font-semibold">{t('order_summary')}</h3>
+          <section
+            aria-labelledby="order-summary"
+            className="space-y-3 border-t pt-4"
+          >
+            <h3 id="order-summary" className="font-semibold">
+              {t("order_summary")}
+            </h3>
 
             <div className="space-y-2 text-gray-700">
               {cartItemsData?.result?.map((item) => (
@@ -527,11 +592,11 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, offerId,
                 <span>₹{totals?.sgst.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
-                <span>{t('delivery_fee')}</span>
+                <span>{t("delivery_fee")}</span>
                 <span>₹{deliveryFee.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-lg font-bold">
-                <span>{t('total')}</span>
+                <span>{t("total")}</span>
                 <span>₹{preOrderData?.finalAmount}</span>
               </div>
             </div>
@@ -545,7 +610,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, offerId,
               className="w-full rounded-lg bg-red-600 py-3 font-medium text-white transition hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70"
               aria-busy={isPlacing}
             >
-              {isPlacing ? `${t('processing')}...` : `${t('proceed_to_pay')}`}
+              {isPlacing ? `${t("processing")}...` : `${t("proceed_to_pay")}`}
             </button>
           </div>
         </form>

@@ -2,7 +2,6 @@
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import dynamic from "next/dynamic";
 
 //constants
 import Loading from "@/components/common/Loading";
@@ -77,34 +76,42 @@ const CategoriesCard = ({
 
 
   return (
-    <div className="w-full lg:ltr:-ml-4 lg:rtl:-mr-2 xl:ltr:-ml-8 xl:rtl:-mr-8 lg:-mt-1">
+    <section className="w-full lg:ltr:-ml-4 lg:rtl:-mr-2 xl:ltr:-ml-8 xl:rtl:-mr-8 lg:-mt-1">
       {isProductsFetching ? (
         <Loading size={60} thickness={5} color="#dc2626" />
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-3 md:gap-4 2xl:gap-5">
-          {products?.map((product, index) => (
-            <ProductCard
-              key={index}
-              id={product?.id}
-              title={product?.name}
-              variantId={product?.variants[0]?.id}
-              variants={product?.variants}
-              subtitle={"tetsing"}
-              description={product?.description}
-              price={Number(product?.variants[0]?.price)}
-              discountedPrice={Number(product?.variants[0]?.discountedPrice)}
-              quantityText={"1 pack (200g)"}
-              image={product?.images[0]}
-              stock={product?.variants[0]?.stock}
-              category={"manidh"}
-            />
-          ))}
-          <div ref={observerRef} className="col-span-full flex justify-center py-4">
-            {isFetchingMore && <Loading size={40} thickness={4} color="#dc2626" />}
+        products && products?.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-3 md:gap-4 2xl:gap-5">
+            {products?.map((product, index) => (
+              <ProductCard
+                key={index}
+                id={product?.id}
+                title={product?.name}
+                variantId={product?.variants[0]?.id}
+                variants={product?.variants}
+                subtitle={"tetsing"}
+                description={product?.description}
+                price={Number(product?.variants[0]?.price)}
+                discountedPrice={Number(product?.variants[0]?.discountedPrice)}
+                quantityText={"1 pack (200g)"}
+                image={product?.images[0]}
+                stock={product?.variants[0]?.stock}
+                category={"manidh"}
+              />
+            ))}
+            <div ref={observerRef} className="col-span-full flex justify-center py-4">
+              {isFetchingMore && <Loading size={40} thickness={4} color="#dc2626" />}
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="text-center py-10 px-5 text-gray-600 font-sans">
+            <p className="text-lg font-medium m-0">
+              No Data Found
+            </p>
+          </div>
+        )
       )}
-    </div>
+    </section>
   );
 };
 

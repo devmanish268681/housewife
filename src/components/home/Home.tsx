@@ -63,14 +63,14 @@ const HomePage = () => {
   const isLoading = isCatgoriesLoading || isProductsLoading
 
   return (
-    <div className="mt-4">
+    <section className="mt-4">
       {isLoading ? (
         <Loading size={60} thickness={5} color="#dc2626" />
       ) : (
-        <>
+        <div>
           <Category data={categoriesData} />
           <FeatureProducts />
-          <Recommended items={popularItems} />
+          <Recommended items={popularItems || []} />
           <DeliverySteps />
           <SectionCard
             title={t('self_care.heading')}
@@ -84,13 +84,15 @@ const HomePage = () => {
             title={t('healthy_snacking.heading')}
             items={groceryCategoryProducts || []}
           />
+          <div className="pb-[90px]">
           <SectionCard
             title={t('back_to_school.heading')}
             items={stationaryCategoryProducts || []}
           />
-        </>
+          </div>
+        </div>
       )}
-    </div>
+    </section>
   );
 };
 

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Suspense, useEffect, useState } from "react";
+import React, {useEffect, useState } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import dynamic from "next/dynamic";
 
@@ -51,6 +51,7 @@ const Categories = () => {
         {isLoading ? (
           <Loading size={60} thickness={5} color="#dc2626" />
         ) : (
+          
           <>
             <CategoriesFilter
               categoryId={categoryId}

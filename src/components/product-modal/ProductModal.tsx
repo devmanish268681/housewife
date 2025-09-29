@@ -1,6 +1,6 @@
 "use client";
 
-import React, {useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import Image from "next/image";
 
@@ -21,6 +21,8 @@ import { useAuth } from "@/lib/context/authContext";
 //types
 import { ProductModalProps } from "./types";
 import { useTranslations } from "next-intl";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
 
 const ProductModal: React.FC<ProductModalProps> = ({
   isOpen,
@@ -100,7 +102,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
       };
 
       if (user) {
-        await addToCart(payload)
+        await addToCart(payload).unwrap()
           .then(() => toast.success("Product added successfully to cart"))
           .catch(() => toast.error("Failed to add product to cart"));
         setQuantity(newQuantity);
@@ -197,11 +199,10 @@ const ProductModal: React.FC<ProductModalProps> = ({
             {product.title}
           </h3>
           <button
-            onClick={() => handleOnClose()}
-            aria-label="Close modal"
-            className="text-gray-600 hover:text-gray-900 font-bold text-2xl leading-none"
+            onClick={onClose}
+            className="p-2 hover:bg-gray-100 rounded-full"
           >
-            ×
+            <FontAwesomeIcon icon={faTimes} size="lg" />
           </button>
         </div>
 
@@ -225,8 +226,9 @@ const ProductModal: React.FC<ProductModalProps> = ({
 
         {/* Details */}
         <p id="product-modal-description" className="mb-2 text-gray-700">
-          {product.description}
+          {product.description}<br />
         </p>
+        <p className="text-xs text-[#586274] mb-2">Net Qty: {product?.variants && <span>{`1 pack (${product?.variants[0]?.unitSize} ${product?.variants[0]?.unit})`}</span>}</p>
 
         <p className="font-bold text-lg mb-1">
           {product.price.toLocaleString("en-IN", {
@@ -234,29 +236,6 @@ const ProductModal: React.FC<ProductModalProps> = ({
             currency: "INR",
           })}
         </p>
-        {/* <p className="mb-1">
-          Stock:{" "}
-          <span
-            className={product.stock === 0 ? "text-red-600 font-semibold" : ""}
-          >
-            {product.stock}
-          </span>
-        </p>
-        <p className="mb-2">
-          Category: <span className="font-medium">{product.category}</span>
-        </p> */}
-
-        {/* Tags */}
-        {/* <div className="flex flex-wrap gap-2 mb-4" aria-label="Product tags">
-          {product.tags.map((tag) => (
-            <span
-              key={tag}
-              className="bg-gray-200 rounded px-2 py-1 text-sm text-gray-700"
-            >
-              {tag}
-            </span>
-          ))}
-        </div> */}
 
         {/* Quantity selector */}
         {quantity !== 0 && (
@@ -307,7 +286,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
         </button>
 
         {/* Related Products */}
-        {relatedProducts.length > 0 && (
+        {/* {relatedProducts.length > 0 && (
           <section className="mt-6" aria-labelledby="related-products-heading">
             <h4 id="related-products-heading" className="font-semibold mb-2">
               Related Products
@@ -345,7 +324,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
               ))}
             </div>
           </section>
-        )}
+        )} */}
       </div>
     </div>
   );

@@ -8,16 +8,18 @@ export type User = {
 
 export type Address = {
   id: string;
-  createdAt: string; // or Date if you parse it
-  updatedAt: string; // or Date
+  createdAt: string;   // ISO date string
+  updatedAt: string;  
   deleted: boolean;
   userId: string;
-  street: string;
-  city: string;
-  state: string;
-  country: string;
-  zipCode: string;
-};
+  street: string | null;
+  latitude: number;
+  longitude: number;
+  city: string | null;
+  state: string | null;
+  country: string | null;
+  zipCode: string | null;
+};;
 
 export type LocationResponse = {
   success: boolean;
