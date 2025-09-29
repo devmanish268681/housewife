@@ -5,8 +5,6 @@ import ClientGeoLocation from "./ClientGeoLocation";
 import { pingExternalServerOnce } from "@/lib/ping-once";
 
 //utils
-
-
 export default async function Home() {
   await pingExternalServerOnce();
   return (

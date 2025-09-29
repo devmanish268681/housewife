@@ -41,7 +41,7 @@ const Notification = ({
     <div className="relative">
       {/* Bell Button */}
       <button
-        className="relative h-10 w-10 bg-gray-100 rounded-full flex items-center justify-center border hover:shadow transition"
+        className="hidden relative h-10 w-10 bg-gray-100 rounded-full flex items-center justify-center border hover:shadow transition lg:flex"
         onClick={() => setShowDropdown((prev) => !prev)}
         aria-label="Notifications"
         aria-expanded={showDropdown}

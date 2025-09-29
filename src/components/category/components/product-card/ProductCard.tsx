@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect,useState } from "react";
 import toast from "react-hot-toast";
 import dynamic from "next/dynamic";
 import Image from "next/image";
@@ -207,12 +207,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
               )}
             </div>
           </div>
-
+          {variants && <p className="text-xs text-[#586274]">{`1 pack (${variants[0]?.unitSize} ${variants[0]?.unit})`}</p>}
           {/* Title & Subtitle */}
           <h2 className="text-base font-semibold text-gray-900 mb-1">
             {title}
           </h2>
-          {/* <p className="text-xs text-gray-400">{quantityText}</p> */}
         </div>
       </article>
 

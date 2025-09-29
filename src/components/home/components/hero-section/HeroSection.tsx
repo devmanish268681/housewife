@@ -1,8 +1,9 @@
 "use client";
+import { useRouter } from "@/i18n/navigation";
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+
 
 //hooks
 import { useAppSelector } from "@/lib/hooks";
@@ -12,15 +13,15 @@ import { Product } from "@/lib/types/products";
 
 //slices
 import { useGetProductsQuery } from "@/lib/slices/productsApiSlice";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 const HeroBanner = () => {
   //states & hooks
-  const [locationVisible, setLocationVisible] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [suggestions, setSuggestions] = useState<Product[]>([]);
   const router = useRouter();
   const t = useTranslations('HomePage.hero-section');
+  const locale = useLocale();
 
   //user-location
   const userLocation = useAppSelector((state) => state.userLocation);
@@ -57,7 +58,7 @@ const HeroBanner = () => {
 
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-teal-700 via-cyan-600 to-blue-800 text-white pt-20 md:pt-24 pb-28 px-4 sm:px-6 md:px-12">
+    <section className="relative overflow-hidden bg-gradient-to-br from-teal-700 via-cyan-600 to-blue-800 text-white pt-10 lg:pt:20 md:pt-24 pb-28 px-4 sm:px-6 md:px-12">
       <div className="max-w-7xl mx-auto flex flex-col-reverse md:flex-row items-center gap-12 sm:gap-14 md:gap-16">
 
         {/* Left Content */}
@@ -67,11 +68,14 @@ const HeroBanner = () => {
             <span className="text-lime-400">{t("fresh_groceries")}</span>{" "}
             & {t("essentials")} <br />
             {t("to")}{" "}
-            <span
-              className={`font-extrabold transition-opacity ${locationVisible ? "opacity-100" : "opacity-0"}`}
-            >
-              {stateName || "--"}
-            </span>
+            {locale === 'en' && (
+              <span
+                className={`font-extrabold transition-opacity`}
+              >
+                {stateName || "--"}
+              </span>
+            )}
+
           </h1>
 
           <p className="mt-4 sm:mt-6 text-base sm:text-lg font-medium text-lime-200 max-w-md drop-shadow-sm">

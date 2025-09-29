@@ -18,7 +18,7 @@ export async function GET(request: Request) {
 
         const address = await prisma.address.findMany({
             where: {
-                userId: userId
+                userId: userId,
             }
         })
 

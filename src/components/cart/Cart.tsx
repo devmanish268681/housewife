@@ -79,7 +79,7 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
       try {
         await addToCart({ productId, productVariantId: variantId, quantity: newQuantity }).unwrap().then(() => getCartPreOrder({}));
       } catch {
-        toast.error("Failed to update cart");
+        toast.error(t('failed_to_update_cart'));
       }
     },
     [addToCart, user]
@@ -103,9 +103,9 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
     async (id: string) => {
       try {
         await deleteFromCart(id);
-        toast.success("Item removed from cart successfully");
+        toast.success(t('item_removed_success'));
       } catch {
-        toast.error("Failed to remove item");
+        toast.error(t('failed_to_remove_item'));
       }
     },
     [deleteFromCart]
@@ -151,23 +151,23 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
           <div className="p-4 space-y-4 overflow-y-auto max-h-[70vh]">
             {cartItemsData?.result?.length === 0 ? (
               <p className="text-gray-500 text-center mt-10">
-                Your cart is empty 😔
+                {t('your_cart_empty')} 😔
               </p>
             ) : (
               cartItemsData?.result?.map((item) => (
                 <div
-                  key={item.productId}
+                  key={item?.productId}
                   className="flex items-center gap-3 border rounded-lg p-3"
                 >
                   <Image
                     src={item?.image[0]}
-                    alt={item.productName}
+                    alt={item?.productName}
                     width={60}
                     height={60}
                     className="rounded-lg"
                   />
                   <div className="flex-1">
-                    <h3 className="font-medium">{item.productName}</h3>
+                    <h3 className="font-medium">{item?.productName}</h3>
                     <div className="flex gap-[4px]">
                       <p className="text-sm text-gray-500">
                         ₹{Math.round(item?.discountPrice)}
@@ -190,9 +190,9 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
                         } else {
                           handleIncrementQuantity(
                             "decrement",
-                            item.quantity,
-                            item.productId,
-                            item.variantId
+                            item?.quantity,
+                            item?.productId,
+                            item?.variantId
                           );
                         }
                       }}
@@ -205,9 +205,9 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
                       onClick={() => {
                         handleIncrementQuantity(
                           "increment",
-                          item.quantity,
-                          item.productId,
-                          item.variantId
+                          item?.quantity,
+                          item?.productId,
+                          item?.variantId
                         );
                       }}
                       className="p-1 border rounded hover:bg-gray-100"
@@ -217,7 +217,7 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
                   </div>
                   <button
                     onClick={() => {
-                      handleDelete(item.id);
+                      handleDelete(item?.id);
                     }}
                     className="ml-2 text-red-500 hover:text-red-700"
                   >
@@ -241,11 +241,6 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
                 <span>{t('items_price')}</span>
                 <span>₹{totals?.discountedPrice.toFixed(2)}</span>
               </div>
-
-              {/* <div className="flex justify-between text-sm text-green-600">
-                <span>Discount</span>
-                <span>₹{totals?.discount.toFixed(2)}</span>
-              </div> */}
 
               {/* Delivery */}
               <div className="flex justify-between text-sm text-gray-700">
@@ -289,13 +284,13 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
         <div className="flex flex-col items-center justify-center h-[70vh]">
           <div className="mx-auto bg-white rounded-2xl shadow-lg p-8 flex flex-col items-center max-w-xs border">
             <h3 className="text-lg font-semibold mb-4 text-[#181111] text-center">
-              Please login to access cart
+              {t('please_login_to_access_cart')}
             </h3>
             <button
               className="px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-full font-semibold shadow transition"
               onClick={() => handleLogin()}
             >
-              Login
+              {t('login')}
             </button>
           </div>
         </div>

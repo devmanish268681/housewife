@@ -10,7 +10,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const Footer = () => {
   return (
-    <footer className="bg-white bottom-0 w-full ">
+    <footer className="bg-white bottom-0 w-full fixed">
       <div className="border-b border-gray-300"></div>
 
       <div className="flex flex-row-reverse justify-between items-center px-6 py-6">

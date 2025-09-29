@@ -1,29 +1,28 @@
 import { useTranslations } from "next-intl";
 import React from "react";
 
-
 const DeliverySteps = () => {
   const t = useTranslations('HomePage.how_delivery_works');
   const steps = [
-  {
-    id: 1,
-    title: t('choose_product.heading'),
-    description: t('choose_product.description'),
-    icon: '🛒',
-  },
-  {
-    id: 2,
-    title:t('select_address.heading'),
-    description: t('select_address.description'),
-    icon: '📍',
-  },
-  {
-    id: 3,
-    title:t('fast_delivery.heading'),
-    description: t('fast_delivery.description'),
-    icon: '🚚',
-  },
-]
+    {
+      id: 1,
+      title: t('choose_product.heading'),
+      description: t('choose_product.description'),
+      icon: '🛒',
+    },
+    {
+      id: 2,
+      title: t('select_address.heading'),
+      description: t('select_address.description'),
+      icon: '📍',
+    },
+    {
+      id: 3,
+      title: t('fast_delivery.heading'),
+      description: t('fast_delivery.description'),
+      icon: '🚚',
+    },
+  ]
   return (
     <section className="py-10 px-4 bg-gray-50 rounded-xl" aria-labelledby="delivery-steps">
       <h2 id="delivery-steps" className="text-xl font-semibold text-center mb-8">
