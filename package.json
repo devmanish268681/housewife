@@ -37,8 +37,10 @@
     "jspdf": "^3.0.2",
     "lodash.isnil": "^4.0.0",
     "lru-cache": "^11.1.0",
+    "multer": "^2.0.2",
     "next": "15.3.4",
     "next-auth": "^4.24.11",
+    "next-connect": "^1.0.0",
     "next-intl": "^4.3.9",
     "node-cache": "^5.1.2",
     "node-fetch": "^3.3.2",
@@ -63,6 +65,7 @@
   "devDependencies": {
     "@types/d3": "^7.4.3",
     "@types/lodash.isnil": "^4.0.9",
+    "@types/multer": "^2.0.0",
     "@types/node": "^20.19.4",
     "@types/react": "^19",
     "@types/react-dom": "^19",

@@ -1,7 +1,7 @@
 export interface Category {
   id: string;
   name: string;
-  image: string;
+  image: string | null;
 }
 
 export interface ProductQueryParams {
@@ -12,8 +12,6 @@ export interface ProductQueryParams {
 export interface Product {
   id: string;
   name: string;
-  createdAt: string;
-  updatedAt: string;
   description: string;
   categoryId: string;
   images: any;

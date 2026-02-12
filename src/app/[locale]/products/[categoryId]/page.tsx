@@ -1,11 +1,11 @@
 import React from "react";
+import Categories from "@/components/products/Categories";
 
 //components
-import Categories from "@/components/category/Categories";
 
 export const metadata = {
-  title: "Categories | My Shop",
-  description: "Browse product categories on My Shop.",
+  title: "Products | My Shop",
+  description: "Browse product by categories on My Shop.",
 };
 
 const Page = () => {

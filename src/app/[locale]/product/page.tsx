@@ -1,7 +1,7 @@
 import React from 'react';
 
 //components
-import Products from '@/components/products/Products'
+import Products from '@/components/productse/Products'
 
 const page = () => {
   return (

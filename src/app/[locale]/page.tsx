@@ -10,7 +10,7 @@ export default async function Home() {
   return (
     <>
       <HeroBanner />
-      <div style={{ maxWidth: "1440px", margin: "auto" }}>
+      <div className="home-page-container">
         <HomePage />
       </div>
       <ClientGeoLocation />

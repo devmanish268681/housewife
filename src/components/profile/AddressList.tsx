@@ -17,11 +17,11 @@ interface AddressListProps {
 
 interface Address {
   id: string;
-  street: string;
-  state: string;
-  city: string;
-  country: string;
-  zipCode: string;
+  street: string | null;
+  state: string | null;
+  city: string | null;
+  country: string | null;
+  zipCode: string | null;
 }
 const AddressList: React.FC<AddressListProps> = ({
   addresses,
@@ -31,7 +31,7 @@ const AddressList: React.FC<AddressListProps> = ({
   const [isAdd, setIsAdd] = useState(false);
   const t = useTranslations('HomePage.profile');
   const [address, setAddress] = useState<Address>();
-  const handleEditAddress = ({ id, street, state, city, country, zipCode }: { id: string, street: string, state: string, city: string, country: string, zipCode: string }) => {
+  const handleEditAddress = ({ id, street, state, city, country, zipCode }: Address) => {
     setAddress({ id, street, state, city, country, zipCode })
     setIsEditModalOpen(true);
   }
@@ -60,7 +60,7 @@ const AddressList: React.FC<AddressListProps> = ({
               </div>
               <button
                 className="text-xs text-[#b59f00] underline hover:text-[#181111] mt-2 md:mt-0"
-                onClick={() => handleEditAddress({ id: addr.id, street: addr.street, state: addr.state, city: addr.city, country: addr.country, zipCode: addr.zipCode })}
+                onClick={() => handleEditAddress({ id: addr.id, street: addr?.street, state: addr.state, city: addr.city, country: addr.country, zipCode: addr.zipCode })}
               >
                 {t('edit')}
               </button>

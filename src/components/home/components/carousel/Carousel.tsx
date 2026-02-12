@@ -17,7 +17,7 @@ const Carousel: React.FC<CarouselProps> = ({ title, items }) => {
               key={idx}
               className="w-[250px] flex-shrink-0 flex flex-col gap-2 cursor-pointer"
               onClick={() =>
-                router.push(`groceries?categoryId=${item?.categoryId}`)
+                router.push(`category/groceries?categoryId=${item?.categoryId}`)
               }
             >
               <div

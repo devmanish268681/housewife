@@ -1,7 +1,9 @@
-// app/not-found.tsx
+"use client"
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 
 const NotFound = () => {
+    const t = useTranslations('HomePage.not-found')
     return (
         <div className="flex flex-col items-center justify-center bg-gray-50 p-6" style={{ height: "calc(100vh - 168px)" }}>
             {/* Animated 404 */}
@@ -11,10 +13,10 @@ const NotFound = () => {
 
             {/* Message */}
             <h2 className="text-3xl font-bold mb-2 text-gray-800">
-                Page Not Found
+                {t('page_not_found')}
             </h2>
             <p className="text-gray-600 mb-6 text-center max-w-md">
-                Sorry, the page you are looking for doesn’t exist, has been moved, or is temporarily unavailable.
+                {t('sorry_page_doesnt_exist')}
             </p>
 
             {/* Back Home Button */}
@@ -22,7 +24,7 @@ const NotFound = () => {
                 href="/"
                 className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg shadow-lg transition transform hover:-translate-y-1"
             >
-                Go Back Home
+                {t('go_back_home')}
             </Link>
         </div>
     );

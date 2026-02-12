@@ -27,15 +27,13 @@ export type Categories = {
     id: string,
     name: string,
     image: any,
-    createdAt: string;
-    description: string;
+    description: string | null;
     offers:
     {
         id: string,
         discountedValue: number
-        type:string;
+        type: string;
     }[];
-    updatedAt: string;
     subCategories: {
         id: string,
         name: string,
@@ -110,6 +108,17 @@ export interface SubCategory {
     deleted: boolean;
 }
 
-export interface CategoriesSectionProps {
-    data?: { categories: Categories[] }
+
+export interface BrandStock {
+    id: string;
+    name: string;
+    individualBrandStock: number;
+}
+
+export interface SubCategoryStock {
+    id: string;
+    name: string;
+    image: string;
+    subCategoryProductStock: number;
+    brands: BrandStock[];
 }

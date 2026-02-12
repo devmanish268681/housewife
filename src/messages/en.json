@@ -95,7 +95,9 @@
       "login": "Login",
       "item_removed_success": "Item removed from cart successfully",
       "failed_to_remove_item": "Failed to remove item",
-      "failed_to_update_cart": "Failed to update cart"
+      "failed_to_update_cart": "Failed to update cart",
+      "offer_valid_message": "Offer is valid only on a minimum order of ₹{minOrderValue}.",
+      "offer_applied": "Offer applied successfully"
     },
     "profile": {
       "log_out": "Log Out",
@@ -157,6 +159,34 @@
       "order_summary": "Order Summary",
       "delivery_fee": "Delivery Fee",
       "processing": "Processing"
+    },
+    "deliverable": {
+      "sorry_we_can't_deliver": "Sorry, we do not deliver to your location yet.",
+      "expanding_services": "We’re constantly expanding our services. Please check back soon or try delivering to another location.",
+      "go_back_home": "Go Back Home",
+      "deliver_to_another_location": "Deliver to Another Location",
+      "check_availability": "Check Availability",
+      "sorry_we_dont_deliver_to_this_location": "Sorry we don't deliver to this location",
+      "enter_pin_code": "Enter Pin Code"
+    },
+    "contact-us": {
+      "contact_us": "Contact Us",
+      "we_love_to_hear_from_you": "We'd love to hear from you! Fill out the form below or reach us through the provided details.",
+      "name": "Name",
+      "your_name": "Your Name",
+      "email": "Email",
+      "subject": "Subject",
+      "message": "Message",
+      "your_message": "Your message",
+      "send_message": "Send Message",
+      "get_in_touch": "Get in touch",
+      "feel_free_to_reach": "Feel free to reach out via email or phone. We’re here to help!",
+      "address": "Shop no. 01 & 02 Jam Jam Plaza, Narayani Vihar,Jaipur,Jhunjhune Bypass,Sikar,Rajasthan - 332001"
+    },
+    "not-found":{
+      "page_not_found":"Page Not Found",
+      "sorry_page_doesnt_exist":"Sorry, the page you are looking for doesn’t exist, has been moved, or is temporarily unavailable.",
+      "go_back_home": "Go Back Home"
     }
   }
 }

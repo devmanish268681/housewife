@@ -1,3 +1,4 @@
+'use client'
 import React, { useState } from "react";
 import Carousel from "../carousel/Carousel";
 import { RecommendedProps } from "@/lib/types/recommended";

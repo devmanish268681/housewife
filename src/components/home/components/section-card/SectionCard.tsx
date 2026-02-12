@@ -5,16 +5,16 @@ import Link from "next/link";
 import { Product } from "@/lib/types/products";
 import './section-card.css'
 
-const SectionCard = ({ title, items }: { title: string; items: Product[] }) => {
+const SectionCard = ({ title, items,category }: { title: string; items: Product[],category:string }) => {
   return (
-    <section className="py-8 px-4" aria-labelledby={title}>
+    <section className="py-8 px-4 mx-4" aria-labelledby={title}>
       <h2 className="text-xl font-semibold mb-4">{title}</h2>
       {items && items?.length > 0 ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 cursor-pointer">
           {items?.map((item, index) => (
             <Link
               key={item.id}
-              href={`groceries?categoryId=${item.categoryId}`}
+              href={`products/${item?.id}?category=${category}`}
               className="bg-white border rounded-xl p-3 shadow-sm text-center hover:shadow-md transition"
             >
               <Image

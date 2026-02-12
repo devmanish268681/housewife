@@ -1,4 +1,7 @@
-import { Toaster } from "react-hot-toast";
+import Script from "next/script";
+import { Suspense } from "react";
+import { Metadata } from "next";
+import { hasLocale, NextIntlClientProvider } from 'next-intl';
 
 //styles
 import "./globals.css";
@@ -8,21 +11,19 @@ import 'ag-grid-community/styles/ag-theme-alpine.css';
 //components
 import Header from "@/components/header/Header";
 import Footer from "@/components/footer/Footer";
-import { hasLocale, NextIntlClientProvider } from 'next-intl';
+import CartLoader from "@/components/cart-loader/CartLoader";
 
 //store
 import StoreProvider from "@/lib/store/StoreProvider";
 
 //utils
 import AuthProvider from "@/lib/auth/AuthProvider";
-import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
-import Script from "next/script";
-import { Metadata } from "next";
-import CartLoader from "@/components/cart-loader/CartLoader";
-import { Suspense } from "react";
-import { getMessages } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import { notFound } from "next/navigation";
+
+//third-party
+import { Toaster } from "react-hot-toast";
+import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -66,6 +67,7 @@ export default async function RootLayout({
   } catch {
     notFound();
   }
+
   return (
     <html lang={locale}>
       <body suppressHydrationWarning={true}>

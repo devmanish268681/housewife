@@ -118,7 +118,7 @@ const Header = () => {
       });
     } catch (error: any) {
       if (error?.status === 400) {
-        router.push("/not-deliverable");
+        // router.push("/not-deliverable");
       } else {
         console.log("Location error:", error);
       }
@@ -126,9 +126,9 @@ const Header = () => {
   };
 
   useEffect(() => {
-    if (!userLocationData) {
-      router.push("/not-deliverable");
-    }
+    // if (!userLocationData) {
+    //   router.push("/not-deliverable");
+    // }
   }, []);
 
   const handleLocationClick = () => {

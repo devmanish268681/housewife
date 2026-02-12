@@ -15,8 +15,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 //components
-import CheckoutModal from "../category/components/checkout-modal/CheckoutModal";
 import CouponCard from "./components/coupon-card/CouponCard";
+import CheckoutModal from "../products/components/checkout-modal/CheckoutModal";
 
 //context
 import { useAuth } from "@/lib/context/authContext";
@@ -123,7 +123,7 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
 
   useEffect(() => {
     if(offerId || couponCode){
-      getCartPreOrder({id:offerId,couponCode:couponCode})
+      getCartPreOrder({id:offerId,couponCode:couponCode}).unwrap().then(() => toast.success(t('offer_applied')))
     }
   },[offerId,couponCode])
 
@@ -229,7 +229,7 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
           </div>
 
           {cartItemsData && cartItemsData?.result?.length > 0 && (
-            <CouponCard  setOfferId={setOfferId} setCouponCode={setCouponCode} couponCode={couponCode}/>
+            <CouponCard  setOfferId={setOfferId} setCouponCode={setCouponCode} couponCode={couponCode} totalOrderAmount={preOrderData?.finalAmount}/>
           )}
 
           {cartItemsData && cartItemsData?.result?.length > 0 && preOrderData && (

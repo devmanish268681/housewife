@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 
 //constants
 import Loading from "@/components/common/Loading";
@@ -12,6 +12,7 @@ import { CategoriesCardProps } from "./types";
 //slices
 import { useLazyGetProductsByCategoryQuery } from "@/lib/slices/categoriesApiSlice";
 import ProductCard from "../product-card/ProductCard";
+import CategoriesCardSkeleton from "../categories-card-skeleton/CategoriesCardsSkeleton";
 
 //dynamic component
 // const ProductCard = dynamic(() => import("../product-card/ProductCard"), { ssr: false });
@@ -27,9 +28,9 @@ const CategoriesCard = ({
   const [isFetchingMore, setIsFetchingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const observerRef = useRef<HTMLDivElement | null>(null);
-  const searchParams = useSearchParams();
-
-  const categoryId = searchParams.get("categoryId");
+ const params = useParams();
+  const categoryId = params?.categoryId as string;
+  console.log(categoryId,"categoryId")
 
   //slices
   const [getProductsByCategory] =
@@ -78,7 +79,7 @@ const CategoriesCard = ({
   return (
     <section className="w-full lg:ltr:-ml-4 lg:rtl:-mr-2 xl:ltr:-ml-8 xl:rtl:-mr-8 lg:-mt-1">
       {isProductsFetching ? (
-        <Loading size={60} thickness={5} color="#dc2626" />
+        <CategoriesCardSkeleton />
       ) : (
         products && products?.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-3 md:gap-4 2xl:gap-5">

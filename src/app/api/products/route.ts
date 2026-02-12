@@ -6,68 +6,20 @@ import { validateAccess } from "@/lib/roles/validateAccess";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 import { createProductSchema } from "./productSchema";
+import { getProducts } from "@/app/lib/services/products.service";
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const categoryId = searchParams.get("categoryId");
 
-    const whereClause: any = {};
+    const result = await getProducts(categoryId);
 
-    if (categoryId) {
-      whereClause.categoryId = categoryId;
-    }
-
-    const products = await prisma.product.findMany({
-      where: whereClause,
-      include: {
-        category: true,
-        variants: {
-          where: { deleted: false },
-          orderBy: {
-            price: "asc",
-          },
-        },
-      },
-    });
-
-    //total count of products
-    const totalCount = await prisma.product.count();
-
-    let formattedData;
-    formattedData = products.map((product) => ({
-      id: product.id,
-      name: product.name,
-      createdAt: product.createdAt,
-      updatedAt: product.updatedAt,
-      description: product.description,
-      categoryId: product.categoryId,
-      images: product.images,
-      subCategoryId: product.subCategoryId,
-      brandId: product.brandId,
-      price: product.variants[0].price,
-      discountedPrice: product.variants[0].discountedPrice,
-      variantId: product.variants[0].id,
-      unit: product.variants[0].unit,
-      unitSize: product.variants[0].unitSize,
-      stock: product.variants[0].stock,
-      category: {
-        id: product.category.id,
-        name: product.category.name,
-        image: product.category.image,
-      },
-    }));
-
-    return NextResponse.json(
-      { data: formattedData, totalCount: totalCount },
-      { status: 200 }
-    );
+    return NextResponse.json(result, { status: 200 });
   } catch (error: any) {
-    console.log("Internal server error", error);
+    console.error("Internal server error", error);
     return NextResponse.json(
-      {
-        message: error.message || "Internal Server Error",
-      },
+      { message: error.message || "Internal Server Error" },
       { status: 500 }
     );
   }

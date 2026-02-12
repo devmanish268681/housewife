@@ -7,11 +7,11 @@ import toast from "react-hot-toast";
 
 interface Address {
   id: string;
-  street: string;
-  state: string;
-  city: string;
-  country: string;
-  zipCode: string;
+  street: string | null;
+  state: string | null;
+  city: string | null;
+  country: string | null;
+  zipCode: string | null;
 } 
 interface AddressEditModalProps {
   isOpen: boolean;

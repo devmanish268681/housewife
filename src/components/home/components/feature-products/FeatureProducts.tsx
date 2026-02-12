@@ -1,38 +1,30 @@
-import React from "react";
+"use client";
+import React, { useMemo } from "react";
 
 //third-party
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useTranslations } from "next-intl";
-import { faClock, faLeaf, faShield } from "@fortawesome/free-solid-svg-icons";
+
+//config
+import { FEATURE_CONFIG } from "./feature.config";
 
 const FeatureProducts = () => {
-  const t = useTranslations('HomePage.feature');
-  const features = [
-    {
-      icon: faClock,
-      title: t('fast_delivery'),
-      description: t('fast_description'),
-    },
-    {
-      icon: faLeaf,
-      title: t('fresh_products'),
-      description: t('fresh_desc'),
-    },
-    {
-      icon: faShield,
-      title: t('trust__quality'),
-      description: t('trust_desc'),
-    },
-  ];
+  const t = useTranslations("HomePage.feature");
+  const features = useMemo(
+    () =>
+      FEATURE_CONFIG.map((item) => ({
+        ...item,
+        title: t(item.titleKey),
+        description: t(item.descKey),
+      })),
+    [t]
+  );
   return (
     <section
       aria-labelledby="feature-products-heading"
       className="mx-4 md:mx-12 my-10 shadow-md rounded-xl bg-gray-50 p-6 md:p-8 lg:p-10"
     >
-      <h2
-        id="feature-products-heading"
-        className="sr-only"
-      >
+      <h2 id="feature-products-heading" className="sr-only">
         Feature Products
       </h2>
 

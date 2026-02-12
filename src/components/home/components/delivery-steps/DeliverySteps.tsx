@@ -1,5 +1,6 @@
-import { useTranslations } from "next-intl";
+'use client'
 import React from "react";
+import { useTranslations } from "next-intl";
 
 const DeliverySteps = () => {
   const t = useTranslations('HomePage.how_delivery_works');
