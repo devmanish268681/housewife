@@ -102,7 +102,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { getUserById } from "../services/userService";
-import { updateAddressRecord } from "../services/addressService";
+import { getAddressByUserId, updateAddressRecord } from "../services/addressService";
 import { Prisma } from "@prisma/client";
 import {
   applyOffer,
@@ -136,16 +136,17 @@ const isServerLive = async () => {
 export const placeOrderController = async (body: any, userId: string) => {
   try {
     const user = await getUserById(userId);
+    const userAddress = await getAddressByUserId(userId);
 
     const result = await prisma.$transaction(
       async (tx: Prisma.TransactionClient) => {
-        if (!user.Address[0].latitude && !user.Address[0].longitude) {
+        if (!userAddress.latitude && !userAddress.longitude) {
           throw new Error("user location not found");
         }
 
         const zone = await isUserWithinRadius(
-          user.Address[0].latitude,
-          user.Address[0].longitude
+          userAddress.latitude,
+          userAddress.longitude
         );
 
         if (!zone.isWithinRadius) {
@@ -154,8 +155,8 @@ export const placeOrderController = async (body: any, userId: string) => {
 
         const { store: nearestStore, distance: storeDistance } =
           await findNearestStoreInZone(
-            Number(user.Address[0].latitude),
-            Number(user.Address[0].longitude),
+            Number(userAddress.latitude),
+            Number(userAddress.longitude),
             zone.zoneId!,
             tx
           );
@@ -170,7 +171,7 @@ export const placeOrderController = async (body: any, userId: string) => {
         };
 
         const userAdress = await updateAddressRecord(
-          user.Address[0].id,
+          userAddress.id,
           adressObj,
           tx
         );
