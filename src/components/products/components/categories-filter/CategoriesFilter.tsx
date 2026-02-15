@@ -1,22 +1,19 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useContext, useMemo, useState } from "react";
 
 //types
-import { CatgoriesFilterProps } from "./types";
 import { useTranslations } from "next-intl";
 
 //components
 import FilterSidebar from "../filter-sidebar/FilterSidebar";
+import { categoryContext } from "../../Categories";
 
-const CategoriesFilter = ({
-  categoryId,
-  setSubCatId,
-  setBrandId,
-  categoriesData
-}: CatgoriesFilterProps) => {
+const CategoriesFilter = () => {
   const [search, setSearch] = useState("");
-  const t = useTranslations('HomePage.category');
+  const { categoryId, categoriesData } = useContext(categoryContext);
+
+  const t = useTranslations("HomePage.category");
   const [drawerOpen, setDrawerOpen] = useState(false); // NEW
 
   // Find the current category object
@@ -25,16 +22,24 @@ const CategoriesFilter = ({
   }, [categoriesData, categoryId]);
 
   // Filtered subcategories and brands
-  const filteredSubcategories = useMemo(() =>
-    currentCategory?.subCategories?.filter((sub) =>
-      sub.name.toLowerCase().includes(search.toLowerCase())
-    ), [currentCategory, search]);
+  const filteredSubcategories = useMemo(
+    () =>
+      currentCategory?.subCategories?.filter((sub) =>
+        sub.name.toLowerCase().includes(search.toLowerCase()),
+      ),
+    [currentCategory, search],
+  );
 
   // Filter brands by name
-  const filteredBrands = useMemo(() =>
-    (currentCategory?.subCategories?.flatMap(sub => sub.brands) ?? []).filter((brand) =>
-      brand.name.toLowerCase().includes(search.toLowerCase())
-    ), [currentCategory, search]);
+  const filteredBrands = useMemo(
+    () =>
+      (
+        currentCategory?.subCategories?.flatMap((sub) => sub.brands) ?? []
+      ).filter((brand) =>
+        brand.name.toLowerCase().includes(search.toLowerCase()),
+      ),
+    [currentCategory, search],
+  );
 
   if (!currentCategory) return null;
 
@@ -45,7 +50,7 @@ const CategoriesFilter = ({
         className="fixed bottom-6 right-6 z-40 bg-[#e82630] text-white px-6 py-3 rounded-full shadow-lg font-bold text-lg lg:hidden"
         onClick={() => setDrawerOpen(true)}
       >
-        {t('filter')}
+        {t("filter")}
       </button>
       {/* Mobile: Drawer */}
       {drawerOpen && (
@@ -80,8 +85,6 @@ const CategoriesFilter = ({
               setSearch={setSearch}
               filteredSubcategories={filteredSubcategories}
               filteredBrands={filteredBrands}
-              setSubCatId={setSubCatId}
-              setBrandId={setBrandId}
               currentCategoryImage={currentCategory?.image}
               t={t}
             />
@@ -95,8 +98,6 @@ const CategoriesFilter = ({
           setSearch={setSearch}
           filteredSubcategories={filteredSubcategories}
           filteredBrands={filteredBrands}
-          setSubCatId={setSubCatId}
-          setBrandId={setBrandId}
           currentCategoryImage={currentCategory?.image}
           t={t}
         />

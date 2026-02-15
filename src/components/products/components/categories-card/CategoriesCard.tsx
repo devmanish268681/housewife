@@ -1,7 +1,13 @@
 "use client";
 
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useParams, useSearchParams } from "next/navigation";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import { useParams } from "next/navigation";
 
 //constants
 import Loading from "@/components/common/Loading";
@@ -13,28 +19,22 @@ import { CategoriesCardProps } from "./types";
 import { useLazyGetProductsByCategoryQuery } from "@/lib/slices/categoriesApiSlice";
 import ProductCard from "../product-card/ProductCard";
 import CategoriesCardSkeleton from "../categories-card-skeleton/CategoriesCardsSkeleton";
+import { categoryContext } from "../../Categories";
 
-//dynamic component
-// const ProductCard = dynamic(() => import("../product-card/ProductCard"), { ssr: false });
-
-const CategoriesCard = ({
-  products: initialProducts,
-  isProductsFetching,
-}: CategoriesCardProps) => {
-
+const CategoriesCard = () => {
+  const { products: initialProducts, isProductsFetching } =
+    useContext(categoryContext);
   //states & hooks
-  const [products, setProducts] = useState(initialProducts || []);
+  const [products, setProducts] = useState(initialProducts?.products || []);
   const [page, setPage] = useState(1);
   const [isFetchingMore, setIsFetchingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const observerRef = useRef<HTMLDivElement | null>(null);
- const params = useParams();
+  const params = useParams();
   const categoryId = params?.categoryId as string;
-  console.log(categoryId,"categoryId")
 
   //slices
-  const [getProductsByCategory] =
-    useLazyGetProductsByCategoryQuery();
+  const [getProductsByCategory] = useLazyGetProductsByCategoryQuery();
 
   const fetchMoreProducts = useCallback(async () => {
     if (!hasMore || isFetchingMore) return;
@@ -45,7 +45,7 @@ const CategoriesCard = ({
       const result = await getProductsByCategory({
         page: page + 1,
         limit: 15,
-        categoryId
+        categoryId,
       }).unwrap();
 
       setProducts((prev) => [...prev, ...(result.products || [])]);
@@ -67,7 +67,7 @@ const CategoriesCard = ({
           fetchMoreProducts();
         }
       },
-      { threshold: 1.0 }
+      { threshold: 1.0 },
     );
 
     observer.observe(observerRef.current);
@@ -75,42 +75,46 @@ const CategoriesCard = ({
     return () => observer.disconnect();
   }, [fetchMoreProducts, isFetchingMore, hasMore]);
 
+  useEffect(() => {
+    setProducts(initialProducts?.products || []);
+  }, [initialProducts?.products]);
 
   return (
     <section className="w-full lg:ltr:-ml-4 lg:rtl:-mr-2 xl:ltr:-ml-8 xl:rtl:-mr-8 lg:-mt-1">
       {isProductsFetching ? (
         <CategoriesCardSkeleton />
+      ) : products && products?.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-3 md:gap-4 2xl:gap-5">
+          {products?.map((product, index) => (
+            <ProductCard
+              key={index}
+              id={product?.id}
+              title={product?.name}
+              variantId={product?.variants[0]?.id}
+              variants={product?.variants}
+              subtitle={"tetsing"}
+              description={product?.description}
+              price={Number(product?.variants[0]?.price)}
+              discountedPrice={Number(product?.variants[0]?.discountedPrice)}
+              quantityText={"1 pack (200g)"}
+              image={product?.images[0]}
+              stock={product?.variants[0]?.stock}
+              category={"manidh"}
+            />
+          ))}
+          <div
+            ref={observerRef}
+            className="col-span-full flex justify-center py-4"
+          >
+            {isFetchingMore && (
+              <Loading size={40} thickness={4} color="#dc2626" />
+            )}
+          </div>
+        </div>
       ) : (
-        products && products?.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-3 md:gap-4 2xl:gap-5">
-            {products?.map((product, index) => (
-              <ProductCard
-                key={index}
-                id={product?.id}
-                title={product?.name}
-                variantId={product?.variants[0]?.id}
-                variants={product?.variants}
-                subtitle={"tetsing"}
-                description={product?.description}
-                price={Number(product?.variants[0]?.price)}
-                discountedPrice={Number(product?.variants[0]?.discountedPrice)}
-                quantityText={"1 pack (200g)"}
-                image={product?.images[0]}
-                stock={product?.variants[0]?.stock}
-                category={"manidh"}
-              />
-            ))}
-            <div ref={observerRef} className="col-span-full flex justify-center py-4">
-              {isFetchingMore && <Loading size={40} thickness={4} color="#dc2626" />}
-            </div>
-          </div>
-        ) : (
-          <div className="text-center py-10 px-5 text-gray-600 font-sans">
-            <p className="text-lg font-medium m-0">
-              No Data Found
-            </p>
-          </div>
-        )
+        <div className="text-center py-10 px-5 text-gray-600 font-sans">
+          <p className="text-lg font-medium m-0">No Data Found</p>
+        </div>
       )}
     </section>
   );
