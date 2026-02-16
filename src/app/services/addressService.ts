@@ -6,20 +6,7 @@ export const createAddressRecord = async (
   tx: Prisma.TransactionClient = prisma
 ) => {
   try {
-    let address;
-    const [existingAdress]: Address[] = await tx.address.findMany({
-      where: { userId: addressObj.userId },
-    });
-
-    if (!existingAdress) {
-      address = await prisma.address.create({ data: addressObj });
-      return address;
-    }
-
-    address = await prisma.address.update({
-      where: { id: existingAdress.id },
-      data: addressObj,
-    });
+    const address = await prisma.address.create({ data: addressObj });
 
     return address;
   } catch (error: any) {
@@ -56,6 +43,7 @@ export const getAddressByUserId = async (userId: string) => {
   try {
     const existingUser = await prisma.address.findFirst({
       where: { userId: userId },
+      orderBy: { updatedAt: "desc" },
     });
 
     if (!existingUser) {
